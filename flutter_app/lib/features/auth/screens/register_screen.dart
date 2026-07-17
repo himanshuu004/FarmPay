@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../core/api/api_response.dart';
 import '../../../core/providers/core_providers.dart';
 import '../../../design_system/tokens.dart';
 import '../../../l10n/generated/app_localizations.dart';
@@ -116,7 +117,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
           _showDevOtp(otpRes['data']?['devOtp']);
           setState(() => _step = 2);
         } else {
-          _showError(otpRes['message'] ?? 'Failed');
+          _showError(apiErrorMessage(otpRes, fallback: 'Failed'));
         }
       } else {
         _showError(message.isEmpty ? 'Registration failed' : message);
@@ -137,7 +138,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
       if (res['success'] == true) {
         setState(() => _step = 3);
       } else {
-        _showError(res['message'] ?? 'Invalid OTP');
+        _showError(apiErrorMessage(res, fallback: 'Invalid OTP'));
       }
     });
   }
@@ -156,7 +157,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
           ).showSnackBar(const SnackBar(content: Text('New OTP sent')));
         }
       } else {
-        _showError(res['message'] ?? 'Could not resend');
+        _showError(apiErrorMessage(res, fallback: 'Could not resend'));
       }
     });
   }
@@ -182,7 +183,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
         mpin: mpin,
       );
       if (setRes['success'] != true) {
-        _showError(setRes['message'] ?? 'Could not set MPIN');
+        _showError(apiErrorMessage(setRes, fallback: 'Could not set MPIN'));
         return;
       }
       final loginRes = await api.login(

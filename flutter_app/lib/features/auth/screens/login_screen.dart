@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../core/api/api_response.dart';
 import '../../../core/storage/secure_store.dart';
 import '../../../core/utils/biometric_service.dart';
 import '../../../design_system/tokens.dart';
@@ -108,7 +109,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           context.go('/home');
         }
       } else {
-        _showError(res['message'] ?? l10n.authLoginFailed);
+        _showError(apiErrorMessage(res, fallback: l10n.authLoginFailed));
       }
     } catch (_) {
       _showError(l10n.authCannotConnect);

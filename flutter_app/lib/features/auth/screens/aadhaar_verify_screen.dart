@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../core/api/api_response.dart';
 import '../../../core/storage/secure_store.dart';
 import '../../../design_system/tokens.dart';
 import '../../../l10n/generated/app_localizations.dart';
@@ -54,7 +55,7 @@ class _AadhaarVerifyScreenState extends ConsumerState<AadhaarVerifyScreen> {
           _otpStep = true;
         });
       } else {
-        _showError(res['message'] ?? 'Failed to send OTP');
+        _showError(apiErrorMessage(res, fallback: 'Failed to send OTP'));
       }
     } catch (_) {
       _showError(l10n.authCannotConnect);
@@ -84,7 +85,7 @@ class _AadhaarVerifyScreenState extends ConsumerState<AadhaarVerifyScreen> {
         );
         if (mounted) context.go(widget.returnTo ?? '/kcc');
       } else {
-        _showError(res['message'] ?? 'Verification failed');
+        _showError(apiErrorMessage(res, fallback: 'Verification failed'));
       }
     } catch (_) {
       if (mounted) _showError(AppLocalizations.of(context).authCannotConnect);

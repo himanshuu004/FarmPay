@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../core/api/api_response.dart';
 import '../../../design_system/tokens.dart';
 import '../../../l10n/generated/app_localizations.dart';
 import '../providers/auth_providers.dart';
@@ -88,7 +89,7 @@ class _ForgotMpinScreenState extends ConsumerState<ForgotMpinScreen> {
         _showDevOtp(res['data']?['devOtp']);
         setState(() => _step = 2);
       } else {
-        _showError(res['message'] ?? 'Could not send OTP');
+        _showError(apiErrorMessage(res, fallback: 'Could not send OTP'));
       }
     });
   }
@@ -108,7 +109,7 @@ class _ForgotMpinScreenState extends ConsumerState<ForgotMpinScreen> {
       if (res['success'] == true) {
         setState(() => _step = 3);
       } else {
-        _showError(res['message'] ?? 'Invalid OTP');
+        _showError(apiErrorMessage(res, fallback: 'Invalid OTP'));
       }
     });
   }
@@ -139,7 +140,7 @@ class _ForgotMpinScreenState extends ConsumerState<ForgotMpinScreen> {
           context.go('/login');
         }
       } else {
-        _showError(res['message'] ?? 'MPIN reset failed');
+        _showError(apiErrorMessage(res, fallback: 'MPIN reset failed'));
       }
     });
   }
