@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CIA · Express interest (farmer)</title>
+<style>
+  :root{--bg:#f4f6f5;--card:#fff;--ink:#14201b;--muted:#6b7c74;--line:#e2e8e4;--brand:#0f7a4d;--brand-d:#0a5c3a;--accent:#e8f5ee;--warn:#b45309;--warnbg:#fef3e2;--blue:#0b5c8a;--bluebg:#e6f0f6;--okbg:#e9f8ef;--okink:#0a5c3a}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+  .wrap{max-width:1040px;margin:0 auto;padding:28px 20px 60px}
+  a.back{color:var(--brand-d);font-size:13px;text-decoration:none;font-weight:700}
+  h1{font-size:24px;margin:8px 0 2px}
+  .lede{color:var(--muted);margin:0 0 18px;max-width:640px;font-size:14px}
+  .stage{display:flex;gap:20px;flex-wrap:wrap;align-items:flex-start}
+  .phone{width:340px;background:#0b120e;border-radius:34px;padding:10px;box-shadow:0 20px 50px rgba(10,30,20,.22);flex:0 0 auto}
+  .screen{background:var(--bg);border-radius:26px;overflow:hidden;height:660px;display:flex;flex-direction:column}
+  .bar{background:var(--brand-d);color:#fff;padding:12px 16px}
+  .bar .t{font-weight:700;font-size:15px}
+  .bar .s{font-size:12px;opacity:.85}
+  .body{padding:16px;overflow:auto;flex:1;display:flex;flex-direction:column}
+  .art{font-size:52px;text-align:center;margin:10px 0 4px}
+  .h{font-size:20px;font-weight:800;text-align:center}
+  .p{font-size:13.5px;color:var(--muted);text-align:center;margin:6px 16px 16px}
+  .rows{background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+  .row{display:flex;justify-content:space-between;gap:10px;padding:11px 13px;font-size:13.5px;border-bottom:1px solid var(--line)}
+  .row:last-child{border-bottom:0}
+  .row .l{color:var(--muted)} .row .v{font-weight:700;text-align:right}
+  .flow{display:flex;align-items:center;justify-content:center;gap:6px;margin:16px 0 6px;font-size:11px;color:var(--muted);font-weight:700}
+  .flow .node{background:var(--accent);color:var(--brand-d);border-radius:99px;padding:4px 9px}
+  .flow .node.me{background:var(--brand);color:#fff}
+  .flow .a{opacity:.5}
+  .spacer{flex:1}
+  .starnote{font-size:11.5px;color:var(--muted);text-align:center;margin:10px 4px}
+  .big{border:0;background:var(--brand);color:#fff;font-weight:800;font-size:16px;border-radius:14px;padding:15px;cursor:pointer;width:100%}
+  .ok .art{color:var(--okink)}
+  .badge{background:var(--okbg);border:1px solid #bfe3cf;border-radius:14px;padding:14px;text-align:center}
+  .badge .st{font-size:11px;font-weight:800;letter-spacing:.04em;color:var(--okink);background:#d8f0e1;border-radius:99px;padding:3px 10px;display:inline-block;margin-top:6px}
+  .link{color:var(--brand-d);font-weight:700;text-decoration:none;font-size:14px;display:block;text-align:center;margin-top:16px}
+  .spec{flex:1;min-width:280px}
+  .spec h2{font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:6px 0 8px}
+  pre{background:#0b120e;color:#d6f5e3;border-radius:12px;padding:14px;font-size:12px;line-height:1.5;overflow:auto;max-height:340px}
+  .note{font-size:13px;color:var(--muted);border-top:1px solid var(--line);margin-top:14px;padding-top:12px}
+  .k{color:#7fd0a3}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="index.html">← CIA prototypes</a>
+  <h1>Express interest</h1>
+  <p class="lede">One tap — the member's interest in <b>a specific scheme</b> is shared with the DCS secretary, and the society board reviews it for selection. Society-mediated (★ farmer-authored): <code>DRAFT → INTEREST_SUBMITTED → PENDING_DCS_REVIEW</code>. Membership is a precondition. Settled mock = the spec for <code>POST /cattle-induction/interest</code>.</p>
+
+  <div class="stage">
+    <div class="phone">
+      <div class="screen">
+        <div class="bar"><div class="t">Express interest</div><div class="s">Ramesh Mahto · SOC-RANCHI-014</div></div>
+        <div class="body" id="body">
+          <div class="art">🐄</div>
+          <div class="h">Join <span id="joinName">this scheme</span>?</div>
+          <div class="p">Tell your dairy society you’re interested. There’s no cost and no commitment — the board will review and get back to you.</div>
+
+          <div class="rows">
+            <div class="row"><span class="l">Scheme</span><span class="v" id="schemeName">—</span></div>
+            <div class="row"><span class="l">Your society (DCS)</span><span class="v">Kanke · SOC-RANCHI-014</span></div>
+            <div class="row"><span class="l">Membership</span><span class="v">Linked ✓ · since 2021</span></div>
+            <div class="row"><span class="l">Shared with</span><span class="v">DCS secretary</span></div>
+          </div>
+
+          <div class="flow">
+            <span class="node me">You</span><span class="a">→</span>
+            <span class="node">DCS secretary</span><span class="a">→</span>
+            <span class="node">Board selects</span>
+          </div>
+
+          <div class="spacer"></div>
+          <div class="starnote">★ You author this step. Selection is the DCS board’s decision.</div>
+          <button class="big" id="go" onclick="submit()">Express interest</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="spec">
+      <h2>Mock JSON — POST /cattle-induction/interest</h2>
+      <pre id="jsonOut"></pre>
+      <div class="note">
+        <b>Rules this mock encodes (→ backend spec):</b><br>
+        • EOI carries the chosen <span class="k">schemeVersion</span> — interest is <b>per scheme</b>, so a member can express interest in more than one.<br>
+        • <span class="k">Society-mediated</span>: shared with the DCS secretary; the board's selection (<code>SELECTED_BY_DCS</code>) is a precondition to apply.<br>
+        • <span class="k">★ farmer-authored</span> only: <code>DRAFT → INTEREST_SUBMITTED → PENDING_DCS_REVIEW</code>; the board authors selection in-app (Convention 30).<br>
+        • Idempotent <span class="k">per scheme</span> — re-tapping returns the existing open application for that scheme, never a duplicate.
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const SCHEME_TITLES = { CIA_UK_2026_v2:'Pashudhan 2026', CIA_UK_NLM_SCST_2026:'NLM Dairy Booster (SC/ST)', CIA_UK_BUFFALO_2026:'Murrah buffalo induction' };
+const schemeV = new URLSearchParams(location.search).get('scheme') || 'CIA_UK_2026_v2';
+const schemeTitle = SCHEME_TITLES[schemeV] || schemeV;
+const req = { schemeVersion: schemeV, dcsRef: 'SOC-RANCHI-014' };
+const res = { applicationUuid: 'e0a7…mock', status: 'INTEREST_SUBMITTED', schemeVersion: schemeV, eoiAt: '2026-07-12T09:20:00Z' };
+
+document.getElementById('joinName').textContent = schemeTitle;
+document.getElementById('schemeName').textContent = schemeTitle;
+document.getElementById('jsonOut').textContent = JSON.stringify({ request: req, response: res }, null, 2);
+
+function submit(){
+  const b = document.getElementById('body');
+  b.classList.add('ok');
+  b.innerHTML = `
+    <div class="art">✅</div>
+    <div class="h">Interest shared</div>
+    <div class="p">Your dairy society has your request for <b>${schemeTitle}</b>. The board will review it at the next selection meeting — you’ll be notified either way.</div>
+    <div class="badge">
+      <div style="font-weight:800">${schemeTitle} · Kanke DCS</div>
+      <div class="st">STATUS · INTEREST_SUBMITTED</div>
+    </div>
+    <div class="flow"><span class="node">You ✓</span><span class="a">→</span><span class="node me">DCS review</span><span class="a">→</span><span class="node">Board selects</span></div>
+    <a class="link" href="farmer-status.html">Track my status →</a>`;
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,18 @@
+/**
+ * Sequelize CLI Configuration — Allied KCC
+ * Points the CLI at the backend/ paths for config, models, migrations, seeders.
+ *
+ * Usage:
+ *   npx sequelize-cli db:migrate
+ *   npx sequelize-cli db:seed:all
+ *   npx sequelize-cli migration:generate --name create-something
+ */
+
+const path = require('path');
+
+module.exports = {
+  config: path.resolve('backend', 'src', 'config', 'database.js'),
+  'models-path': path.resolve('backend', 'src', 'shared', 'models'),
+  'migrations-path': path.resolve('migrations'),
+  'seeders-path': path.resolve('seeders'),
+};

@@ -1,0 +1,50 @@
+/** i18n fragment: logs screens. Keys are "namespace.key" → { en, hi }. */
+const frag: Record<string, { en: string; hi: string }> = {
+  // ── cost screen: units + shared payment modes ──
+  "cost.unit.kg": { en: "kg", hi: "किलो" },
+  "cost.unit.bag": { en: "bag", hi: "बोरी" },
+  "cost.unit.litre": { en: "litre", hi: "लीटर" },
+  "cost.unit.piece": { en: "piece", hi: "नग" },
+  "cost.unit.hour": { en: "hour", hi: "घंटा" },
+  "cost.pay.cash": { en: "Cash", hi: "नकद" },
+  "cost.pay.upi": { en: "UPI", hi: "यूपीआई" },
+  "cost.pay.bank": { en: "Bank", hi: "बैंक" },
+  "cost.pay.credit": { en: "Credit", hi: "उधार" },
+
+  // ── treatment (trt.) ──
+  "trt.herd_wide": { en: "Herd-wide", hi: "पूरा झुंड" },
+  "trt.type.vaccine": { en: "Vaccine", hi: "टीका" },
+  "trt.type.deworm": { en: "Deworm", hi: "पेट के कीड़े" },
+  "trt.type.mastitis": { en: "Mastitis", hi: "थनैला" },
+  "trt.type.fever": { en: "Fever", hi: "बुखार" },
+  "trt.type.injury": { en: "Injury", hi: "चोट" },
+  "trt.type.reproductive": { en: "Reproductive", hi: "प्रजनन" },
+  "trt.type.nutrition": { en: "Nutrition", hi: "पोषण" },
+  "trt.type.other": { en: "Other", hi: "अन्य" },
+  "trt.outcome.recovered": { en: "Recovered", hi: "ठीक हो गया" },
+  "trt.outcome.improving": { en: "Improving", hi: "सुधार हो रहा" },
+  "trt.outcome.no_change": { en: "No change", hi: "कोई बदलाव नहीं" },
+  "trt.outcome.worsened": { en: "Worsened", hi: "बिगड़ गया" },
+  "trt.outcome.died": { en: "Died", hi: "मर गया" },
+  "trt.medicine": { en: "Medicine", hi: "दवा" },
+  "trt.vet_fee": { en: "Vet fee", hi: "डॉक्टर फीस" },
+  "trt.vettype.govt": { en: "Govt", hi: "सरकारी" },
+  "trt.vettype.private": { en: "Private", hi: "निजी" },
+  "trt.vettype.paravet": { en: "Paravet", hi: "पैरावेट" },
+  "trt.vettype.self": { en: "Self", hi: "स्वयं" },
+  "trt.formal_informal": { en: "Formal = receipted · Informal = cash", hi: "औपचारिक = रसीद के साथ · अनौपचारिक = नकद" },
+  "trt.logged": { en: "Treatment logged", hi: "इलाज दर्ज हो गया" },
+
+  // ── breeding (brd.) ──
+  "brd.svc.ai": { en: "AI (Artificial)", hi: "कृत्रिम गर्भाधान" },
+  "brd.svc.natural": { en: "Natural (Bull)", hi: "प्राकृतिक (सांड)" },
+  "brd.service_charge": { en: "Service", hi: "सेवा" },
+  "brd.transport": { en: "Transport", hi: "वाहन" },
+  "brd.ptype.govt_vet": { en: "Govt vet", hi: "सरकारी डॉक्टर" },
+  "brd.ptype.private_vet": { en: "Private vet", hi: "निजी डॉक्टर" },
+  "brd.ptype.coop_inseminator": { en: "Coop inseminator", hi: "सहकारी गर्भाधानकर्ता" },
+  "brd.ptype.self": { en: "Self", hi: "स्वयं" },
+  "brd.select_animal": { en: "Select an animal", hi: "एक पशु चुनें" },
+  "brd.logged": { en: "Breeding event logged", hi: "प्रजनन दर्ज हो गया" },
+};
+export default frag;

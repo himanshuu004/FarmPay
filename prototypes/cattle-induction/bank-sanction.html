@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CIA · Bank sanction upload</title>
+<style>
+  :root{--bg:#f4f6f5;--card:#fff;--ink:#14201b;--muted:#6b7c74;--line:#e2e8e4;--brand:#0f7a4d;--brand-d:#0a5c3a;--accent:#e8f5ee;--warn:#b45309;--warnbg:#fef3e2;--blue:#0b5c8a;--bluebg:#e6f0f6;--danger:#b42318;--ok:#0f7a4d}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+  .wrap{max-width:1120px;margin:0 auto;padding:26px 22px 60px}
+  a.back{color:var(--brand-d);font-size:13px;text-decoration:none;font-weight:700}
+  h1{font-size:24px;margin:8px 0 2px}
+  .lede{color:var(--muted);margin:0 0 16px;max-width:800px;font-size:14px}
+  .portal{background:var(--card);border:1px solid var(--line);border-radius:16px;overflow:hidden;box-shadow:0 12px 30px rgba(20,40,30,.06)}
+  .phead{background:var(--brand-d);color:#fff;padding:14px 18px;display:flex;justify-content:space-between;align-items:center}
+  .phead .t{font-weight:800}
+  .steps{display:flex;gap:0;border-bottom:1px solid var(--line)}
+  .steps .s{flex:1;text-align:center;padding:10px;font-size:12px;font-weight:800;color:var(--muted);border-right:1px solid var(--line)}
+  .steps .s:last-child{border-right:0}
+  .steps .s.on{background:var(--accent);color:var(--brand-d)}
+  .pad{padding:16px 18px}
+  .drop{border:2px dashed var(--line);border-radius:12px;padding:22px;text-align:center;color:var(--muted);cursor:pointer;background:#fbfdfc}
+  .drop b{color:var(--ink)}
+  .btn{border:0;border-radius:10px;padding:9px 14px;font-weight:800;font-size:13px;cursor:pointer}
+  .btn.p{background:var(--brand);color:#fff}.btn.g{background:#fff;color:var(--brand-d);border:1px solid var(--line)}
+  .btn:disabled{opacity:.5;cursor:not-allowed}
+  table{width:100%;border-collapse:collapse;margin-top:12px}
+  th,td{text-align:left;padding:9px 12px;font-size:13px;border-bottom:1px solid var(--line)}
+  th{font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+  .m{font-size:11px;font-weight:800;padding:2px 8px;border-radius:99px}
+  .m-mat{background:#d8f0e1;color:var(--brand-d)} .m-un{background:#fdeeec;color:var(--danger)} .m-rej{background:var(--warnbg);color:var(--warn)}
+  .row-un{background:#fdf5f4}
+  .bararow{display:flex;gap:8px;align-items:center;margin-top:14px;flex-wrap:wrap}
+  .tag{font-size:12px;color:var(--muted)}
+  .spec{margin-top:16px}
+  .spec h2{font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:6px 0 8px}
+  pre{background:#0b120e;color:#d6f5e3;border-radius:12px;padding:14px;font-size:12px;line-height:1.5;overflow:auto;max-height:260px}
+  .note{font-size:13px;color:var(--muted);border-top:1px solid var(--line);margin-top:14px;padding-top:12px}
+  .k{color:#7fd0a3}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="index.html">← CIA prototypes</a>
+  <h1>Bank sanction upload</h1>
+  <p class="lede">The cooperative bank returns its sanction decision as a file (the degraded fallback; API is the CIA-2 primary path). <b>Maker</b> uploads → sees a matched/unmatched preview; <b>Checker</b> confirms → only matched rows apply (SANCTIONED / REJECTED), unmatched rows are <b>quarantined, never auto-applied</b>. Status only — no money moves in CIA-1. Settled mock = the spec for Slice G.</p>
+
+  <div class="portal">
+    <div class="phead"><div class="t">Cooperative Bank · Ranchi branch</div><span class="tag" style="color:#cfe8db">file mode (fallback)</span></div>
+    <div class="steps">
+      <div class="s on" id="s1">1 · Maker uploads &amp; previews</div>
+      <div class="s" id="s2">2 · Checker confirms (matched only)</div>
+    </div>
+    <div class="pad">
+      <div class="bararow">
+        <button class="btn g" onclick="alert('Downloaded packet: CIA_BANK_PACKET_PLACEHOLDER_v0.xlsx')">⬇ Download packet</button>
+        <div class="drop" style="flex:1" onclick="stage()"><b>⬆ Upload sanction file</b> — drag &amp; drop or click (mock: 4 rows)</div>
+      </div>
+      <table id="tbl" style="display:none">
+        <thead><tr><th>Loan a/c row</th><th>Matches</th><th>Outcome</th><th>Match</th></tr></thead>
+        <tbody id="rows"></tbody>
+      </table>
+      <div class="bararow" id="confirmBar" style="display:none">
+        <span class="tag" id="summary"></span>
+        <span style="flex:1"></span>
+        <button class="btn p" id="confirmBtn" onclick="confirm_()">Checker: confirm — apply matched only</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="spec">
+    <h2>Mock JSON — POST /bank/sanction-file (stage) → /bank/sanction-file/confirm</h2>
+    <pre id="jsonOut"></pre>
+    <div class="note">
+      <b>Rules this mock encodes (→ backend spec):</b><br>
+      • Maker <span class="k">stages</span> the file → rows parsed to MATCHED (found SUBMITTED_TO_BANK app) or UNMATCHED; dedup by <span class="k">file_row_hash</span> (re-upload is idempotent).<br>
+      • Checker <span class="k">confirms</span> → matched rows apply: SANCTIONED → <span class="k">LOAN_SANCTIONED</span>, rejected → <span class="k">LOAN_REJECTED</span> (reason); farmers intimated.<br>
+      • Unmatched rows are <span class="k">QUARANTINED</span> — never auto-applied; resolved manually.<br>
+      • <span class="k">Maker-checker</span>: the checker must differ from the maker who staged.<br>
+      • CIA-1 records <span class="k">status only</span> — subsidy/disbursement (money) are CIA-2; API path is the CIA-2 primary.
+    </div>
+  </div>
+</div>
+
+<script>
+const rows = [
+  { acct:'••••7781', app:'Ramesh Mahto', match:'MATCHED', outcome:'SANCTIONED', amount:62000 },
+  { acct:'••••4420', app:'Sunita Devi',  match:'MATCHED', outcome:'SANCTIONED', amount:58000 },
+  { acct:'••••9911', app:'Imran Ansari', match:'MATCHED', outcome:'REJECTED',  reason:'insufficient milk history' },
+  { acct:'••••0000', app:'(no match)',   match:'UNMATCHED' },
+];
+let staged=false;
+
+function stage(){
+  staged=true;
+  document.getElementById('tbl').style.display='';
+  document.getElementById('confirmBar').style.display='flex';
+  document.getElementById('s1').classList.add('on');
+  const tb=document.getElementById('rows'); tb.innerHTML='';
+  rows.forEach(r=>{
+    const tr=document.createElement('tr'); if(r.match==='UNMATCHED') tr.className='row-un';
+    const mcls = r.match==='MATCHED'?'m-mat':'m-un';
+    const oc = r.match==='UNMATCHED' ? '—' : (r.outcome==='SANCTIONED'?`<span class="m m-mat">SANCTIONED ₹${r.amount.toLocaleString('en-IN')}</span>`:`<span class="m m-rej">REJECTED</span>`);
+    tr.innerHTML=`<td>${r.acct}</td><td>${r.app}</td><td>${oc}${r.reason?`<br><span class="tag">${r.reason}</span>`:''}</td><td><span class="m ${mcls}">${r.match}</span></td>`;
+    tb.appendChild(tr);
+  });
+  const matched=rows.filter(r=>r.match==='MATCHED').length, un=rows.length-matched;
+  document.getElementById('summary').textContent=`${matched} matched · ${un} will be quarantined`;
+  updateJson('stage');
+}
+function confirm_(){
+  document.getElementById('s2').classList.add('on');
+  const applied=rows.filter(r=>r.match==='MATCHED').length;
+  updateJson('confirm');
+  alert(`Confirmed ✓ ${applied} matched rows applied (LOAN_SANCTIONED / LOAN_REJECTED). ${rows.length-applied} unmatched row quarantined — not applied.`);
+}
+function updateJson(phase){
+  document.getElementById('jsonOut').textContent = JSON.stringify(
+    phase==='stage'
+      ? { staged:true, preview: rows.map(r=>({ acct:r.acct, match:r.match, outcome:r.outcome||null })) }
+      : { confirmed:true, applied: rows.filter(r=>r.match==='MATCHED').map(r=>({ acct:r.acct, outcome:r.outcome, newStatus:r.outcome==='SANCTIONED'?'LOAN_SANCTIONED':'LOAN_REJECTED' })), quarantined: rows.filter(r=>r.match==='UNMATCHED').length },
+    null, 2);
+}
+updateJson('stage');
+</script>
+</body>
+</html>

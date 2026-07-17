@@ -1,0 +1,510 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Allied KCC — Screen Wireframes (farmer · field · back-office)</title>
+<style>
+:root{
+  --bg:#eceff2;--ink:#111827;--muted:#5b6675;--line:#dfe4ea;--panel:#fff;
+  --brand:#0f7a4d;--brand2:#2e7d32;--brand-d:#0a5c3a;--soft:#e7f2ec;
+  --amber:#b4530a;--amberbg:#fef3e2;--red:#b42318;--redbg:#fdecea;--blue:#0b5c8a;--bluebg:#e6f0f6;--gold:#8a5d00;--goldbg:#f9efd6;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --sans:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root{--bg:#0c1016;--ink:#e7ecf3;--muted:#93a0af;--line:#26303c}}
+:root[data-theme="light"]{--bg:#eceff2;--ink:#111827;--muted:#5b6675;--line:#dfe4ea}
+:root[data-theme="dark"]{--bg:#0c1016;--ink:#e7ecf3;--muted:#93a0af;--line:#26303c}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);line-height:1.5;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1200px;margin:0 auto;padding:32px 20px 70px}
+h1{font-size:25px;margin:0 0 4px;letter-spacing:-.02em}
+.sub{color:var(--muted);font-size:14px;margin:0 0 14px;max-width:720px}
+.map{display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-family:var(--mono);font-size:11px;color:var(--muted);margin-bottom:8px}
+.map b{color:var(--brand-d);background:var(--soft);padding:2px 8px;border-radius:6px;font-weight:700}
+.flow{display:flex;flex-wrap:wrap;gap:26px 20px;align-items:flex-start;margin-top:22px}
+.step{width:266px;position:relative}
+.badge{position:absolute;top:-10px;left:-8px;z-index:3;width:26px;height:26px;border-radius:50%;background:var(--brand);color:#fff;font-weight:800;font-size:13px;display:grid;place-items:center;box-shadow:0 2px 6px rgba(0,0,0,.2)}
+.cap{margin-top:9px}
+.cap .nm{font-size:13px;font-weight:800}
+.cap .rt{font-family:var(--mono);font-size:11px;color:var(--muted)}
+.cap .tr{font-size:11px;color:var(--brand-d);font-weight:700;margin-top:3px}
+.cap .tr::before{content:"↳ "}
+/* phone */
+.phone{background:#0b120e;border-radius:30px;padding:7px;box-shadow:0 14px 34px rgba(10,30,20,.22)}
+.scr{background:#f4f6f5;border-radius:24px;overflow:hidden;height:498px;display:flex;flex-direction:column;color:#14201b;font-size:11px}
+.bar{background:var(--brand);color:#fff;padding:9px 12px;font-weight:800;font-size:12.5px;display:flex;justify-content:space-between;align-items:center;flex:0 0 auto}
+.bar .lang{background:rgba(255,255,255,.22);border-radius:20px;font-size:9px;padding:2px 7px;font-weight:700}
+.body{padding:11px;overflow:hidden;flex:1}
+.mut{color:#6b7c74}
+.btn{background:var(--brand2);color:#fff;border-radius:9px;padding:9px;text-align:center;font-weight:800;font-size:11.5px;margin-top:8px}
+.btn.g{background:#fff;color:var(--brand-d);border:1.5px solid var(--brand2)}
+.btn.sm{padding:7px;font-size:10.5px}
+.card{background:#fff;border:1px solid #e4e9e6;border-radius:11px;padding:9px 10px;margin-bottom:7px}
+.row{display:flex;justify-content:space-between;align-items:center;gap:6px}
+.in{background:#fafbfa;border:1px solid #e0e5e2;border-radius:8px;padding:8px 9px;color:#9aa;margin-top:6px}
+.chip{display:inline-block;font-size:9px;font-weight:800;border-radius:5px;padding:2px 6px}
+.c-paid{background:var(--soft);color:var(--brand-d)} .c-over{background:var(--redbg);color:var(--red)} .c-due{background:var(--bluebg);color:var(--blue)} .c-erp{background:var(--bluebg);color:var(--blue)}
+.sec{font-size:9px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:#8a9a92;margin:9px 0 6px}
+.big{font-size:19px;font-weight:800;color:var(--brand-d)}
+.alert{background:var(--redbg);border:1px solid #f3c9c2;border-radius:9px;padding:8px;color:var(--red);font-weight:700;font-size:10px;margin-top:7px}
+.lock{background:var(--amberbg);border:1px solid #f3e2c8;border-radius:8px;padding:7px;color:var(--amber);font-size:9.5px;margin-top:7px}
+.pill2{background:var(--bluebg);color:var(--blue);border-radius:7px;padding:5px 8px;font-size:9.5px;display:flex;justify-content:space-between}
+.two{display:flex;gap:7px}.two>*{flex:1}
+.qr{display:flex;gap:6px;margin-top:7px}.qr>div{flex:1;background:#fff;border:1px solid #e4e9e6;border-radius:9px;padding:8px 4px;text-align:center;font-weight:700;font-size:9.5px}
+.emoji{font-size:15px}
+.tl{margin:5px 0 0;padding-left:3px}
+.tl .li{position:relative;padding:0 0 8px 15px}
+.tl .li::before{content:"";position:absolute;left:0;top:2px;width:9px;height:9px;border-radius:50%;background:var(--brand)}
+.tl .li::after{content:"";position:absolute;left:4px;top:11px;bottom:0;width:2px;background:#dfe6e1}
+.tl .li:last-child::after{display:none}
+.tl .li.now::before{background:#fff;border:2.5px solid var(--brand)}
+.tl .li.f::before{background:#c3ccc7}.tl .li.f{opacity:.55}
+.tl .h{font-weight:700;font-size:10px}.tl .w{font-size:9px;color:#8a9a92}
+.doc{display:flex;align-items:center;gap:6px;padding:4px 0;border-bottom:1px solid #eef2f0;font-size:10px}
+.dbox{width:14px;height:14px;border-radius:3px;border:1.5px solid #cbd3ce;flex:0 0 auto}
+.dbox.on{background:var(--brand);border-color:var(--brand)}
+.stepn{display:flex;align-items:center;gap:8px;background:#fff;border:1px solid #e4e9e6;border-radius:9px;padding:7px 8px;margin-bottom:5px}
+.stepn .n{width:19px;height:19px;border-radius:50%;border:1.5px solid var(--brand);color:var(--brand-d);font-weight:800;font-size:9px;display:grid;place-items:center;flex:0 0 auto}
+.stepn.lock{opacity:.6}.stepn.lock .n{background:#c3ccc7;border-color:#c3ccc7;color:#fff}
+.stepn .go{margin-left:auto;font-size:9px;font-weight:800;color:var(--brand-d)}
+.stepper{display:flex;align-items:center;gap:10px;margin-top:6px}
+.stepper b{width:26px;height:26px;border:1px solid #cbd3ce;border-radius:7px;display:grid;place-items:center;font-size:14px}
+.foot{color:var(--muted);font-size:12px;border-top:1px solid var(--line);margin-top:30px;padding-top:14px}
+.login .scr{background:var(--brand-d);align-items:center;justify-content:center;padding:16px}
+.login .lcard{background:#fff;border-radius:18px;padding:20px 16px;width:100%;text-align:center}
+.login .lcard .t{font-size:19px;font-weight:800;color:var(--brand-d);margin-top:4px}
+.login .lk{color:var(--brand2);font-weight:700;font-size:10.5px;margin-top:9px}
+/* section dividers */
+.section-h{font-size:16px;font-weight:800;margin:44px 0 2px;letter-spacing:-.01em;display:flex;align-items:center;gap:10px;flex-wrap:wrap;border-top:1px solid var(--line);padding-top:26px}
+.section-h .tag{font-size:10px;font-weight:800;border-radius:99px;padding:3px 10px}
+.tag.mob{background:#e6f0f6;color:#0b5c8a}.tag.web{background:#f9efd6;color:#8a5d00}
+.section-sub{color:var(--muted);font-size:12.5px;margin:2px 0 4px;max-width:720px}
+.badge.bf{background:#0b5c8a}.badge.bw{background:#8a5d00}
+.off{background:#fff4e5;color:#8a5a00;border-radius:20px;font-size:8px;padding:2px 7px;font-weight:800}
+.roletag{font-family:var(--mono);font-size:8.5px;font-weight:700;color:#0b5c8a;background:#e6f0f6;border-radius:5px;padding:2px 6px;display:inline-block;margin-bottom:6px}
+/* desktop browser window */
+.wstep{width:436px}
+.win{background:#0b120e;border-radius:12px;padding:6px;box-shadow:0 14px 34px rgba(10,30,20,.2)}
+.wscr{background:#fff;border-radius:8px;overflow:hidden;color:#14201b;font-size:10.5px}
+.wbar{background:#eef1f0;padding:7px 10px;display:flex;gap:5px;align-items:center;border-bottom:1px solid #e0e5e2}
+.wdot{width:8px;height:8px;border-radius:50%;background:#cbd3ce}
+.wurl{margin-left:6px;font-family:var(--mono);font-size:9px;color:#5b6675;background:#fff;border:1px solid #e0e5e2;border-radius:6px;padding:3px 9px;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.wb{padding:12px 13px;min-height:210px}
+.tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:2px 0 9px}
+.tile{background:#f4f6f5;border:1px solid #e4e9e6;border-radius:8px;padding:7px 8px}
+.tile .v{font-size:16px;font-weight:800;color:var(--brand-d)}.tile .l{font-size:8.5px;color:#8a9a92}
+.tbl{width:100%;border-collapse:collapse;font-size:9.5px;margin-top:2px}
+.tbl th{text-align:left;color:#8a9a92;font-size:8px;text-transform:uppercase;letter-spacing:.04em;border-bottom:1px solid #e4e9e6;padding:4px 5px}
+.tbl td{border-bottom:1px solid #eef2f0;padding:5px 5px}
+.tbl td.r,.tbl th.r{text-align:right}
+.gate .g{display:flex;align-items:center;gap:7px;padding:4px 0;font-size:10px}
+.gate .tick{width:15px;height:15px;border-radius:4px;background:var(--brand);color:#fff;display:grid;place-items:center;font-size:9px;flex:0 0 auto}
+.frow{display:flex;align-items:center;gap:8px;font-size:9px;margin:4px 0}.frow span{width:74px;color:#6b7c74}
+.fbar{flex:1;height:10px;background:#eef2f0;border-radius:6px;overflow:hidden}.fbar i{display:block;height:100%;background:var(--brand)}
+.frow b{width:26px;text-align:right}
+.wcap{margin-top:9px}.wcap .nm{font-size:13px;font-weight:800}.wcap .rt{font-family:var(--mono);font-size:10.5px;color:var(--muted)}.wcap .tr{font-size:11px;color:#8a5d00;font-weight:700;margin-top:3px}
+
+.api{margin-top:8px;background:var(--panel,#fff);border:1px solid var(--line);border-radius:9px;padding:7px 9px}
+.api .ah{font-size:8px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
+.api .a{font-family:var(--mono);font-size:9.5px;color:var(--ink);display:flex;gap:6px;align-items:baseline;margin:2.5px 0;line-height:1.3}
+.m{font-weight:800;font-size:7.5px;border-radius:4px;padding:1px 5px;flex:0 0 auto}
+.m.get{background:#dcfce7;color:#0c5f34}.m.post{background:#e6f0f6;color:#0b5c8a}.m.put{background:#f9efd6;color:#8a5d00}
+:root[data-theme="dark"] .m.get{background:#10281b;color:#7fe0aa}
+:root[data-theme="dark"] .m.post{background:#122238;color:#7db0ff}
+:root[data-theme="dark"] .m.put{background:#2a2010;color:#f0c477}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Allied KCC — Screen Wireframes</h1>
+  <p class="sub">Every persona of the Cattle Induction (CIA) programme, screen by screen. <b>Farmer</b> (mobile app) and the <b>field PWA</b> (mobile · offline) render as phones; the <b>back-office</b> personas (DCS · DUSS · bank · UCDF) render as desktop web dashboards — the form-factor split is deliberate. Farmer screens mirror the built React Native / Expo app; field and back-office are settled prototypes.</p>
+  <div class="map">FLOW &nbsp;<b>login</b> → <b>home</b> → <b>schemes</b> → <b>scheme</b> → <b>eligibility</b> → <b>EOI</b> → <b>application</b> → <b>status</b> → <b>purchase</b> → <b>EMI</b> → <b>claim</b></div>
+
+  <h2 class="section-h" style="border-top:0;padding-top:8px;margin-top:20px">Farmer app <span class="tag mob">📱 mobile · built in React Native</span></h2>
+  <div class="flow">
+
+    <!-- 1 LOGIN -->
+    <div class="step login"><div class="badge">1</div>
+      <div class="phone"><div class="scr"><div class="lcard">
+        <div class="emoji" style="font-size:30px">🌾</div>
+        <div class="t">Allied KCC</div><div class="mut" style="font-size:10px">Farmer Dashboard</div>
+        <div class="in" style="text-align:left">Mobile Number</div>
+        <div class="in" style="text-align:center;letter-spacing:6px;color:#333">• • • •</div>
+        <div class="btn">Sign In</div>
+        <div class="lk">Forgot MPIN?</div><div class="lk">New here? Register</div>
+      </div></div></div>
+      <div class="cap"><div class="nm">Login</div><div class="rt">/login</div><div class="tr">MPIN + OTP → /(tabs)</div><div class="api"><div class="ah">API · base /api/v1</div><div class="a"><span class="m post">POST</span>/auth/login</div></div></div>
+    </div>
+
+    <!-- 2 HOME -->
+    <div class="step"><div class="badge">2</div>
+      <div class="phone"><div class="scr">
+        <div class="bar"><span>होम · Home</span><span class="lang">हिं|EN</span></div>
+        <div class="body">
+          <b style="font-size:14px">Namaste, Ramesh 🙏</b><div class="mut">What to record today?</div>
+          <div class="two" style="margin-top:7px"><div class="btn sm" style="margin:0">🥛 Log Milk</div><div class="btn g sm" style="margin:0">💰 Log Expense</div></div>
+          <div class="qr"><div>📒 Logbook</div><div>🐄 Animals</div><div>💊 Treatment</div></div>
+          <div class="card row" style="margin-top:7px"><span><b class="big" style="font-size:13px">₹9,800</b><div class="mut">credit ready</div></span><span style="text-align:right"><b class="big" style="font-size:13px">₹14,000</b><div class="mut">milk dues</div></span></div>
+          <div class="alert">🚨 360…101: Mastitis — check udder</div>
+          <div class="sec">My accounts</div>
+          <div class="card row"><span>🥛 <b>Milk passbook</b></span><span class="mut">›</span></div>
+          <div class="card row"><span>💳 <b>₹44,612 KCC limit</b></span><span class="mut">›</span></div>
+          <div class="card row" style="border-color:var(--brand2)"><span>🐄 <b>Cattle induction</b></span><span class="mut">›</span></div>
+        </div>
+      </div></div>
+      <div class="cap"><div class="nm">Home (unified)</div><div class="rt">/(tabs)</div><div class="tr">tap "Cattle induction" → /cia-schemes</div><div class="api"><div class="ah">API · base /api/v1</div><div class="a"><span class="m get">GET</span>/coop/passbook</div><div class="a"><span class="m get">GET</span>/kcc/facility</div><div class="a"><span class="m get">GET</span>/kavach/policies/me</div><div class="a"><span class="m get">GET</span>/kavach/renewals/due</div><div class="a"><span class="m get">GET</span>/advisory/feed?status=OPEN</div></div></div>
+    </div>
+
+    <!-- 3 SCHEMES -->
+    <div class="step"><div class="badge">3</div>
+      <div class="phone"><div class="scr">
+        <div class="bar"><span>Cattle schemes</span><span class="lang">हिं|EN</span></div>
+        <div class="body">
+          <div class="mut" style="text-transform:uppercase;font-size:9px;font-weight:800;letter-spacing:.5px">1 scheme open at your society</div>
+          <div class="card" style="margin-top:8px">
+            <div class="row"><b>Pashudhan Vikas — Milch Cattle Induction</b><span class="big" style="font-size:15px">50%<div class="mut" style="font-size:8px;text-align:right">subsidy</div></span></div>
+            <div class="mut" style="margin-top:6px">Ceiling <b style="color:#333">₹70,000</b> · Max <b style="color:#333">2</b> · Min <b style="color:#333">6mo</b></div>
+            <div class="row" style="margin-top:8px"><span style="color:var(--amber);font-weight:700">△ Check criteria</span><span style="color:var(--brand-d);font-weight:800">View →</span></div>
+          </div>
+        </div>
+      </div></div>
+      <div class="cap"><div class="nm">Schemes list</div><div class="rt">/cia-schemes</div><div class="tr">tap scheme → /cia-scheme</div><div class="api"><div class="ah">API · base /api/v1</div><div class="a"><span class="m get">GET</span>/cattle-induction/schemes</div><div class="a"><span class="m get">GET</span>/cattle-induction/applications</div></div></div>
+    </div>
+
+    <!-- 4 SCHEME DETAIL -->
+    <div class="step"><div class="badge">4</div>
+      <div class="phone"><div class="scr">
+        <div class="bar"><span>← Scheme details</span><span class="lang">हिं|EN</span></div>
+        <div class="body">
+          <div class="sec">What you get</div>
+          <div class="card"><div class="row"><span class="mut">Subsidy on the animal</span><b>50%</b></div><div class="row"><span class="mut">Your contribution</span><b>10%</b></div><div class="row"><span class="mut">Price ceiling / animal</span><b>₹70,000</b></div><div class="row"><span class="mut">Animals per member</span><b>2</b></div></div>
+          <div class="sec">Who can apply</div>
+          <div class="card"><div class="row"><span class="mut">Min DCS membership</span><b>6 mo</b></div><div class="row"><span class="mut">Avg monthly milk</span><b>₹3,000</b></div></div>
+          <div class="two"><div class="btn sm">Check eligibility</div><div class="btn g sm">Interested</div></div>
+        </div>
+      </div></div>
+      <div class="cap"><div class="nm">Scheme detail</div><div class="rt">/cia-scheme</div><div class="tr">Check eligibility → /cia-eligibility</div><div class="api"><div class="ah">API · base /api/v1</div><div class="a"><span class="m get">GET</span>/cattle-induction/schemes/:version</div></div></div>
+    </div>
+
+    <!-- 5 ELIGIBILITY -->
+    <div class="step"><div class="badge">5</div>
+      <div class="phone"><div class="scr">
+        <div class="bar"><span>Am I eligible?</span><span class="lang">हिं|EN</span></div>
+        <div class="body">
+          <div class="pill2"><span>Checking for Pashudhan Vikas</span><b>Change</b></div>
+          <div class="card" style="border-color:#bfe3cf;background:#f2fbf5;margin-top:8px"><b style="color:var(--brand-d)">✓ Likely eligible</b><div class="mut">You meet the basic criteria.</div></div>
+          <div class="doc"><span class="dbox on"></span>Society membership ≥ 6 mo</div>
+          <div class="doc"><span class="dbox on"></span>Avg milk value ≥ ₹3,000</div>
+          <div class="doc"><span class="dbox on"></span>DBT-to-account active</div>
+          <div class="mut" style="font-size:9px;margin-top:6px;font-weight:700;text-transform:uppercase">A guide, not an approval</div>
+          <div class="btn">Express interest</div>
+        </div>
+      </div></div>
+      <div class="cap"><div class="nm">Eligibility check</div><div class="rt">/cia-eligibility</div><div class="tr">Express interest → /cia-eoi</div><div class="api"><div class="ah">API · base /api/v1</div><div class="a"><span class="m get">GET</span>/cattle-induction/eligibility?scheme=:v</div></div></div>
+    </div>
+
+    <!-- 6 EOI -->
+    <div class="step"><div class="badge">6</div>
+      <div class="phone"><div class="scr">
+        <div class="bar"><span>Express interest</span><span class="lang">हिं|EN</span></div>
+        <div class="body" style="text-align:center">
+          <div class="emoji" style="font-size:26px;margin-top:6px">🐄</div>
+          <b style="font-size:13px">Join Pashudhan Vikas?</b>
+          <div class="mut" style="margin:5px 6px">Tell your society you're interested. No cost, no commitment — the board reviews and gets back to you.</div>
+          <div class="card" style="text-align:left"><div class="row"><span class="mut">Scheme</span><b>Pashudhan Vikas</b></div><div class="row"><span class="mut">Shared with</span><b>DCS secretary</b></div></div>
+          <div class="mut" style="font-size:9px">★ You author this step. Selection is the DCS board's call.</div>
+          <div class="btn">Express interest</div>
+        </div>
+      </div></div>
+      <div class="cap"><div class="nm">Express interest (EOI)</div><div class="rt">/cia-eoi</div><div class="tr">★ POST /interest → /cia-status</div><div class="api"><div class="ah">API · base /api/v1</div><div class="a"><span class="m post">POST</span>/cattle-induction/interest</div></div></div>
+    </div>
+
+    <!-- 7 APPLICATION -->
+    <div class="step"><div class="badge">7</div>
+      <div class="phone"><div class="scr">
+        <div class="bar"><span>Application</span><span class="lang">हिं|EN</span></div>
+        <div class="body">
+          <div class="sec">Applicant (from Aanchal ERP)</div>
+          <div class="card"><div class="row"><span class="mut">Name</span><span><b>Ramesh Rawat</b> <span class="chip c-erp">ERP</span></span></div><div class="row"><span class="mut">Society</span><b>SOC-DEMO</b></div><div class="row"><span class="mut">Bank a/c</span><b>SBIN…7781</b></div></div>
+          <div class="sec">How many cattle?</div>
+          <div class="stepper"><b>−</b><span style="font-weight:800;font-size:14px">1</span><b>+</b></div>
+          <div class="sec">Documents (camera only)</div>
+          <div class="doc"><span>🪪 Aadhaar</span><span class="go" style="margin-left:auto;color:var(--brand-d);font-weight:800">📷</span></div>
+          <div class="doc"><span>🏦 Bank passbook</span><span style="margin-left:auto;color:var(--brand-d);font-weight:800">📷</span></div>
+          <div class="doc"><span>🧑 Photo</span><span style="margin-left:auto;color:var(--brand-d);font-weight:800">📷</span></div>
+          <div class="two"><div class="btn g sm">Save draft</div><div class="btn sm">Submit</div></div>
+        </div>
+      </div></div>
+      <div class="cap"><div class="nm">Application + docs</div><div class="rt">/cia-application</div><div class="tr">★ submit → PENDING_SUPERVISOR_VERIFY</div><div class="api"><div class="ah">API · base /api/v1</div><div class="a"><span class="m post">POST</span>/cattle-induction/applications</div><div class="a"><span class="m post">POST</span>/cattle-induction/applications/:id/documents</div><div class="a"><span class="m post">POST</span>/cattle-induction/applications/:id/submit</div></div></div>
+    </div>
+
+    <!-- 8 STATUS -->
+    <div class="step"><div class="badge">8</div>
+      <div class="phone"><div class="scr">
+        <div class="bar"><span>My application</span><span class="lang">हिं|EN</span></div>
+        <div class="body">
+          <div class="pill2"><span>Status as of today</span><b>SOC-DEMO</b></div>
+          <div class="card" style="margin-top:7px"><div class="mut" style="font-size:9px;font-weight:800;text-transform:uppercase">Current step</div><b style="color:var(--brand-d);font-size:13px">Milk-linked repayment</b><div class="btn sm">Loan recovery →</div></div>
+          <div class="card"><div class="row"><span class="mut">Subsidy transferred</span><b>₹31,000</b></div><div class="row"><span class="mut">Loan disbursed</span><b>₹24,800</b></div></div>
+          <div class="tl">
+            <div class="li"><div class="h">Interest submitted</div></div>
+            <div class="li"><div class="h">Selected by DCS board</div></div>
+            <div class="li"><div class="h">Field verification</div></div>
+            <div class="li"><div class="h">Bank appraisal</div></div>
+            <div class="li now"><div class="h">Loan disbursed</div></div>
+          </div>
+        </div>
+      </div></div>
+      <div class="cap"><div class="nm">Status tracker</div><div class="rt">/cia-status</div><div class="tr">"Buy your animal" → /cia-purchase</div><div class="api"><div class="ah">API · base /api/v1</div><div class="a"><span class="m get">GET</span>/cattle-induction/applications</div><div class="a"><span class="m get">GET</span>/cattle-induction/applications/:id/status</div></div></div>
+    </div>
+
+    <!-- 9 PURCHASE -->
+    <div class="step"><div class="badge">9</div>
+      <div class="phone"><div class="scr">
+        <div class="bar"><span>Buy your animal</span><span class="lang">हिं|EN</span></div>
+        <div class="body">
+          <div class="card row"><b class="big" style="font-size:14px">₹62,000</b><span class="mut">disbursed</span></div>
+          <div class="stepn"><span class="n">1</span><span><b>Seller details</b><div class="mut">id + bank + relationship</div></span><span class="go">open ›</span></div>
+          <div class="stepn"><span class="n">2</span><span><b>Cattle inspection</b><div class="mut">live photos</div></span><span class="go">open ›</span></div>
+          <div class="stepn"><span class="n">3</span><span><b>Purchase location</b><div class="mut">live GPS</div></span><span class="go">open ›</span></div>
+          <div class="stepn"><span class="n">4</span><span><b>Ear tag</b><div class="mut">12-digit + photo</div></span><span class="go">open ›</span></div>
+          <div class="stepn lock"><span class="n">🔒</span><span><b>Seller payment</b><div class="mut">CIA-3 · gated</div></span></div>
+          <div class="lock">🔒 Payment stays locked until vet cert + insurance + your acknowledgment exist.</div>
+        </div>
+      </div></div>
+      <div class="cap"><div class="nm">Guided purchase</div><div class="rt">/cia-purchase</div><div class="tr">capture → PURCHASE_INITIATED → EMI</div><div class="api"><div class="ah">API · base /api/v1</div><div class="a"><span class="m get">GET</span>/cattle-induction/applications/:id/purchase</div><div class="a"><span class="m post">POST</span>/.../:id/purchase/capture</div><div class="a"><span class="m post">POST</span>/.../:id/insurance/transit</div><div class="a"><span class="m post">POST</span>/.../:id/insurance/arrival</div><div class="a"><span class="m post">POST</span>/.../:id/insurance/cattle</div></div></div>
+    </div>
+
+    <!-- 10 EMI -->
+    <div class="step"><div class="badge">10</div>
+      <div class="phone"><div class="scr">
+        <div class="bar"><span>Loan recovery</span><span class="lang">हिं|EN</span></div>
+        <div class="body">
+          <div class="pill2"><span>As of yesterday's settlement</span><b>SBIN…7781</b></div>
+          <div class="lock">🔒 Track-only — set up authorisation to auto-deduct from milk.</div>
+          <div class="card row"><span><b class="big">₹8,600</b><div class="mut">outstanding</div></span><span style="text-align:right"><div class="mut">next EMI</div><b>₹2,150</b></span></div>
+          <div class="card row"><span><b>Instalment 1</b> <span class="mut">deducted ₹2,150</span></span><span class="chip c-paid">PAID</span></div>
+          <div class="card row"><span><b>Instalment 2</b> <span class="mut">deducted ₹2,150</span></span><span class="chip c-paid">PAID</span></div>
+          <div class="card row"><span><b>Instalment 3</b> <span class="mut">nothing deducted</span></span><span class="chip c-over">OVERDUE</span></div>
+          <div class="card row"><span><b>Instalment 4</b> <span class="mut">due ₹2,150</span></span><span class="chip c-due">DUE</span></div>
+          <div class="btn sm">Set up auto-deduction →</div>
+        </div>
+      </div></div>
+      <div class="cap"><div class="nm">EMI ledger</div><div class="rt">/cia-emi</div><div class="tr">🛡 Insurance claim → /cia-claim</div><div class="api"><div class="ah">API · base /api/v1</div><div class="a"><span class="m get">GET</span>/cattle-induction/applications/:id/emi</div><div class="a"><span class="m get">GET</span>/.../:id/emi/no-dues-certificate</div></div></div>
+    </div>
+
+    <!-- 11 CLAIM -->
+    <div class="step"><div class="badge">11</div>
+      <div class="phone"><div class="scr">
+        <div class="bar"><span>Insurance claim</span><span class="lang">हिं|EN</span></div>
+        <div class="body">
+          <div class="pill2" style="justify-content:center;text-align:center"><b>12 days left · 15-day SLA</b></div>
+          <div class="sec">4 documents (only)</div>
+          <div class="doc"><span class="dbox on"></span>Death certificate (vet)</div>
+          <div class="doc"><span class="dbox on"></span>Ear-tag / carcass photo</div>
+          <div class="doc"><span class="dbox"></span>Post-mortem report</div>
+          <div class="doc"><span class="dbox"></span>Policy copy</div>
+          <div class="sec">Progress</div>
+          <div class="tl">
+            <div class="li"><div class="h">Intimated</div></div>
+            <div class="li now"><div class="h">Survey done</div></div>
+            <div class="li f"><div class="h">Post-mortem</div></div>
+            <div class="li f"><div class="h">Under review</div></div>
+            <div class="li f"><div class="h">Settled</div></div>
+          </div>
+        </div>
+      </div></div>
+      <div class="cap"><div class="nm">Cattle claim</div><div class="rt">/cia-claim</div><div class="tr">4-doc · 12% penal on SLA breach</div><div class="api"><div class="ah">API · base /api/v1</div><div class="a"><span class="m get">GET</span>/cattle-induction/applications/:id/claim</div><div class="a"><span class="m post">POST</span>/cattle-induction/applications/:id/claim</div></div></div>
+    </div>
+
+  </div>
+
+  <!-- ===================== FIELD PWA ===================== -->
+  <h2 class="section-h">Field PWA <span class="tag mob">📱 mobile · offline · role-gated</span></h2>
+  <p class="section-sub">Route Supervisor and Vet share ONE offline-capable PWA — role-gated views, never shared screens. Works with no signal; captures live geo/photos; syncs idempotently (server-wins on conflict, farmer notified).</p>
+  <div class="flow">
+
+    <div class="step"><div class="badge bf">1</div>
+      <div class="phone"><div class="scr">
+        <div class="bar"><span>Field verification</span><span class="off">⚡ offline</span></div>
+        <div class="body">
+          <span class="roletag">ROUTE_SUPERVISOR</span>
+          <div class="card"><div class="row"><span class="mut">Applicant</span><b>Ramesh · SOC-DEMO</b></div></div>
+          <div class="doc"><span class="dbox on"></span>Existing cattle counted (3)</div>
+          <div class="doc"><span class="dbox on"></span>Geo-tag captured · 30.31, 78.03</div>
+          <div class="doc"><span class="dbox on"></span>Live photos (2)</div>
+          <div class="doc"><span class="dbox"></span>Shed / land proof</div>
+          <div class="btn sm">Verify &amp; forward to DUSS</div>
+          <div class="btn g sm">Return for correction</div>
+        </div>
+      </div></div>
+      <div class="cap"><div class="nm">Supervisor verification</div><div class="rt">/cattle-induction/field</div><div class="tr">‡ in-app · → FORWARDED_TO_DUSS</div><div class="api"><div class="ah">API · base /api/v1</div><div class="a"><span class="m get">GET</span>/cattle-induction/field/tasks</div><div class="a"><span class="m post">POST</span>/cattle-induction/field/verify/:id</div></div></div>
+    </div>
+
+    <div class="step"><div class="badge bf">2</div>
+      <div class="phone"><div class="scr">
+        <div class="bar"><span>Vet exam &amp; valuation</span><span class="off">⚡ offline</span></div>
+        <div class="body">
+          <span class="roletag">VET · VCI-registered</span>
+          <div class="card"><div class="row"><span class="mut">Ear tag</span><b>3600…201 · HF</b></div></div>
+          <div class="doc"><span>Body condition (BCS)</span><b style="margin-left:auto">3.5</b></div>
+          <div class="doc"><span>Market valuation</span><b style="margin-left:auto">₹60,000</b></div>
+          <div class="doc"><span>Fitness for transport</span><b style="margin-left:auto;color:var(--brand-d)">✓</b></div>
+          <div class="doc"><span>Test milking</span><b style="margin-left:auto">9 L</b></div>
+          <div class="in" style="text-align:left">✍️ e-sign · vetReg UK-VET-4821</div>
+          <div class="two"><div class="btn sm">Approve purchase</div><div class="btn g sm">Reject</div></div>
+        </div>
+      </div></div>
+      <div class="cap"><div class="nm">Vet exam &amp; e-sign</div><div class="rt">/cattle-induction/field</div><div class="tr">approve → PURCHASE_APPROVED</div><div class="api"><div class="ah">API · base /api/v1</div><div class="a"><span class="m post">POST</span>/cattle-induction/field/vet/:id</div><div class="a"><span class="m post">POST</span>/cattle-induction/field/purchase/:id/checks</div></div></div>
+    </div>
+
+    <div class="step"><div class="badge bf">3</div>
+      <div class="phone"><div class="scr">
+        <div class="bar"><span>Inspection · 30-day</span><span class="off">⚡ offline</span></div>
+        <div class="body">
+          <span class="roletag">ROUTE_SUPERVISOR</span>
+          <div class="doc"><span class="dbox on"></span>Ear-tag re-confirm · 3600…201</div>
+          <div class="doc"><span class="dbox on"></span>Live re-capture (2 photos)</div>
+          <div class="doc"><span class="dbox on"></span>Animal healthy</div>
+          <div class="card"><div class="row"><span class="mut">Milk yield</span><b>9.5 L / day</b></div></div>
+          <div class="card" style="border-color:#bfe3cf;background:#f2fbf5"><b style="color:var(--brand-d)">✓ Asset existence verified</b></div>
+          <div class="btn sm">Submit inspection</div>
+        </div>
+      </div></div>
+      <div class="cap"><div class="nm">Post-purchase inspection</div><div class="rt">/cattle-induction/field</div><div class="tr">7 / 30 / 90-day asset checks</div><div class="api"><div class="ah">API · base /api/v1</div><div class="a"><span class="m post">POST</span>/cattle-induction/field/inspection/:id</div></div></div>
+    </div>
+
+    <div class="step"><div class="badge bf">4</div>
+      <div class="phone"><div class="scr">
+        <div class="bar"><span>Sync</span><span class="off">⚡ offline</span></div>
+        <div class="body">
+          <div class="card"><b>3 items queued on this phone</b></div>
+          <div class="card row"><span>Supervisor verify</span><span class="chip c-paid">SYNCED</span></div>
+          <div class="card row"><span>Vet exam</span><span class="chip c-due">SYNCING</span></div>
+          <div class="card row"><span>Inspection</span><span class="chip c-due">QUEUED</span></div>
+          <div class="lock">Conflicts resolve server-wins — the farmer is notified. No data lost with no signal.</div>
+          <div class="btn sm">Sync now</div>
+        </div>
+      </div></div>
+      <div class="cap"><div class="nm">Offline sync / conflict</div><div class="rt">app/lib/offlineQueue.ts</div><div class="tr">QUEUED_LOCAL → SYNCING → SYNCED</div><div class="api"><div class="ah">API · base /api/v1</div><div class="a"><span class="m get">GET</span>/cattle-induction/field/tasks</div><div class="a"><span class="m post">POST</span>/cattle-induction/field/sync</div></div></div>
+    </div>
+
+  </div>
+
+  <!-- ===================== BACK-OFFICE ===================== -->
+  <h2 class="section-h">Back-office <span class="tag web">🖥️ desktop web dashboards</span></h2>
+  <p class="section-sub">DCS · DUSS · cooperative bank · UCDF work in web dashboards — bulk maker-checker review, reconciliation tables and command views that genuinely want a large screen. (Settled prototypes; not built in RN.)</p>
+  <div class="flow">
+
+    <div class="step wstep"><div class="badge bw">1</div>
+      <div class="win"><div class="wscr">
+        <div class="wbar"><span class="wdot"></span><span class="wdot"></span><span class="wdot"></span><span class="wurl">/cattle-induction/dcs · DCS_SECRETARY</span></div>
+        <div class="wb">
+          <b>Interested members — selection meeting</b>
+          <table class="tbl">
+            <tr><th>Member</th><th class="r">Milk / mo</th><th class="r">Months</th><th>Pick</th></tr>
+            <tr><td>Ramesh Rawat</td><td class="r">₹21,600</td><td class="r">44</td><td>☑</td></tr>
+            <tr><td>Balbir Singh</td><td class="r">₹15,200</td><td class="r">31</td><td>☑</td></tr>
+            <tr><td>Sunita Devi</td><td class="r">₹9,400</td><td class="r">8</td><td>☐</td></tr>
+          </table>
+          <div class="btn sm">Record board decision + resolution</div>
+        </div>
+      </div></div>
+      <div class="wcap"><div class="nm">DCS selection / agenda</div><div class="rt">/cattle-induction/dcs</div><div class="tr">‡ in-app · → SELECTED_BY_DCS</div><div class="api"><div class="ah">API · base /api/v1</div><div class="a"><span class="m get">GET</span>/cattle-induction/dcs/interested</div><div class="a"><span class="m post">POST</span>/cattle-induction/dcs/select/:id</div></div></div>
+    </div>
+
+    <div class="step wstep"><div class="badge bw">2</div>
+      <div class="win"><div class="wscr">
+        <div class="wbar"><span class="wdot"></span><span class="wdot"></span><span class="wdot"></span><span class="wurl">/cattle-induction/duss · DUSS_MAKER</span></div>
+        <div class="wb">
+          <div class="tiles"><div class="tile"><div class="v">18</div><div class="l">To scrutinise</div></div><div class="tile"><div class="v">5</div><div class="l">Deficient</div></div><div class="tile"><div class="v">41</div><div class="l">Ready</div></div></div>
+          <table class="tbl">
+            <tr><th>Application</th><th class="r">Subsidy</th><th>Status</th></tr>
+            <tr><td>CIA-2026-000481</td><td class="r">₹31,000</td><td><span class="chip c-paid">verified</span></td></tr>
+            <tr><td>CIA-2026-000482</td><td class="r">₹28,500</td><td><span class="chip c-over">deficient</span></td></tr>
+          </table>
+          <div class="btn sm">Generate bank batch (prescribed format)</div>
+          <div class="mut" style="font-size:9px;margin-top:5px">Maker prepares → Checker approves (segregation of duties)</div>
+        </div>
+      </div></div>
+      <div class="wcap"><div class="nm">DUSS bulk inbox</div><div class="rt">/cattle-induction/duss</div><div class="tr">scrutiny · subsidy calc · bank batch</div><div class="api"><div class="ah">API · base /api/v1</div><div class="a"><span class="m get">GET</span>/cattle-induction/duss/inbox</div><div class="a"><span class="m post">POST</span>/cattle-induction/duss/scrutinise/:id</div><div class="a"><span class="m post">POST</span>/cattle-induction/duss/subsidy/:id</div><div class="a"><span class="m post">POST</span>/cattle-induction/duss/batch</div></div></div>
+    </div>
+
+    <div class="step wstep"><div class="badge bw">3</div>
+      <div class="win"><div class="wscr">
+        <div class="wbar"><span class="wdot"></span><span class="wdot"></span><span class="wdot"></span><span class="wurl">/cattle-induction/bank · BANK_MAKER</span></div>
+        <div class="wb">
+          <b>Packet inbox — API log / file upload</b>
+          <div class="tiles"><div class="tile"><div class="v">38</div><div class="l">Matched</div></div><div class="tile"><div class="v">3</div><div class="l">Unmatched</div></div><div class="tile"><div class="v">33</div><div class="l">Sanctioned</div></div></div>
+          <table class="tbl">
+            <tr><th>Loan a/c</th><th class="r">Sanctioned</th><th>Status</th></tr>
+            <tr><td>SBIN…7781</td><td class="r">₹62,000</td><td><span class="chip c-paid">disbursed</span></td></tr>
+            <tr><td>PUNB…4410</td><td class="r">₹58,000</td><td><span class="chip c-due">appraisal</span></td></tr>
+          </table>
+          <div class="two"><div class="btn sm">Confirm sanction</div><div class="btn g sm">Upload disbursement</div></div>
+        </div>
+      </div></div>
+      <div class="wcap"><div class="nm">Bank sanction · maker-checker</div><div class="rt">/cattle-induction/bank</div><div class="tr">API primary · filedrop fallback</div><div class="api"><div class="ah">API · base /api/v1</div><div class="a"><span class="m get">GET</span>/cattle-induction/bank/packets</div><div class="a"><span class="m post">POST</span>/cattle-induction/bank/sanction-file</div><div class="a"><span class="m post">POST</span>/cattle-induction/bank/disbursement-file</div><div class="a"><span class="m post">POST</span>/cattle-induction/bank/emi-file</div></div></div>
+    </div>
+
+    <div class="step wstep"><div class="badge bw">4</div>
+      <div class="win"><div class="wscr">
+        <div class="wbar"><span class="wdot"></span><span class="wdot"></span><span class="wdot"></span><span class="wurl">/admin/cattle-induction · UCDF_PM</span></div>
+        <div class="wb">
+          <div class="row"><b>Uttarakhand · all districts</b><span class="mut" style="font-size:9px">as of last sync</span></div>
+          <div class="tiles" style="margin-top:8px"><div class="tile"><div class="v">128</div><div class="l">EOI</div></div><div class="tile"><div class="v">96</div><div class="l">Selected</div></div><div class="tile"><div class="v">4</div><div class="l">SLA breaches</div></div></div>
+          <div class="sec" style="margin-top:2px">Funnel — EOI → sanction</div>
+          <div class="frow"><span>EOI</span><span class="fbar"><i style="width:100%"></i></span><b>128</b></div>
+          <div class="frow"><span>Selected</span><span class="fbar"><i style="width:75%"></i></span><b>96</b></div>
+          <div class="frow"><span>To bank</span><span class="fbar"><i style="width:40%"></i></span><b>51</b></div>
+          <div class="frow"><span>Sanctioned</span><span class="fbar"><i style="width:26%"></i></span><b>33</b></div>
+        </div>
+      </div></div>
+      <div class="wcap"><div class="nm">UCDF command dashboard</div><div class="rt">/admin/cattle-induction</div><div class="tr">funnel · league table · exceptions</div><div class="api"><div class="ah">API · base /api/v1</div><div class="a"><span class="m get">GET</span>/admin/cattle-induction/dashboard</div><div class="a"><span class="m get">GET</span>/admin/cattle-induction/reports/:key</div><div class="a"><span class="m get">GET</span>/admin/cattle-induction/audit-log</div></div></div>
+    </div>
+
+    <div class="step wstep"><div class="badge bw">5</div>
+      <div class="win"><div class="wscr">
+        <div class="wbar"><span class="wdot"></span><span class="wdot"></span><span class="wdot"></span><span class="wurl">/admin/cattle-induction · UCDF_FINANCE</span></div>
+        <div class="wb">
+          <b>Seller payment — recommendation</b>
+          <div class="gate" style="margin-top:6px">
+            <div class="g"><span class="tick">✓</span>Vet certificate</div>
+            <div class="g"><span class="tick">✓</span>Transit insurance</div>
+            <div class="g"><span class="tick">✓</span>Cattle insurance (assigned to bank)</div>
+            <div class="g"><span class="tick">✓</span>Farmer acknowledgment</div>
+            <div class="g"><span class="tick">✓</span>Traceability chain complete</div>
+            <div class="g"><span class="tick">✓</span>Penny-drop verified payee</div>
+          </div>
+          <div class="btn sm">Recommend payment (not execute)</div>
+          <div class="lock">No payout without complete verification. App recommends — it never moves money.</div>
+        </div>
+      </div></div>
+      <div class="wcap"><div class="nm">Payment gate</div><div class="rt">finance-payment-gate</div><div class="tr">recommend-not-execute · Convention 31</div><div class="api"><div class="ah">API · base /api/v1</div><div class="a"><span class="m post">POST</span>/cattle-induction/bank/seller-payment/:id/recommend</div><div class="a"><span class="m post">POST</span>/cattle-induction/bank/seller-payment/:id/confirm</div></div></div>
+    </div>
+
+    <div class="step wstep"><div class="badge bw">6</div>
+      <div class="win"><div class="wscr">
+        <div class="wbar"><span class="wdot"></span><span class="wdot"></span><span class="wdot"></span><span class="wurl">/admin/cattle-induction · UCDF_ADMIN</span></div>
+        <div class="wb">
+          <b>Fraud exceptions — shadow mode</b>
+          <table class="tbl">
+            <tr><th>Signal</th><th class="r">Flagged</th><th>Action</th></tr>
+            <tr><td>Duplicate photo (pHash)</td><td class="r">1</td><td><span style="color:var(--brand-d);font-weight:700">review</span></td></tr>
+            <tr><td>Price outlier vs ceiling</td><td class="r">2</td><td><span style="color:var(--brand-d);font-weight:700">review</span></td></tr>
+            <tr><td>Geo-fence miss</td><td class="r">0</td><td class="mut">—</td></tr>
+            <tr><td>Ear-tag duplicate</td><td class="r">0</td><td class="mut">—</td></tr>
+          </table>
+          <div class="lock">Signals flag to humans — never auto-reject. A live flag holds the seller payment.</div>
+        </div>
+      </div></div>
+      <div class="wcap"><div class="nm">Fraud exception panel</div><div class="rt">ucdf-fraud-panel</div><div class="tr">shadow-first · review &amp; clear (reason)</div><div class="api"><div class="ah">API · base /api/v1</div><div class="a"><span class="m get">GET</span>/admin/cattle-induction/exceptions</div><div class="a"><span class="m post">POST</span>/admin/cattle-induction/exceptions/:id/clear</div></div></div>
+    </div>
+
+  </div>
+
+  <p class="foot">★ = farmer-authored · ‡ = the CIA-only in-app exception (DCS &amp; supervisor act in the app; routine co-op orders stay ERP-side). Form factor is deliberate: <b>farmer + field are mobile</b> (offline-first, camera/GPS); <b>back-office is desktop web</b> (bulk maker-checker, reconciliation tables). The seller-payment gate never opens until vet certificate + transit &amp; cattle insurance + farmer acknowledgment + a complete traceability chain exist — and the app <em>recommends</em>, it never moves money.</p>
+</div>
+</body>
+</html>

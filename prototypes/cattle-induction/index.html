@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Aanchal — Cattle Induction (CIA) prototypes</title>
+<style>
+  :root{--bg:#f4f6f5;--card:#fff;--ink:#14201b;--muted:#6b7c74;--line:#e2e8e4;--brand:#0f7a4d;--brand-d:#0a5c3a;--accent:#e8f5ee;--blue:#0b5c8a;--bluebg:#e6f0f6}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+  .wrap{max-width:920px;margin:0 auto;padding:40px 24px 60px}
+  .brand{font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--brand-d);font-weight:700}
+  h1{font-size:30px;margin:6px 0 4px}
+  .lede{color:var(--muted);margin:0 0 18px;max-width:680px}
+  .phase{display:inline-block;background:var(--accent);color:var(--brand-d);border-radius:999px;padding:4px 12px;font-size:12px;font-weight:700;margin-bottom:22px}
+  .grp{margin:26px 0 8px;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:700}
+  .cards{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
+  @media(max-width:720px){.cards{grid-template-columns:1fr 1fr}}
+  @media(max-width:480px){.cards{grid-template-columns:1fr}}
+  a.card{display:block;text-decoration:none;color:inherit;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;transition:transform .12s,box-shadow .12s}
+  a.card:hover{transform:translateY(-2px);box-shadow:0 12px 26px rgba(20,40,30,.10)}
+  a.card b{display:block;font-size:15px}
+  a.card span{color:var(--muted);font-size:13px}
+  .todo{opacity:.55;pointer-events:none}
+  .note{margin-top:28px;font-size:13px;color:var(--muted);border-top:1px solid var(--line);padding-top:14px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="brand">Aanchal Dairy · UCDF</div>
+  <h1>Cattle Induction — prototypes</h1>
+  <p class="lede">Clickable mocks with mock JSON. The settled prototype is the spec (CLAUDE.md P0 prototype rule). Screens below map to PRD Part 6 &amp; Part 16.</p>
+  <div class="phase">CIA-1 · Application &amp; Capture (no money movement)</div>
+
+  <div class="grp">Farmer app</div>
+  <div class="cards">
+    <a class="card" href="farmer-scheme.html"><b>Scheme information</b><span>Terms · docs · how it works</span></a>
+    <a class="card" href="farmer-eligibility.html"><b>Eligibility checker</b><span>Non-binding · reasons · advisory</span></a>
+    <a class="card" href="farmer-eoi.html"><b>Express interest</b><span>One-tap EOI to DCS ★</span></a>
+    <a class="card" href="farmer-application.html"><b>Application + documents</b><span>ERP pre-fill · camera-first · offline draft</span></a>
+    <a class="card" href="farmer-status.html"><b>Status tracker</b><span>Timeline · honest "as of"</span></a>
+    <a class="card" href="farmer-purchase.html"><b>Guided purchase hub</b><span>Gated stepper (Part 16 #1)</span></a>
+    <a class="card" href="farmer-purchase.html#eartag"><b>Ear-tag &amp; geo capture</b><span>Live-only · 12-digit · geo-fence</span></a>
+  </div>
+
+  <div class="grp">Field PWA (offline)</div>
+  <div class="cards">
+    <a class="card" href="field-verification.html"><b>Supervisor verification</b><span>Checklist · geo · live photos</span></a>
+    <a class="card todo" href="#"><b>Sync / conflict</b><span>Queue → idempotent sync</span></a>
+    <a class="card" href="field-vet-exam.html"><b>Vet exam (CIA-3)</b><span>BCS · valuation · e-sign</span></a>
+  </div>
+
+  <div class="grp">DCS · DUSS · Bank · UCDF</div>
+  <div class="cards">
+    <a class="card" href="dcs-selection.html"><b>DCS selection / agenda</b><span>Board decision + resolution</span></a>
+    <a class="card" href="duss-inbox.html"><b>DUSS bulk inbox</b><span>Scrutiny · deficiency · bank batch</span></a>
+    <a class="card" href="bank-sanction.html"><b>Bank sanction upload</b><span>Matched/unmatched preview</span></a>
+    <a class="card" href="ucdf-dashboard.html"><b>UCDF command dashboard</b><span>Funnel · league table · exceptions</span></a>
+  </div>
+
+  <div class="grp">CIA-2 · Financial (recording + track-only)</div>
+  <div class="cards">
+    <a class="card" href="farmer-loan-status.html"><b>Loan &amp; subsidy status</b><span>Sanction · subsidy · disbursement · unlock purchase</span></a>
+    <a class="card" href="farmer-emi-schedule.html"><b>EMI schedule</b><span>Loan↔milk map · installments</span></a>
+    <a class="card" href="farmer-emi-ledger.html"><b>Milk-payment EMI ledger</b><span>Deducted vs due · track-only</span></a>
+    <a class="card" href="farmer-emi-consent.html"><b>EMI deduction consent</b><span>Tri-partite · track→initiate</span></a>
+  </div>
+
+  <div class="grp">CIA-3 · Advanced verification</div>
+  <div class="cards">
+    <a class="card" href="field-vet-exam.html"><b>Vet exam &amp; valuation</b><span>Field PWA · BCS · e-sign</span></a>
+    <a class="card" href="farmer-insurance.html"><b>Transit &amp; cattle insurance</b><span>KAVACH · no backdating</span></a>
+    <a class="card" href="finance-payment-gate.html"><b>Payment gate + recommendation</b><span>Gate checklist · recommend-not-execute</span></a>
+    <a class="card" href="ucdf-fraud-panel.html"><b>Fraud exception panel</b><span>Shadow · review &amp; clear · holds payment</span></a>
+  </div>
+
+  <div class="grp">CIA-4 · Full lifecycle</div>
+  <div class="cards">
+    <a class="card" href="field-inspection.html"><b>Post-purchase inspection</b><span>7/30/90-day · asset existence</span></a>
+    <a class="card" href="farmer-claim.html"><b>Cattle claim</b><span>4-doc · 15-day SLA · 12% penal</span></a>
+  </div>
+
+  <p class="note">Cards are placeholders — build each as a standalone HTML mock in this folder, then link it here. Money-movement and gated-purchase screens (EMI ledger, seller payment) belong to CIA-2/CIA-3.</p>
+</div>
+</body>
+</html>

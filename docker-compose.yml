@@ -1,0 +1,53 @@
+# Allied KCC — local development infrastructure
+# Postgres 16 (with pgvector + PostGIS), Redis 7, RabbitMQ 3.
+#   docker compose up -d
+services:
+  postgres:
+    # PostGIS base + pgvector installed via backend/db/Dockerfile.postgres,
+    # so one container provides Postgres 16 + PostGIS + pgvector.
+    build:
+      context: ./backend/db
+      dockerfile: Dockerfile.postgres
+    image: akcc-postgres:16
+    container_name: akcc-postgres
+    environment:
+      POSTGRES_DB: allied_kcc_dev
+      POSTGRES_USER: allied_kcc
+      POSTGRES_PASSWORD: allied_kcc
+    ports:
+      # Host 5433 → container 5432 to avoid clashing with a local Postgres
+      # already bound to host 5432. Set DB_PORT=5433 in .env to match.
+      - "5433:5432"
+    volumes:
+      - akcc_pgdata:/var/lib/postgresql/data
+      - ./backend/db/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U allied_kcc -d allied_kcc_dev"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    container_name: akcc-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - akcc_redisdata:/data
+
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: akcc-rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: allied_kcc
+      RABBITMQ_DEFAULT_PASS: allied_kcc
+    ports:
+      - "5672:5672"    # AMQP
+      - "15672:15672"  # management UI
+    volumes:
+      - akcc_rabbitdata:/var/lib/rabbitmq
+
+volumes:
+  akcc_pgdata:
+  akcc_redisdata:
+  akcc_rabbitdata:

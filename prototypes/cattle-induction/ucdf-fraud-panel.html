@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CIA · Fraud exception panel (shadow)</title>
+<style>
+  :root{--bg:#f4f6f5;--card:#fff;--ink:#14201b;--muted:#6b7c74;--line:#e2e8e4;--brand:#0f7a4d;--brand-d:#0a5c3a;--accent:#e8f5ee;--warn:#b45309;--warnbg:#fef3e2;--blue:#0b5c8a;--bluebg:#e6f0f6;--danger:#b42318;--purple:#6b3fa0;--purplebg:#f0eaf8}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+  .wrap{max-width:1120px;margin:0 auto;padding:26px 22px 60px}
+  a.back{color:var(--brand-d);font-size:13px;text-decoration:none;font-weight:700}
+  h1{font-size:24px;margin:8px 0 2px}
+  .phase{display:inline-block;background:#ede9fb;color:#6b3fa0;border-radius:99px;padding:2px 10px;font-size:11px;font-weight:800;margin-left:6px}
+  .lede{color:var(--muted);margin:0 0 16px;max-width:800px;font-size:14px}
+  .portal{background:var(--card);border:1px solid var(--line);border-radius:16px;overflow:hidden;box-shadow:0 12px 30px rgba(20,40,30,.06)}
+  .phead{background:var(--brand-d);color:#fff;padding:14px 18px;display:flex;justify-content:space-between;align-items:center}
+  .phead .t{font-weight:800}
+  .legend{display:flex;gap:14px;padding:10px 16px;border-bottom:1px solid var(--line);font-size:12px;color:var(--muted);flex-wrap:wrap}
+  .dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:5px;vertical-align:middle}
+  .d-block{background:var(--danger)} .d-adv{background:var(--warn)}
+  table{width:100%;border-collapse:collapse}
+  th,td{text-align:left;padding:11px 16px;font-size:14px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+  .flag{display:inline-block;font-size:10px;font-weight:800;padding:2px 8px;border-radius:99px;margin:2px 4px 2px 0;cursor:pointer}
+  .flag.block{background:#fdeeec;color:var(--danger)} .flag.adv{background:var(--warnbg);color:var(--warn)} .flag.cleared{background:#eef0ee;color:var(--muted);text-decoration:line-through;cursor:default}
+  .hold{font-size:11px;font-weight:800;padding:2px 8px;border-radius:99px}
+  .hold.on{background:#fdeeec;color:var(--danger)} .hold.off{background:#d8f0e1;color:var(--brand-d)}
+  .foot{padding:12px 16px;background:#fbfdfc;border-top:1px solid var(--line);font-size:13px;color:var(--muted)}
+  .spec{margin-top:16px}
+  .spec h2{font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:6px 0 8px}
+  pre{background:#0b120e;color:#d6f5e3;border-radius:12px;padding:14px;font-size:12px;line-height:1.5;overflow:auto;max-height:240px}
+  .note{font-size:13px;color:var(--muted);border-top:1px solid var(--line);margin-top:14px;padding-top:12px}
+  .k{color:#7fd0a3}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="index.html">← CIA prototypes</a>
+  <h1>Fraud exception panel <span class="phase">CIA-3 · shadow</span></h1>
+  <p class="lede">Every fraud signal is surfaced here for a human — the system never auto-rejects. <b>Blocking</b> flags hold seller payment until cleared with a reason; <b>advisory</b> flags (e.g. price outlier) are shown but don't hold. Click a flag to review &amp; clear. Settled mock = the spec for Slice S.</p>
+
+  <div class="portal">
+    <div class="phead"><div class="t">UCDF · fraud &amp; exceptions</div><span style="font-size:12px;color:#cfe8db">shadow-first · human review</span></div>
+    <div class="legend"><span><span class="dot d-block"></span>Blocking (holds payment)</span><span><span class="dot d-adv"></span>Advisory (shown only)</span><span>Click a flag to review &amp; clear</span></div>
+    <table>
+      <thead><tr><th>Application</th><th>Flags</th><th>Payment</th></tr></thead>
+      <tbody id="rows"></tbody>
+    </table>
+    <div class="foot">Clearing a blocking flag records who cleared it + a reason (append-only), and opens the payment gate if no blocking flags remain.</div>
+  </div>
+
+  <div class="spec">
+    <h2>Mock JSON — GET /admin/.../exceptions · POST /admin/.../exceptions/:appUuid/clear</h2>
+    <pre id="jsonOut"></pre>
+    <div class="note">
+      <b>Rules this mock encodes (→ backend spec):</b><br>
+      • Reads flags from <span class="k">CiaPurchase.exception_flags</span> + the domain_events outbox; shadow-first (never auto-rejects — Convention 32).<br>
+      • <span class="k">Blocking</span> flags (payee, geo-fence, registry-dup, duplicate-photo) HOLD seller payment; <span class="k">advisory</span> (price outlier) do not.<br>
+      • Clear requires a <span class="k">reason</span> + reviewer id → cia.fraud.cleared (append-only); removing the last blocking flag re-opens the gate (Slice R).<br>
+      • Nothing is deleted — cleared flags are recorded, not erased.
+    </div>
+  </div>
+</div>
+
+<script>
+const BLOCK = ['PAYEE_NAME_MISMATCH','PAYEE_UNVERIFIED','GEOFENCE_BREACH','REGISTRY_DUPLICATE','DUPLICATE_PHOTO'];
+const rows = [
+  { app:'CIA-…481', name:'Ramesh Mahto', flags:[{f:'PAYEE_NAME_MISMATCH',c:false},{f:'GEOFENCE_BREACH',c:false}] },
+  { app:'CIA-…503', name:'Sunita Devi',  flags:[{f:'PRICE_OUTLIER',c:false}] },
+  { app:'CIA-…511', name:'Imran Ansari', flags:[{f:'DUPLICATE_PHOTO',c:false}] },
+];
+const isBlock = (f)=>BLOCK.includes(f);
+function held(r){ return r.flags.some(x=>isBlock(x.f) && !x.c); }
+function render(){
+  const tb=document.getElementById('rows'); tb.innerHTML='';
+  rows.forEach((r,ri)=>{
+    const tr=document.createElement('tr');
+    const flagsHtml = r.flags.map((x,fi)=>{
+      const cls = x.c ? 'cleared' : (isBlock(x.f)?'block':'adv');
+      return `<span class="flag ${cls}" ${x.c?'':`onclick="clearFlag(${ri},${fi})"`}>${x.f}${x.c?' ✓':''}</span>`;
+    }).join('');
+    const h = held(r);
+    tr.innerHTML = `<td><b>${r.name}</b><br><span style="font-size:12px;color:var(--muted)">${r.app}</span></td>
+      <td>${flagsHtml}</td>
+      <td><span class="hold ${h?'on':'off'}">${h?'HELD':'clear'}</span></td>`;
+    tb.appendChild(tr);
+  });
+  updateJson();
+}
+function clearFlag(ri,fi){
+  const x = rows[ri].flags[fi];
+  const reason = prompt('Reason to clear "'+x.f+'" (recorded, not deleted):', 'Verified with seller by phone; genuine');
+  if(reason===null) return;
+  x.c = true; x.reason = reason; render();
+  if(!held(rows[ri])) setTimeout(()=>alert('No blocking flags remain — payment gate re-opened for '+rows[ri].name),50);
+}
+function updateJson(){
+  document.getElementById('jsonOut').textContent = JSON.stringify({
+    exceptions: rows.map(r=>({ application:r.app, paymentHeld:held(r), flags:r.flags.map(x=>({ flag:x.f, blocking:isBlock(x.f), cleared:x.c, reason:x.reason||null })) })),
+  }, null, 2);
+}
+render();
+</script>
+</body>
+</html>

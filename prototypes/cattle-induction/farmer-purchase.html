@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CIA · Guided cattle purchase (farmer)</title>
+<style>
+  :root{--bg:#f4f6f5;--card:#fff;--ink:#14201b;--muted:#6b7c74;--line:#e2e8e4;--brand:#0f7a4d;--brand-d:#0a5c3a;--accent:#e8f5ee;--warn:#b45309;--warnbg:#fef3e2;--blue:#0b5c8a;--bluebg:#e6f0f6;--danger:#b42318;--ok:#0f7a4d;--lock:#c3ccc7}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+  .wrap{max-width:1040px;margin:0 auto;padding:26px 20px 60px}
+  a.back{color:var(--brand-d);font-size:13px;text-decoration:none;font-weight:700}
+  h1{font-size:24px;margin:8px 0 2px}
+  .lede{color:var(--muted);margin:0 0 16px;max-width:720px;font-size:14px}
+  .stage{display:flex;gap:20px;flex-wrap:wrap;align-items:flex-start}
+  .phone{width:346px;background:#0b120e;border-radius:34px;padding:10px;box-shadow:0 20px 50px rgba(10,30,20,.22);flex:0 0 auto}
+  .screen{background:var(--bg);border-radius:26px;overflow:hidden;height:672px;display:flex;flex-direction:column}
+  .bar{background:var(--brand-d);color:#fff;padding:11px 15px}
+  .bar .t{font-weight:700;font-size:14px}.bar .s{font-size:12px;opacity:.85}
+  .body{padding:14px 15px;overflow:auto;flex:1}
+  .loan{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:11px 13px;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center}
+  .loan b{font-size:15px}.loan .amt{font-weight:800;color:var(--brand-d)}
+  .step{display:flex;align-items:center;gap:11px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:11px 12px;margin-bottom:8px}
+  .step .n{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;font-size:13px;font-weight:800;flex:0 0 auto}
+  .step.done .n{background:var(--ok);color:#fff}.step.now .n{background:#fff;color:var(--brand-d);border:2px solid var(--brand)}.step.lock .n{background:var(--lock);color:#fff}
+  .step .l{flex:1}.step .l b{font-size:14px}.step .l span{font-size:12px;color:var(--muted);display:block}
+  .step.lock{opacity:.6}
+  .step .go{font-size:12px;font-weight:800;color:var(--brand-d);cursor:pointer}
+  .gate{background:var(--warnbg);color:var(--warn);border:1px solid #f3e2c8;border-radius:10px;padding:10px 12px;font-size:12px;margin-top:6px}
+  /* ear-tag sub-screen */
+  .sub{display:none} .sub.on{display:block}
+  .view{background:#0b120e;border-radius:14px;height:150px;display:grid;place-items:center;color:#7fd0a3;font-size:13px;position:relative;margin-bottom:10px}
+  .view .frame{border:2px dashed #4f7; width:78%;height:44px;border-radius:8px;display:grid;place-items:center;color:#bff}
+  .gallery-off{position:absolute;bottom:6px;font-size:10px;color:#9fb}
+  input.tag{width:100%;border:1px solid var(--line);border-radius:10px;padding:11px;font-size:18px;letter-spacing:2px;text-align:center;font-family:monospace}
+  .val{font-size:12px;margin-top:5px}.val.ok{color:var(--brand-d)}.val.bad{color:var(--danger)}
+  button.primary{border:0;background:var(--brand);color:#fff;font-weight:800;font-size:15px;border-radius:12px;padding:12px;width:100%;cursor:pointer;margin-top:10px}
+  button.primary:disabled{background:#b9c6bf;cursor:not-allowed}
+  button.link{border:0;background:none;color:var(--brand-d);font-weight:700;font-size:13px;cursor:pointer;margin-top:8px}
+  .spec{flex:1;min-width:280px}
+  .spec h2{font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:6px 0 8px}
+  pre{background:#0b120e;color:#d6f5e3;border-radius:12px;padding:14px;font-size:12px;line-height:1.5;overflow:auto;max-height:300px}
+  .note{font-size:13px;color:var(--muted);border-top:1px solid var(--line);margin-top:14px;padding-top:12px}
+  .k{color:#7fd0a3}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="index.html">← CIA prototypes</a>
+  <h1>Guided cattle purchase</h1>
+  <p class="lede">After disbursement the farmer documents the animal step by step. CIA-1 <b>captures evidence</b> (seller, inspection, live geo, 12-digit ear-tag, transport); the vet check, geo-fence, ear-tag registry-uniqueness, duplicate-photo hash and the <b>payment gate</b> are enforced in CIA-3. Payment is never reachable in CIA-1. Settled mock = the spec for Slice H.</p>
+
+  <div class="stage">
+    <div class="phone">
+      <div class="screen">
+        <div class="bar"><div class="t">Buy your animal</div><div class="s">Loan CIA-2026-000481 · deadline in 21 days</div></div>
+        <div class="body">
+          <!-- HUB -->
+          <div class="sub on" id="hub">
+            <div class="loan"><div><b>₹62,000 disbursed</b><span style="font-size:12px;color:var(--muted)">buy 1 milch animal</span></div><span class="amt">CIA-1</span></div>
+            <div id="steps"></div>
+            <div class="gate">🔒 Seller payment stays locked in CIA-1 — it opens only in CIA-3 after vet certificate + transit &amp; cattle insurance + your acknowledgment, with a complete traceability chain.</div>
+          </div>
+          <!-- EAR-TAG -->
+          <div class="sub" id="eartag">
+            <div class="view"><div class="frame" id="frameTxt">align the ear tag</div><span class="gallery-off">📷 live camera only — gallery disabled</span></div>
+            <input class="tag" id="tagIn" maxlength="12" inputmode="numeric" placeholder="12-digit NDDB tag" oninput="checkTag()">
+            <div class="val" id="tagVal">12 digits required</div>
+            <button class="primary" id="tagSave" disabled onclick="saveTag()">Save ear tag</button>
+            <button class="link" onclick="show('hub')">← back to steps</button>
+          </div>
+          <!-- GEO -->
+          <div class="sub" id="geo">
+            <div class="view">📍 GPS 30.3149, 78.0301 · accuracy 6m<span class="gallery-off">live position — captured now</span></div>
+            <div class="val ok" id="geoVal">✓ position captured (geo-fence check runs in CIA-3)</div>
+            <button class="primary" onclick="saveGeo()">Save purchase location</button>
+            <button class="link" onclick="show('hub')">← back to steps</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="spec">
+      <h2>Mock JSON — POST /applications/:id/purchase/capture</h2>
+      <pre id="jsonOut"></pre>
+      <div class="note">
+        <b>Rules this mock encodes (→ backend spec):</b><br>
+        • CIA-1 <span class="k">records evidence</span>: seller (id + bank + relationship), inspection photos, live geo, ear-tag, transport — sets PURCHASE_INITIATED.<br>
+        • Ear tag must match <span class="k">^\d{12}$</span> and is <span class="k">registry-unique</span> (DB unique now; NDDB registry lookup in CIA-3).<br>
+        • Media/geo/tag are <span class="k">live-capture only</span> (gallery blocked); perceptual-hash + geo-fence enforced in CIA-3.<br>
+        • The <span class="k">traceability chain</span> is assembled: application → animal(ear_tag) → seller(a/c) → transport(origin/dest).<br>
+        • <span class="k">SELLER_PAYMENT_PENDING is unreachable</span> in CIA-1 — the gate + payout land in CIA-3.
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const STEPS = [
+  { key:'seller',    n:'Seller details',      s:'id + bank + relationship' },
+  { key:'inspect',   n:'Cattle inspection',    s:'live photos + video' },
+  { key:'geo',       n:'Purchase location',    s:'live GPS' },
+  { key:'eartag',    n:'Ear tag',              s:'12-digit + photo' },
+  { key:'transport', n:'Transport',            s:'vehicle + bill/challan' },
+  { key:'ack',       n:'Acknowledge arrival',  s:'confirm you received it' },
+  { key:'pay',       n:'Seller payment',       s:'CIA-3 · gated', lock:true },
+];
+const done = {};
+const capture = { earTagNo:null, purchaseGeo:null };
+
+function renderSteps(){
+  const el=document.getElementById('steps'); el.innerHTML='';
+  let firstOpen = STEPS.findIndex(s=>!done[s.key] && !s.lock);
+  STEPS.forEach((s,i)=>{
+    const isDone=done[s.key];
+    const cls = s.lock ? 'lock' : (isDone ? 'done' : (i===firstOpen ? 'now' : ''));
+    const d=document.createElement('div'); d.className='step '+cls;
+    const tappable = !s.lock && (s.key==='eartag'||s.key==='geo');
+    d.innerHTML=`<div class="n">${isDone?'✓':(s.lock?'🔒':i+1)}</div>
+      <div class="l"><b>${s.n}</b><span>${s.s}</span></div>
+      ${tappable?`<span class="go" onclick="show('${s.key}')">${isDone?'edit':'open ›'}</span>`:(s.lock?'':`<span class="go" onclick="mark('${s.key}')">${isDone?'✓':'capture'}</span>`)}`;
+    el.appendChild(d);
+  });
+  updateJson();
+}
+function mark(k){ done[k]=true; renderSteps(); }
+function show(id){ document.querySelectorAll('.sub').forEach(s=>s.classList.toggle('on',s.id===id)); }
+
+function checkTag(){
+  const v=document.getElementById('tagIn').value.replace(/\D/g,'').slice(0,12);
+  document.getElementById('tagIn').value=v;
+  const ok=/^\d{12}$/.test(v);
+  const el=document.getElementById('tagVal');
+  el.className='val '+(ok?'ok':'bad'); el.textContent= ok?'✓ valid — uniqueness checked on save':(v.length+'/12 digits');
+  document.getElementById('tagSave').disabled=!ok;
+}
+function saveTag(){ capture.earTagNo=document.getElementById('tagIn').value; done['eartag']=true; show('hub'); renderSteps(); }
+function saveGeo(){ capture.purchaseGeo={lat:30.3149,lng:78.0301,accuracyM:6}; done['geo']=true; show('hub'); renderSteps(); }
+
+function updateJson(){
+  document.getElementById('jsonOut').textContent = JSON.stringify({
+    applicationUuid:'a1f0…mock', purchaseStatus:'PURCHASE_INITIATED',
+    earTagNo: capture.earTagNo, purchaseGeo: capture.purchaseGeo,
+    captured: Object.keys(done).filter(k=>done[k]),
+    sellerPaymentReachable:false, gate:'CIA-3',
+  }, null, 2);
+}
+renderSteps();
+</script>
+</body>
+</html>

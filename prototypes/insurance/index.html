@@ -1,0 +1,253 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Allied KCC — Pashu Suraksha Prototype</title>
+<style>
+  :root{
+    --bg:#f4f6f5; --card:#fff; --ink:#14201b; --muted:#6b7c74; --line:#e2e8e4;
+    --brand:#0f7a4d; --brand-d:#0a5c3a; --accent:#e8f5ee; --warn:#b4530a; --danger:#b3261e;
+    --meter-bg:#e2ece7; --gold:#8a6d1f; --goldbg:#fbf3d9;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+  .wrap{max-width:1120px;margin:0 auto;padding:24px;display:flex;gap:28px;flex-wrap:wrap;justify-content:center}
+  .phone{position:relative;width:360px;background:var(--card);border-radius:28px;box-shadow:0 12px 40px rgba(20,40,30,.12);overflow:hidden;border:1px solid var(--line)}
+  .status{height:26px;background:var(--brand-d)}
+  .top{background:var(--brand);color:#fff;padding:14px 18px}
+  .top h1{margin:0;font-size:16px;font-weight:650}
+  .top .sub{opacity:.85;font-size:12px;margin-top:2px}
+  .screen{display:none;padding:16px 16px 84px;min-height:560px}
+  .screen.on{display:block}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px;margin-bottom:12px}
+  .card h2{margin:0 0 10px;font-size:13px;letter-spacing:.02em;text-transform:uppercase;color:var(--muted)}
+  .kpi{font-size:26px;font-weight:720}
+  .kpi.small{font-size:20px}
+  .row{display:flex;justify-content:space-between;align-items:center;gap:10px}
+  .muted{color:var(--muted)}
+  .chip{display:inline-block;font-size:11px;padding:3px 8px;border-radius:999px;background:var(--accent);color:var(--brand-d);font-weight:600}
+  .chip.gold{background:var(--goldbg);color:var(--gold)}
+  .chip.warn{background:#fff8ec;color:var(--warn)}
+  .meter{height:14px;border-radius:999px;background:var(--meter-bg);overflow:hidden;margin:8px 0}
+  .meter > span{display:block;height:100%;background:linear-gradient(90deg,var(--brand),var(--brand-d))}
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  th,td{text-align:right;padding:7px 4px;border-bottom:1px solid var(--line)}
+  th:first-child,td:first-child{text-align:left}
+  th{color:var(--muted);font-weight:600}
+  .btn{display:block;width:100%;border:0;border-radius:12px;padding:13px;font-size:15px;font-weight:650;background:var(--brand);color:#fff;cursor:pointer}
+  .btn:disabled{background:#b8c6bf;cursor:not-allowed}
+  .btn.ghost{background:var(--accent);color:var(--brand-d)}
+  .btn.small{padding:9px;font-size:13px}
+  .nav{position:absolute;bottom:0;left:0;right:0;display:flex;border-top:1px solid var(--line);background:#fff}
+  .nav button{flex:1;border:0;background:none;padding:10px 4px 12px;font-size:11px;color:var(--muted);cursor:pointer}
+  .nav button.on{color:var(--brand);font-weight:700}
+  .nav .ico{font-size:18px;display:block}
+  .item{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--line)}
+  .item:last-child{border-bottom:0}
+  .step{display:flex;gap:10px;align-items:flex-start;padding:6px 0}
+  .dot{width:14px;height:14px;border-radius:50%;margin-top:3px;flex:none;background:var(--line)}
+  .dot.done{background:var(--brand)} .dot.now{background:var(--warn);box-shadow:0 0 0 4px #f6e3cf}
+  .step .lbl{font-size:13px} .step .who{font-size:11px;color:var(--muted)}
+  .note{font-size:12px;color:var(--muted);margin-top:6px}
+  .banner{background:#fff8ec;border:1px solid #f0dcc0;color:var(--warn);border-radius:12px;padding:10px 12px;font-size:12px;margin-bottom:12px}
+  .seg{display:flex;gap:6px;margin:6px 0 10px}
+  .seg button{flex:1;border:1px solid var(--line);background:#fff;border-radius:10px;padding:9px;font-size:13px;cursor:pointer}
+  .seg button.on{background:var(--accent);border-color:var(--brand);color:var(--brand-d);font-weight:650}
+  input[type=number],input[type=text]{width:100%;border:1px solid var(--line);border-radius:10px;padding:10px;font-size:15px}
+  .check{display:flex;align-items:center;gap:8px;padding:8px 0;font-size:13px}
+  .box{width:20px;height:20px;border-radius:6px;border:2px solid var(--line);flex:none;display:flex;align-items:center;justify-content:center;font-size:13px;color:#fff}
+  .box.on{background:var(--brand);border-color:var(--brand)}
+  .clock{display:flex;align-items:baseline;gap:6px}
+  .legend{font-size:11px;color:var(--muted);text-align:center;margin-top:10px;max-width:360px}
+  h3.side{width:100%;text-align:center;color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.08em;margin:4px 0 -8px}
+  .trust{background:var(--accent);border:1px solid #cfe6da;border-radius:12px;padding:10px 12px;font-size:12px;color:var(--brand-d);margin-top:10px}
+  code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11px}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h3 class="side">Pashu Suraksha — NLM livestock insurance (mock data · faithful to the API contracts)</h3>
+
+<div class="phone">
+  <div class="status"></div>
+  <div class="top"><h1>Pashu Suraksha</h1><div class="sub" id="topSub">Asha Devi · SOC-A · Uttarakhand</div></div>
+
+  <!-- HOME -->
+  <section class="screen on" id="s-home">
+    <div class="card">
+      <h2>My protection</h2>
+      <div class="row"><div class="kpi" id="coverLabel">1 of 3 covered</div><span class="chip">NLM</span></div>
+      <div class="meter"><span style="width:33%"></span></div>
+      <div class="note">Sum insured active: ₹60,000 · 2 animals not yet covered</div>
+    </div>
+    <div class="banner" id="renewHero">⏳ Buffalo policy renews in 12 days — one-tap renew keeps cover continuous. <b>Tap Renew ▸</b></div>
+    <div class="card">
+      <h2>Active policy</h2>
+      <div class="item"><div><b>Buffalo · 3-yr</b><div class="muted" style="font-size:12px">Tag 3600·0000·0111 · SI ₹60,000</div></div><span class="chip">active</span></div>
+      <div class="item"><div>Waiting period</div><div class="muted">ended 21 days after issue</div></div>
+      <div class="item"><div>Premium (your share)</div><b>₹1,035</b><span class="muted" style="font-size:11px">/ ₹6,900 total</span></div>
+    </div>
+    <div class="card">
+      <h2>Quick actions</h2>
+      <button class="btn" onclick="go('quote')">Get a quote for another animal</button>
+      <div style="height:8px"></div>
+      <button class="btn ghost" onclick="go('claim')">Report an animal death</button>
+    </div>
+    <p class="legend">Muzzle biometrics are a <b>second factor</b> — the 12-digit NDDB tag remains your statutory identity.</p>
+  </section>
+
+  <!-- QUOTE -->
+  <section class="screen" id="s-quote">
+    <div class="card">
+      <h2>Premium quote</h2>
+      <div class="seg" id="species">
+        <button class="on" data-sp="CATTLE" onclick="pickSpecies(this)">Cattle</button>
+        <button data-sp="BUFFALO" onclick="pickSpecies(this)">Buffalo</button>
+      </div>
+      <label class="muted" style="font-size:12px">Market value (₹)</label>
+      <input type="number" id="si" value="50000" oninput="recompute()">
+      <div class="seg" id="term" style="margin-top:10px">
+        <button data-t="12" onclick="pickTerm(this)">1 yr</button>
+        <button data-t="24" onclick="pickTerm(this)">2 yr</button>
+        <button class="on" data-t="36" onclick="pickTerm(this)">3 yr</button>
+      </div>
+      <div class="note">Region: <b>Himalayan (Uttarakhand)</b> · ceiling <span id="ceil">11.5%</span> · centre:state 90:10</div>
+    </div>
+    <div class="card">
+      <h2>Breakdown</h2>
+      <table>
+        <tr><td>Sum insured</td><td id="qSI">₹50,000</td></tr>
+        <tr><td>Total premium</td><td id="qTot">₹5,750</td></tr>
+        <tr><td><b>You pay (15%)</b></td><td><b id="qFarmer">₹862.50</b></td></tr>
+        <tr><td>Govt subsidy (85%)</td><td id="qGovt">₹4,887.50</td></tr>
+        <tr><td class="muted">— centre 90%</td><td class="muted" id="qC">₹4,398.75</td></tr>
+        <tr><td class="muted">— state 10%</td><td class="muted" id="qS">₹488.75</td></tr>
+      </table>
+      <div class="note">Cattle-unit cap 10/household · 21-day waiting from issue.</div>
+    </div>
+    <button class="btn" onclick="go('enrol')">Proceed to enrol ▸</button>
+  </section>
+
+  <!-- ENROL -->
+  <section class="screen" id="s-enrol">
+    <div class="card">
+      <h2>Enrolment</h2>
+      <div class="step"><span class="dot done"></span><div><div class="lbl"><b>Draft</b></div><div class="who">quote captured</div></div></div>
+      <div class="step"><span class="dot now"></span><div><div class="lbl"><b>Tag + photos</b></div><div class="who">you — now</div></div></div>
+      <div class="step"><span class="dot"></span><div><div class="lbl">Examined</div><div class="who">VCI vet</div></div></div>
+      <div class="step"><span class="dot"></span><div><div class="lbl">Valued</div><div class="who">vet + you</div></div></div>
+      <div class="step"><span class="dot"></span><div><div class="lbl">Premium paid</div><div class="who">via KCC (consent)</div></div></div>
+      <div class="step"><span class="dot"></span><div><div class="lbl">Policy issued</div><div class="who">system</div></div></div>
+    </div>
+    <div class="card">
+      <h2>Statutory identity (required)</h2>
+      <label class="muted" style="font-size:12px">12-digit NDDB ear tag</label>
+      <input type="text" id="tag" placeholder="3600 0000 0111" maxlength="14" oninput="valTag()">
+      <div class="row" style="margin-top:10px">
+        <span class="chip" id="p1">📷 Owner + animal photo</span>
+        <span class="chip" id="p2">📷 Tag close-up</span>
+      </div>
+    </div>
+    <div class="card">
+      <h2>Muzzle capture <span class="chip gold">2nd factor</span></h2>
+      <div class="note">Burst captures the muzzle print (shadow-mode dedupe). Runs on-device; the gallery never leaves the platform. Never replaces the tag.</div>
+      <button class="btn ghost small" style="margin-top:8px">◉ Capture muzzle burst</button>
+    </div>
+    <label class="check"><span class="box on">✓</span> I consent to premium debit via my KCC account (DPDP)</label>
+    <button class="btn" id="enrolBtn" disabled onclick="alert('Submitted → vet exam queued')">Submit for vet examination ▸</button>
+  </section>
+
+  <!-- CLAIM -->
+  <section class="screen" id="s-claim">
+    <div class="banner">A claim is a serious step. NLM asks for exactly <b>four documents</b> — never more.</div>
+    <div class="card">
+      <h2>Claim status</h2>
+      <div class="step"><span class="dot done"></span><div><div class="lbl"><b>Intimated</b></div><div class="who">you · today</div></div></div>
+      <div class="step"><span class="dot done"></span><div><div class="lbl">Survey done</div><div class="who">surveyor</div></div></div>
+      <div class="step"><span class="dot now"></span><div><div class="lbl"><b>Post-mortem</b></div><div class="who">VCI vet — today</div></div></div>
+      <div class="step"><span class="dot"></span><div><div class="lbl">Documents submitted</div></div></div>
+      <div class="step"><span class="dot"></span><div><div class="lbl">Under review → settled</div></div></div>
+    </div>
+    <div class="card">
+      <h2>4-document checklist</h2>
+      <label class="check"><span class="box on">✓</span> Death intimation</label>
+      <label class="check"><span class="box on">✓</span> Post-mortem report (VCI vet)</label>
+      <label class="check"><span class="box on">✓</span> 12-digit ear-tag photo</label>
+      <label class="check"><span class="box">&nbsp;</span> Signed claim form</label>
+    </div>
+    <div class="card">
+      <h2>Settlement clock</h2>
+      <div class="clock"><div class="kpi small">15 days</div><span class="chip warn">from docs complete</span></div>
+      <div class="note">If breached, <b>12% p.a. compound</b> penal interest accrues automatically — in your favour, visible here.</div>
+      <div class="trust">🔒 Every step is on a <b>tamper-evident hash chain</b>. <code>SHA-256(prev + payload + ts)</code> — no one can silently edit your claim history.</div>
+    </div>
+  </section>
+
+  <!-- RENEW -->
+  <section class="screen" id="s-renew">
+    <div class="card">
+      <h2>Renewal due</h2>
+      <div class="row"><div><b>Buffalo · 3-yr</b><div class="muted" style="font-size:12px">ends 2029-08-10 · in 12 days</div></div><span class="chip warn">reminded</span></div>
+      <div class="note">One-tap renew clones your policy + tag + photos — <b>zero re-documentation</b>. Premium re-priced at current NLM rates.</div>
+    </div>
+    <div class="card">
+      <h2>Next term</h2>
+      <table>
+        <tr><td>Sum insured</td><td>₹60,000 (unchanged)</td></tr>
+        <tr><td>You pay (15%)</td><td><b>₹1,035</b></td></tr>
+        <tr><td>New term</td><td>2029-08-10 → 2032-08-10</td></tr>
+        <tr><td>Cover</td><td>continuous · no new waiting</td></tr>
+      </table>
+    </div>
+    <button class="btn" onclick="alert('Renewed → new policy issued, old term runs to expiry')">Renew now (one tap) ▸</button>
+    <div style="height:8px"></div>
+    <label class="check"><span class="box">&nbsp;</span> Auto-renew next time (opt-in)</label>
+  </section>
+
+  <div class="nav">
+    <button class="on" data-s="home" onclick="go('home')"><span class="ico">🛡️</span>Home</button>
+    <button data-s="quote" onclick="go('quote')"><span class="ico">🧮</span>Quote</button>
+    <button data-s="enrol" onclick="go('enrol')"><span class="ico">🏷️</span>Enrol</button>
+    <button data-s="claim" onclick="go('claim')"><span class="ico">📋</span>Claim</button>
+    <button data-s="renew" onclick="go('renew')"><span class="ico">🔄</span>Renew</button>
+  </div>
+</div>
+
+<p class="legend">Prototype-first per §8A. Screens mirror the live API contracts (premium engine, 6-state enrolment, 4-doc claim + 15-day SLA + hash chain, one-tap renewal). Swap mock JSON for `/api/v1/kavach` + `/api/v1/claims` when porting to React Native.</p>
+</div>
+
+<script>
+  // Premium engine mirror (NLM, Himalayan). Kept in sync with premiumQuoteEngine.js.
+  const CEIL = { 12:5.5, 24:9, 36:11.5 };
+  const inr = (n) => '₹' + n.toLocaleString('en-IN', { minimumFractionDigits: (n%1?2:0), maximumFractionDigits:2 });
+  let sp='CATTLE', term=36;
+  function pickSpecies(b){ document.querySelectorAll('#species button').forEach(x=>x.classList.remove('on')); b.classList.add('on'); sp=b.dataset.sp; recompute(); }
+  function pickTerm(b){ document.querySelectorAll('#term button').forEach(x=>x.classList.remove('on')); b.classList.add('on'); term=+b.dataset.t; document.getElementById('ceil').textContent=CEIL[term]+'%'; recompute(); }
+  function recompute(){
+    const si = Math.max(0, +document.getElementById('si').value||0);
+    const total = Math.round(CEIL[term]/100*si*100)/100;
+    const farmer = Math.round(0.15*total*100)/100;
+    const govt = Math.round((total-farmer)*100)/100;
+    const centre = Math.round(0.9*govt*100)/100, state = Math.round((govt-centre)*100)/100;
+    document.getElementById('qSI').textContent=inr(si);
+    document.getElementById('qTot').textContent=inr(total);
+    document.getElementById('qFarmer').textContent=inr(farmer);
+    document.getElementById('qGovt').textContent=inr(govt);
+    document.getElementById('qC').textContent=inr(centre);
+    document.getElementById('qS').textContent=inr(state);
+  }
+  function valTag(){
+    const digits=(document.getElementById('tag').value.match(/\d/g)||[]).length;
+    document.getElementById('enrolBtn').disabled = digits!==12;
+  }
+  function go(s){
+    document.querySelectorAll('.screen').forEach(x=>x.classList.remove('on'));
+    document.getElementById('s-'+s).classList.add('on');
+    document.querySelectorAll('.nav button').forEach(x=>x.classList.toggle('on', x.dataset.s===s));
+    window.scrollTo(0,0);
+  }
+  recompute();
+</script>
+</body>
+</html>

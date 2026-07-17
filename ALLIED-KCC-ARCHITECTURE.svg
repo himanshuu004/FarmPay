@@ -1,0 +1,298 @@
+<svg viewBox="0 0 1440 1310" xmlns="http://www.w3.org/2000/svg" font-family="Helvetica, Arial, sans-serif">
+  <defs>
+    <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#6B7280"/>
+    </marker>
+  </defs>
+
+  <rect x="0" y="0" width="1440" height="1310" fill="#FCFCFA"/>
+
+  <!-- Title -->
+  <text x="40" y="34" font-size="20" font-weight="bold" fill="#111827">Allied KCC — System Architecture (v0.6, member-first pilot)</text>
+  <text x="40" y="54" font-size="12" fill="#4B5563">v1 = UCDF member-first (Uttarakhand): COOP passbook wedge → KCC → Pashu Suraksha · all-allied credit catalog · offline-first · Intelligence Layer: CV muzzle-ID · Indic voice · predictive ML · deferred items tagged (P4)</text>
+
+  <!-- ══════════ CLIENTS BAND ══════════ -->
+  <rect x="28" y="70" width="1384" height="152" rx="10" fill="#E7F0FA" stroke="#9DBBD8"/>
+  <text x="44" y="90" font-size="12" font-weight="bold" fill="#33557A">CLIENTS</text>
+
+  <rect x="44" y="100" width="560" height="110" rx="8" fill="#FFFFFF" stroke="#7FA6CC"/>
+  <text x="58" y="120" font-size="13" font-weight="bold" fill="#1F2937">Farmer App — Expo RN 0.81 · one app (~50 screens) · OFFLINE-FIRST · on-device QC</text>
+  <text x="58" y="139" font-size="11" fill="#374151">auth · onboarding (multi-activity + society link) · registers · logbook (voice-first)</text>
+  <text x="58" y="156" font-size="11" fill="#374151">kcc-*: calculator → apply → limit dashboard → LT drawdown (¶19(2)) → renewal pack</text>
+  <text x="58" y="173" font-size="11" fill="#374151">pashu-*: tagging + muzzle burst · enrol · vault · renew ★ · report-death · claim</text>
+  <text x="58" y="190" font-size="11" fill="#374151">society-*: order (70% meter, voice) · status timeline · receipt · milk passbook</text>
+
+  <rect x="626" y="100" width="580" height="110" rx="8" fill="#FFFFFF" stroke="#7FA6CC"/>
+  <text x="640" y="120" font-size="13" font-weight="bold" fill="#1F2937">Role Surfaces — ONE offline field PWA + insurer-ops (role-gated, never shared screens)</text>
+  <text x="640" y="139" font-size="11" fill="#374151">Field PWA: VO exams/valuations/e-PM + honorarium · Surveyor SLA queue + field filing ·</text>
+  <text x="640" y="156" font-size="11" fill="#374151">POSP tasks + escrow card — three role views, one offline-capable shell (v1)</text>
+  <text x="640" y="173" font-size="11" fill="#374151">Insurer-ops (Next.js): exceptions · allocation · settle (human-only) · fraud queue</text>
+  <text x="640" y="190" font-size="11" fill="#374151">Banker: renewal-pack PDF handoff (v1) → dashboard (P4) | Gov: Annexure XX report (P4 white-label)</text>
+
+  <rect x="1228" y="100" width="168" height="110" rx="8" fill="#FFFFFF" stroke="#7FA6CC" stroke-dasharray="5 3"/>
+  <text x="1242" y="120" font-size="13" font-weight="bold" fill="#1F2937">P0 Prototypes</text>
+  <text x="1242" y="139" font-size="11" fill="#374151">Clickable HTML, mock</text>
+  <text x="1242" y="156" font-size="11" fill="#374151">data — incl. voice +</text>
+  <text x="1242" y="173" font-size="11" fill="#374151">muzzle capture flows</text>
+  <text x="1242" y="190" font-size="11" fill="#374151">(Suraksha §8A)</text>
+
+  <line x1="324" y1="222" x2="324" y2="246" stroke="#6B7280" stroke-width="1.6" marker-end="url(#arr)"/>
+  <line x1="916" y1="222" x2="916" y2="246" stroke="#6B7280" stroke-width="1.6" marker-end="url(#arr)"/>
+
+  <!-- ══════════ API BAND ══════════ -->
+  <rect x="28" y="248" width="1384" height="62" rx="10" fill="#DCE6F2" stroke="#9DBBD8"/>
+  <text x="44" y="273" font-size="13" font-weight="bold" fill="#1F2937">Express API — /api/v1 · JWT + 4-digit MPIN + OTP (no passwords) · Aadhaar step-up</text>
+  <text x="44" y="292" font-size="11" fill="#374151">middleware: roleCheck [ FARMER · VET · SURVEYOR · POSP · INSURER_OPS · GOV_VIEWER · GP_BDO · BANKER ] · Joi validate · rate-limit · X-Language · requestId — co-op approvers are NOT app roles (ERP-side)</text>
+
+  <line x1="720" y1="310" x2="720" y2="334" stroke="#6B7280" stroke-width="1.6" marker-end="url(#arr)"/>
+
+  <!-- ══════════ MODULES BAND ══════════ -->
+  <rect x="28" y="336" width="1384" height="378" rx="10" fill="#F4F2EC" stroke="#C9C4B4"/>
+  <text x="44" y="356" font-size="12" font-weight="bold" fill="#6B6350">BACKEND MODULES — Node 20 + Express 4 · PostgreSQL 16 (pgvector · PostGIS) · MVC + service layer · getDb() lazy-load · snake_case DB / camelCase DTO</text>
+
+  <!-- ERP -->
+  <rect x="44" y="368" width="256" height="230" rx="8" fill="#E9F3E6" stroke="#7CAE72"/>
+  <text x="58" y="388" font-size="13" font-weight="bold" fill="#2C5E24">ERP — registers &amp; money</text>
+  <text x="58" y="407" font-size="11.5" font-weight="bold" fill="#1F2937">livestock/  (dairy-v2 generalized)</text>
+  <text x="58" y="423" font-size="11" fill="#374151">species profiles: DAIRY full depth;</text>
+  <text x="58" y="438" font-size="11" fill="#374151">goatery · poultry · piggery · sheep</text>
+  <text x="58" y="456" font-size="11.5" font-weight="bold" fill="#1F2937">pop/ (touchpoints) · fishery/ (P4 — catalog-only in v1)</text>
+  <text x="58" y="476" font-size="11" fill="#374151">registers · tag_number · production logs</text>
+  <text x="58" y="491" font-size="11" fill="#374151">(milk L/fat/SNF · eggs · catch)</text>
+  <text x="58" y="506" font-size="11" fill="#374151">cost/revenue events · recurring templates</text>
+  <text x="58" y="521" font-size="11" fill="#374151">hybrid P&amp;L · weekly summaries</text>
+  <text x="58" y="536" font-size="11" fill="#374151">tiered entry · formal/informal split</text>
+  <text x="58" y="556" font-size="11" font-weight="bold" fill="#2C5E24">voice-first entry: ASR draft →</text>
+  <text x="58" y="571" font-size="11" font-weight="bold" fill="#2C5E24">farmer confirms (never auto-commit)</text>
+  <circle cx="283" cy="384" r="9" fill="#C2410C"/><text x="283" y="388" font-size="11" font-weight="bold" fill="#FFF" text-anchor="middle">1</text>
+
+  <!-- CREDIT -->
+  <rect x="319" y="368" width="256" height="230" rx="8" fill="#FDF3E0" stroke="#D8A94E"/>
+  <text x="333" y="388" font-size="13" font-weight="bold" fill="#8A5A10">CREDIT</text>
+  <text x="333" y="407" font-size="11.5" font-weight="bold" fill="#1F2937">kcc/ — Limit Engine (deterministic)</text>
+  <text x="333" y="423" font-size="11" fill="#374151">WC = Σ(SoF × units) + 10%¹ + 20% + ins</text>
+  <text x="333" y="438" font-size="11" fill="#374151">MPL ×1.10/yr → CMPL (6-yr composite)</text>
+  <text x="333" y="453" font-size="11" fill="#374151">¹consumption once · scheme-versioned</text>
+  <text x="333" y="468" font-size="11" fill="#374151">sof_registry (SLTC) · scheme_configs (MISS)</text>
+  <text x="333" y="483" font-size="11" fill="#374151">sub-limit ledgers · drawing power</text>
+  <text x="333" y="498" font-size="11" fill="#374151">11-state application · docs · consent</text>
+  <text x="333" y="518" font-size="11.5" font-weight="bold" fill="#1F2937">trust/ — pillars + insurance pillar</text>
+  <text x="333" y="534" font-size="11" fill="#374151">1000-pt · 4 bands · SHAP reason codes</text>
+  <text x="333" y="549" font-size="11" fill="#374151">logbook + co-op formality evidence</text>
+  <text x="333" y="569" font-size="11" font-weight="bold" fill="#8A5A10">ML forecasts drawing power — never</text>
+  <text x="333" y="584" font-size="11" font-weight="bold" fill="#8A5A10">the sanctioned numbers</text>
+  <circle cx="558" cy="384" r="9" fill="#C2410C"/><text x="558" y="388" font-size="11" font-weight="bold" fill="#FFF" text-anchor="middle">2</text>
+
+  <!-- INSURANCE -->
+  <rect x="594" y="368" width="256" height="230" rx="8" fill="#F6E9EE" stroke="#C77A96"/>
+  <text x="608" y="388" font-size="13" font-weight="bold" fill="#8E3A5C">INSURANCE — Pashu Suraksha</text>
+  <text x="608" y="407" font-size="11.5" font-weight="bold" fill="#1F2937">kavach/ — policy core</text>
+  <text x="608" y="423" font-size="11" fill="#374151">plans (NLM 15%/85% · caps 4.5/8/11%)</text>
+  <text x="608" y="438" font-size="11" fill="#374151">proposals → policies (system-of-record)</text>
+  <text x="608" y="453" font-size="11" fill="#374151">policy_assets: 12-digit tag + 2 photos</text>
+  <text x="608" y="468" font-size="11" fill="#374151">premium ledger (financed_kcc) · escrow</text>
+  <text x="608" y="483" font-size="11" fill="#374151">renewal_journeys ★ one-tap renew</text>
+  <text x="608" y="503" font-size="11.5" font-weight="bold" fill="#1F2937">claims/ — evidence &amp; SLA</text>
+  <text x="608" y="519" font-size="11" fill="#374151">hash-chained claim_events · lossless EXIF</text>
+  <text x="608" y="534" font-size="11" fill="#374151">15-day clock · 12% penal · 4-doc checklist</text>
+  <text x="608" y="554" font-size="11" font-weight="bold" fill="#8E3A5C">identity/ — muzzle re-ID second factor:</text>
+  <text x="608" y="569" font-size="11" font-weight="bold" fill="#8E3A5C">enrol dedupe + carcass match (pgvector,</text>
+  <text x="608" y="584" font-size="11" font-weight="bold" fill="#8E3A5C">shadow → assist; human adjudicates)</text>
+  <circle cx="833" cy="384" r="9" fill="#C2410C"/><text x="833" y="388" font-size="11" font-weight="bold" fill="#FFF" text-anchor="middle">3</text>
+  <circle cx="833" cy="406" r="9" fill="#C2410C"/><text x="833" y="410" font-size="11" font-weight="bold" fill="#FFF" text-anchor="middle">4</text>
+
+  <!-- FIELD OPS -->
+  <rect x="869" y="368" width="256" height="230" rx="8" fill="#EFE9F6" stroke="#9B7FC4"/>
+  <text x="883" y="388" font-size="13" font-weight="bold" fill="#5B3E8E">FIELD OPS</text>
+  <text x="883" y="407" font-size="11.5" font-weight="bold" fill="#1F2937">stakeholders/</text>
+  <text x="883" y="423" font-size="11" fill="#374151">Intermediary (POSP · IRDAI cert)</text>
+  <text x="883" y="438" font-size="11" fill="#374151">tasks: verify_loss · postmortem ·</text>
+  <text x="883" y="453" font-size="11" fill="#374151">valuation · tag_verify · enrol exam</text>
+  <text x="883" y="468" font-size="11" fill="#374151">evidence bundles: photos · GPS ·</text>
+  <text x="883" y="483" font-size="11" fill="#374151">timestamps · encrypted · offline sync</text>
+  <text x="883" y="498" font-size="11" fill="#374151">consent: thumbprint + attestation</text>
+  <text x="883" y="518" font-size="11" fill="#374151">commission escrow:</text>
+  <text x="883" y="533" font-size="11" fill="#6B21A8">accrued → escrow_held → qc_passed</text>
+  <text x="883" y="548" font-size="11" fill="#6B21A8">→ released → paid (T+15 visible)</text>
+  <text x="883" y="568" font-size="11" font-weight="bold" fill="#5B3E8E">on-device capture QC (ONNX) —</text>
+  <text x="883" y="583" font-size="11" font-weight="bold" fill="#5B3E8E">bad evidence rejected at source</text>
+  <circle cx="1108" cy="384" r="9" fill="#C2410C"/><text x="1108" y="388" font-size="11" font-weight="bold" fill="#FFF" text-anchor="middle">4</text>
+
+  <!-- INTELLIGENCE -->
+  <rect x="1144" y="368" width="252" height="230" rx="8" fill="#E6F2F2" stroke="#67A5A5"/>
+  <text x="1158" y="388" font-size="13" font-weight="bold" fill="#22635F">INTELLIGENCE (product)</text>
+  <text x="1158" y="407" font-size="11.5" font-weight="bold" fill="#1F2937">market/</text>
+  <text x="1158" y="423" font-size="11" fill="#374151">v1: milk fat/SNF + feed (free from ERP/</text>
+  <text x="1158" y="438" font-size="11" fill="#374151">catalog) · channel advisor · egg/fish P4</text>
+  <text x="1158" y="456" font-size="11.5" font-weight="bold" fill="#1F2937">advisory/</text>
+  <text x="1158" y="472" font-size="11" fill="#374151">vaccination · mastitis · heat stress</text>
+  <text x="1158" y="487" font-size="11" fill="#374151">batch cycles · water quality</text>
+  <text x="1158" y="505" font-size="11.5" font-weight="bold" fill="#1F2937">scenarios/ (P4 — deferred)</text>
+  <text x="1158" y="521" font-size="11" fill="#374151">calculator covers v1 what-ifs</text>
+  <text x="1158" y="541" font-size="11.5" font-weight="bold" fill="#1F2937">assistant/ — "Pashu Mitra"</text>
+  <text x="1158" y="557" font-size="11" fill="#374151">RAG over schemes + own records</text>
+  <text x="1158" y="572" font-size="11" fill="#374151">tool allow-list · IVR twin · Hindi-first</text>
+  <circle cx="1379" cy="384" r="9" fill="#C2410C"/><text x="1379" y="388" font-size="11" font-weight="bold" fill="#FFF" text-anchor="middle">5</text>
+
+  <line x1="300" y1="470" x2="319" y2="470" stroke="#6B7280" stroke-width="1.6" marker-end="url(#arr)"/>
+  <line x1="575" y1="470" x2="594" y2="470" stroke="#6B7280" stroke-width="1.6" marker-end="url(#arr)"/>
+  <line x1="850" y1="470" x2="869" y2="470" stroke="#6B7280" stroke-width="1.6" marker-end="url(#arr)"/>
+
+  <!-- CORE strip -->
+  <rect x="44" y="612" width="812" height="88" rx="8" fill="#FFFFFF" stroke="#C9C4B4"/>
+  <text x="58" y="634" font-size="12" font-weight="bold" fill="#1F2937">core services</text>
+  <text x="58" y="654" font-size="11" fill="#374151">auth (MPIN+OTP · JWT · Aadhaar) · farmer (multi-activity · KYC) · location (LGD)</text>
+  <text x="58" y="670" font-size="11" fill="#374151">compliance (DPDP consents incl. model_improvement purpose) · notifications (SMS/WA/push/IVR)</text>
+  <text x="58" y="686" font-size="11" fill="#374151">domain_events outbox (append-only — audit + ML training spine)</text>
+
+  <!-- COOP box -->
+  <rect x="872" y="612" width="524" height="88" rx="8" fill="#FFF3E9" stroke="#D28B4E"/>
+  <text x="886" y="634" font-size="12" font-weight="bold" fill="#8A4A10">coop/ — society farmers (source of truth: Input Service App.pdf · UCDF/Aanchal)</text>
+  <text x="886" y="654" font-size="11" fill="#374151">order ≤ 70% × outstanding milk payables · windows: 1st &amp; 3rd week · voice ordering</text>
+  <text x="886" y="670" font-size="11" fill="#374151">app authors only SUBMIT + RECEIPT_CONFIRM — approvals mirrored from Aanchal ERP</text>
+  <text x="886" y="686" font-size="11" fill="#374151">milk passbook → TRUST + drawing power · delivered orders auto-log as feed costs</text>
+  <circle cx="1379" cy="628" r="9" fill="#C2410C"/><text x="1379" y="632" font-size="11" font-weight="bold" fill="#FFF" text-anchor="middle">6</text>
+
+  <line x1="720" y1="714" x2="720" y2="738" stroke="#6B7280" stroke-width="1.6" marker-end="url(#arr)"/>
+
+  <!-- ══════════ AI SERVICES BAND ══════════ -->
+  <rect x="28" y="740" width="1384" height="118" rx="10" fill="#EDEEFB" stroke="#8A91CE"/>
+  <text x="44" y="760" font-size="12" font-weight="bold" fill="#3B4390">AI SERVICES — Python 3.12 + FastAPI · ONNX Runtime (CPU-first) · statutory math is never a model · AI proposes, humans dispose</text>
+
+  <rect x="44" y="770" width="330" height="76" rx="8" fill="#FFFFFF" stroke="#8A91CE"/>
+  <text x="56" y="789" font-size="12" font-weight="bold" fill="#1F2937">vision/</text>
+  <text x="56" y="806" font-size="10.5" fill="#374151">muzzle re-ID (embeddings → pgvector) · liveness</text>
+  <text x="56" y="820" font-size="10.5" fill="#374151">capture-QC (exported on-device) · BCS/weight · breed</text>
+  <text x="56" y="834" font-size="10.5" fill="#374151">doc-AI (vet certs · PM reports) · image forensics</text>
+
+  <rect x="390" y="770" width="330" height="76" rx="8" fill="#FFFFFF" stroke="#8A91CE"/>
+  <text x="402" y="789" font-size="12" font-weight="bold" fill="#1F2937">speech/ + rag/</text>
+  <text x="402" y="806" font-size="10.5" fill="#374151">Indic ASR/TTS: Bhashini → IndicWhisper fallback</text>
+  <text x="402" y="820" font-size="10.5" fill="#374151">voice logbook/ordering (draft → farmer confirms)</text>
+  <text x="402" y="834" font-size="10.5" fill="#374151">Pashu Mitra RAG · grievance triage · IVR twin</text>
+  <circle cx="704" cy="786" r="9" fill="#C2410C"/><text x="704" y="790" font-size="11" font-weight="bold" fill="#FFF" text-anchor="middle">7</text>
+
+  <rect x="736" y="770" width="330" height="76" rx="8" fill="#FFFFFF" stroke="#8A91CE"/>
+  <text x="748" y="789" font-size="12" font-weight="bold" fill="#1F2937">predict/</text>
+  <text x="748" y="806" font-size="10.5" fill="#374151">yield forecast (lactation curves) · renewal propensity</text>
+  <text x="748" y="820" font-size="10.5" fill="#374151">fraud score (decision support) · price/THI heat stress</text>
+  <text x="748" y="834" font-size="10.5" fill="#374151">credit EWS · DUSS demand forecast (co-op)</text>
+
+  <rect x="1082" y="770" width="314" height="76" rx="8" fill="#FFFFFF" stroke="#8A91CE"/>
+  <text x="1094" y="789" font-size="12" font-weight="bold" fill="#1F2937">governance &amp; ML infra</text>
+  <text x="1094" y="806" font-size="10.5" fill="#374151">shadow → assist → override · kill-switch per model</text>
+  <text x="1094" y="820" font-size="10.5" fill="#374151">model_inference_log (append-only) · MLflow · eval gates</text>
+  <text x="1094" y="834" font-size="10.5" fill="#374151">Label Studio · data cards · bias review · drift watch</text>
+
+  <line x1="720" y1="858" x2="720" y2="882" stroke="#6B7280" stroke-width="1.6" marker-end="url(#arr)"/>
+
+  <!-- ══════════ DATA / ASYNC BAND ══════════ -->
+  <rect x="28" y="884" width="1384" height="146" rx="10" fill="#F0F0EA" stroke="#BBB9A8"/>
+  <text x="44" y="904" font-size="12" font-weight="bold" fill="#5C5A48">DATA &amp; ASYNC INFRASTRUCTURE</text>
+
+  <rect x="44" y="914" width="230" height="100" rx="8" fill="#FFFFFF" stroke="#8A887A"/>
+  <text x="58" y="934" font-size="12" font-weight="bold" fill="#1F2937">PostgreSQL 16 · Sequelize 6</text>
+  <text x="58" y="952" font-size="11" fill="#374151">pgvector: muzzle + RAG embeddings</text>
+  <text x="58" y="967" font-size="11" fill="#374151">PostGIS: evidence geo-checks</text>
+  <text x="58" y="982" font-size="11" fill="#374151">claim_events hash-chained ·</text>
+  <text x="58" y="997" font-size="11" fill="#374151">domain_events outbox (append-only)</text>
+
+  <rect x="294" y="914" width="230" height="100" rx="8" fill="#FFFFFF" stroke="#8A887A"/>
+  <text x="308" y="934" font-size="12" font-weight="bold" fill="#1F2937">Redis 7 — cache</text>
+  <text x="308" y="952" font-size="11" fill="#374151">kavach:catalog · policy:snapshot</text>
+  <text x="308" y="967" font-size="11" fill="#374151">claims:sla · coop:elig · coop:passbook</text>
+  <text x="308" y="982" font-size="11" fill="#374151">feat:&lt;entity&gt; (online features)</text>
+  <text x="308" y="997" font-size="11" fill="#374151">invalidate on issue/renew/stage/sync</text>
+
+  <rect x="544" y="914" width="300" height="100" rx="8" fill="#FFFFFF" stroke="#8A887A"/>
+  <text x="558" y="934" font-size="12" font-weight="bold" fill="#1F2937">RabbitMQ 3 — queues</text>
+  <text x="558" y="952" font-size="11" fill="#374151">kavach.renewal.reminders · kavach.policy.issued</text>
+  <text x="558" y="967" font-size="11" fill="#374151">claims.evidence.process · sla.breach · notify</text>
+  <text x="558" y="982" font-size="11" fill="#374151">coop.dispatch.alerts · ai.inference.requests</text>
+  <text x="558" y="997" font-size="11" fill="#374151">(Kafka/CDC deferred until scale demands)</text>
+
+  <rect x="864" y="914" width="240" height="100" rx="8" fill="#FFFFFF" stroke="#8A887A"/>
+  <text x="878" y="934" font-size="12" font-weight="bold" fill="#1F2937">Object storage (S3, India)</text>
+  <text x="878" y="952" font-size="11" fill="#374151">lossless evidence · content-addressed</text>
+  <text x="878" y="967" font-size="11" fill="#374151">EXIF/GPS/device meta preserved</text>
+  <text x="878" y="982" font-size="11" fill="#374151">doubles as data lake: parquet</text>
+  <text x="878" y="997" font-size="11" fill="#374151">training tables (featureSnapshotJob)</text>
+
+  <rect x="1124" y="914" width="272" height="100" rx="8" fill="#FFFFFF" stroke="#8A887A"/>
+  <text x="1138" y="934" font-size="12" font-weight="bold" fill="#1F2937">Scheduled jobs</text>
+  <text x="1138" y="952" font-size="11" fill="#374151">renewalSweep ★ · slaClockTick (penal int.)</text>
+  <text x="1138" y="967" font-size="11" fill="#374151">premiumDebitWatch · commissionPayout</text>
+  <text x="1138" y="982" font-size="11" fill="#374151">grievanceAgeing · erpSync · demandWindow</text>
+  <text x="1138" y="997" font-size="11" fill="#374151">recurring · priceIngest · featureSnapshot · drift</text>
+
+  <line x1="720" y1="1030" x2="720" y2="1054" stroke="#6B7280" stroke-width="1.6" marker-end="url(#arr)"/>
+
+  <!-- ══════════ EXTERNAL BAND ══════════ -->
+  <rect x="28" y="1056" width="1384" height="130" rx="10" fill="#FFF" stroke="#BBB9A8" stroke-dasharray="6 4"/>
+  <text x="44" y="1076" font-size="12" font-weight="bold" fill="#5C5A48">EXTERNAL INTEGRATIONS</text>
+
+  <rect x="44" y="1086" width="163" height="84" rx="8" fill="#FBFBF8" stroke="#8A887A"/>
+  <text x="54" y="1104" font-size="11.5" font-weight="bold" fill="#1F2937">Bank / Finacle</text>
+  <text x="54" y="1120" font-size="10.5" fill="#374151">KCC account · premium</text>
+  <text x="54" y="1134" font-size="10.5" fill="#374151">debit · prefill · policy</text>
+  <text x="54" y="1148" font-size="10.5" fill="#374151">assignment · recon</text>
+
+  <rect x="215" y="1086" width="163" height="84" rx="8" fill="#FBFBF8" stroke="#8A887A"/>
+  <text x="225" y="1104" font-size="11.5" font-weight="bold" fill="#1F2937">Insurer (P1: Oriental)</text>
+  <text x="225" y="1120" font-size="10.5" fill="#374151">issuance · settlement</text>
+  <text x="225" y="1134" font-size="10.5" fill="#374151">(human decision only —</text>
+  <text x="225" y="1148" font-size="10.5" fill="#374151">no auto-denial)</text>
+
+  <rect x="386" y="1086" width="163" height="84" rx="8" fill="#FFF3E9" stroke="#D28B4E"/>
+  <text x="396" y="1104" font-size="11.5" font-weight="bold" fill="#8A4A10">Aanchal ERP (UCDF)</text>
+  <text x="396" y="1120" font-size="10.5" fill="#374151">Secretary → Supervisor</text>
+  <text x="396" y="1134" font-size="10.5" fill="#374151">→ DUSS → CFF · sync modes:</text>
+  <text x="396" y="1148" font-size="10.5" fill="#374151">API | webhook | daily CSV drop</text>
+
+  <rect x="557" y="1086" width="163" height="84" rx="8" fill="#EDEEFB" stroke="#8A91CE"/>
+  <text x="567" y="1104" font-size="11.5" font-weight="bold" fill="#3B4390">Bhashini · LLM APIs</text>
+  <text x="567" y="1120" font-size="10.5" fill="#374151">Indic ASR/TTS/translate</text>
+  <text x="567" y="1134" font-size="10.5" fill="#374151">India-region LLM · open-</text>
+  <text x="567" y="1148" font-size="10.5" fill="#374151">weights fallback · DPDP</text>
+
+  <rect x="728" y="1086" width="163" height="84" rx="8" fill="#FBFBF8" stroke="#8A887A"/>
+  <text x="738" y="1104" font-size="11.5" font-weight="bold" fill="#1F2937">DigiLocker · SMS/WA/IVR</text>
+  <text x="738" y="1120" font-size="10.5" fill="#374151">policy vault → farmer</text>
+  <text x="738" y="1134" font-size="10.5" fill="#374151">renewal T-30/15/7/1</text>
+  <text x="738" y="1148" font-size="10.5" fill="#374151">claim + dispatch alerts</text>
+
+  <rect x="899" y="1086" width="163" height="84" rx="8" fill="#FBFBF8" stroke="#8A887A"/>
+  <text x="909" y="1104" font-size="11.5" font-weight="bold" fill="#1F2937">NDDB tags · IMD</text>
+  <text x="909" y="1120" font-size="10.5" fill="#374151">12-digit UID + RFID ·</text>
+  <text x="909" y="1134" font-size="10.5" fill="#374151">2 photos · weather feeds</text>
+  <text x="909" y="1148" font-size="10.5" fill="#374151">(THI heat-stress)</text>
+
+  <rect x="1070" y="1086" width="163" height="84" rx="8" fill="#FBFBF8" stroke="#8A887A"/>
+  <text x="1080" y="1104" font-size="11.5" font-weight="bold" fill="#1F2937">DAHD / Annexure XX</text>
+  <text x="1080" y="1120" font-size="10.5" fill="#374151">system-of-record here</text>
+  <text x="1080" y="1134" font-size="10.5" fill="#374151">(portal not live) · export-</text>
+  <text x="1080" y="1148" font-size="10.5" fill="#374151">compatible returns</text>
+
+  <rect x="1241" y="1086" width="155" height="84" rx="8" fill="#FBFBF8" stroke="#8A887A"/>
+  <text x="1251" y="1104" font-size="11.5" font-weight="bold" fill="#1F2937">SLTC / DLTC SoF</text>
+  <text x="1251" y="1120" font-size="10.5" fill="#374151">state × activity SoF</text>
+  <text x="1251" y="1134" font-size="10.5" fill="#374151">seeds sof_registry ·</text>
+  <text x="1251" y="1148" font-size="10.5" fill="#374151">no SoF → outside KCC</text>
+
+  <!-- ══════════ KEY FLOWS LEGEND ══════════ -->
+  <rect x="28" y="1200" width="1384" height="86" rx="10" fill="#FFF7ED" stroke="#E8B98A"/>
+  <circle cx="52" cy="1219" r="9" fill="#C2410C"/><text x="52" y="1223" font-size="11" font-weight="bold" fill="#FFF" text-anchor="middle">1</text>
+  <text x="68" y="1223" font-size="11" fill="#7C3A0F">Registers feed the Limit Engine — live units drive drawing limits</text>
+  <circle cx="52" cy="1243" r="9" fill="#C2410C"/><text x="52" y="1247" font-size="11" font-weight="bold" fill="#FFF" text-anchor="middle">2</text>
+  <text x="68" y="1247" font-size="11" fill="#7C3A0F">Logbook P&amp;L → TRUST → drawing power + one-tap renewal pack</text>
+  <circle cx="52" cy="1267" r="9" fill="#C2410C"/><text x="52" y="1271" font-size="11" font-weight="bold" fill="#FFF" text-anchor="middle">7</text>
+  <text x="68" y="1271" font-size="11" fill="#7C3A0F">Voice: speech → ASR draft → farmer confirms → logbook (never auto-commit)</text>
+  <circle cx="510" cy="1219" r="9" fill="#C2410C"/><text x="510" y="1223" font-size="11" font-weight="bold" fill="#FFF" text-anchor="middle">3</text>
+  <text x="526" y="1223" font-size="11" fill="#7C3A0F">Enrolment → VO exam → policy → 15% premium via KCC (¶32–33) + muzzle dedupe (shadow)</text>
+  <circle cx="510" cy="1243" r="9" fill="#C2410C"/><text x="510" y="1247" font-size="11" font-weight="bold" fill="#FFF" text-anchor="middle">4</text>
+  <text x="526" y="1247" font-size="11" fill="#7C3A0F">Death → surveyor + VO e-PM + muzzle match → 4 docs → 15-day SLA (12% penalty)</text>
+  <circle cx="1010" cy="1219" r="9" fill="#C2410C"/><text x="1010" y="1223" font-size="11" font-weight="bold" fill="#FFF" text-anchor="middle">5</text>
+  <text x="1026" y="1223" font-size="11" fill="#7C3A0F">Renewal sweep → propensity-targeted reminders → one-tap renew ★</text>
+  <circle cx="1010" cy="1243" r="9" fill="#C2410C"/><text x="1010" y="1247" font-size="11" font-weight="bold" fill="#FFF" text-anchor="middle">6</text>
+  <text x="1026" y="1247" font-size="11" fill="#7C3A0F">Society order (≤70% payables) → ERP chain → dispatch alert → receipt</text>
+</svg>

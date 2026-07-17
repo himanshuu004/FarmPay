@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CIA · Schemes (farmer)</title>
+<style>
+  :root{--bg:#f4f6f5;--card:#fff;--ink:#14201b;--muted:#6b7c74;--line:#e2e8e4;--brand:#0f7a4d;--brand-d:#0a5c3a;--accent:#e8f5ee;--warn:#b45309;--warnbg:#fef3e2;--blue:#0b5c8a;--bluebg:#e6f0f6;--danger:#b42318;--okbg:#e9f8ef;--okink:#0a5c3a;--violet:#6d4aff;--violetbg:#eee9ff}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+  .wrap{max-width:1040px;margin:0 auto;padding:28px 20px 60px}
+  a.back{color:var(--brand-d);font-size:13px;text-decoration:none;font-weight:700}
+  h1{font-size:24px;margin:8px 0 2px}
+  .lede{color:var(--muted);margin:0 0 18px;max-width:640px;font-size:14px}
+  .stage{display:flex;gap:20px;flex-wrap:wrap;align-items:flex-start}
+  .phone{width:340px;background:#0b120e;border-radius:34px;padding:10px;box-shadow:0 20px 50px rgba(10,30,20,.22);flex:0 0 auto}
+  .screen{background:var(--bg);border-radius:26px;overflow:hidden;height:660px;display:flex;flex-direction:column}
+  .bar{background:var(--brand-d);color:#fff;padding:12px 16px;display:flex;align-items:center;gap:10px}
+  .bar .t{font-weight:700;font-size:15px}
+  .bar .s{font-size:12px;opacity:.85}
+  .bar .lnk{color:#cdeeda;font-size:13px;font-weight:800;cursor:pointer;background:none;border:0;padding:0}
+  .body{padding:14px 16px;overflow:auto;flex:1}
+  .count{font-size:12px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.04em;margin-bottom:10px}
+  /* scheme list card */
+  .sc{background:var(--card);border:1px solid var(--line);border-radius:15px;padding:13px;margin-bottom:11px;cursor:pointer;transition:border-color .12s,transform .08s}
+  .sc:active{transform:scale(.99)} .sc:hover{border-color:var(--brand)}
+  .sc .top{display:flex;justify-content:space-between;gap:8px;align-items:flex-start}
+  .sc .ttl{font-size:15.5px;font-weight:800;line-height:1.25}
+  .sc .subsidy{font-size:15px;font-weight:800;color:var(--brand-d);white-space:nowrap}
+  .tags{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0 9px}
+  .tag{font-size:10px;font-weight:800;padding:3px 8px;border-radius:99px;letter-spacing:.02em}
+  .tag.animal{background:var(--accent);color:var(--brand-d)} .tag.fund{background:var(--bluebg);color:var(--blue)}
+  .tag.scst{background:var(--violetbg);color:var(--violet)} .tag.buf{background:#f0ece2;color:#7a5c1a}
+  .sc .facts{display:flex;gap:14px;font-size:12px;color:var(--muted)}
+  .sc .facts b{color:var(--ink)}
+  .sc .fit{display:flex;align-items:center;gap:6px;margin-top:9px;font-size:12px;font-weight:700}
+  .sc .fit.ok{color:var(--okink)} .sc .fit.no{color:var(--warn)}
+  .sc .go{float:right;color:var(--brand-d);font-weight:800;font-size:12px;margin-top:9px}
+  /* detail */
+  .hero{background:linear-gradient(135deg,var(--brand),var(--brand-d));color:#fff;border-radius:16px;padding:16px;margin-bottom:14px}
+  .hero .ttl{font-size:18px;font-weight:800;line-height:1.25}
+  .hero .ver{display:inline-block;margin-top:8px;font-size:10px;font-weight:800;background:rgba(255,255,255,.2);padding:3px 8px;border-radius:99px;letter-spacing:.03em}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:16px}
+  .fact{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+  .fact .v{font-size:19px;font-weight:800;color:var(--brand-d)}
+  .fact .l{font-size:11px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.03em}
+  .sec{font-size:12px;color:var(--muted);font-weight:800;text-transform:uppercase;letter-spacing:.05em;margin:4px 0 8px}
+  .doc{display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--line);border-radius:11px;padding:9px 11px;margin-bottom:7px}
+  .doc .ic{width:34px;height:34px;border-radius:9px;background:var(--accent);display:grid;place-items:center;font-size:17px;flex:0 0 auto}
+  .doc .n{flex:1;font-size:14px;font-weight:600}
+  .doc .r{font-size:10px;font-weight:800;padding:2px 7px;border-radius:99px}
+  .doc .r.m{background:#fdeeec;color:var(--danger)} .doc .r.o{background:var(--bluebg);color:var(--blue)}
+  .cta{position:sticky;bottom:0;background:linear-gradient(transparent,var(--bg) 24%);padding-top:14px;display:flex;gap:8px}
+  button.primary{flex:1;border:0;background:var(--brand);color:#fff;font-weight:800;font-size:15px;border-radius:12px;padding:13px;cursor:pointer}
+  button.ghost{border:1px solid var(--line);background:#fff;color:var(--brand-d);font-weight:700;border-radius:12px;padding:13px 14px;cursor:pointer}
+  .spec{flex:1;min-width:280px}
+  .spec h2{font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:6px 0 8px}
+  pre{background:#0b120e;color:#d6f5e3;border-radius:12px;padding:14px;font-size:12px;line-height:1.5;overflow:auto;max-height:340px}
+  .note{font-size:13px;color:var(--muted);border-top:1px solid var(--line);margin-top:14px;padding-top:12px}
+  .k{color:#7fd0a3}
+  .hidden{display:none}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="index.html">← CIA prototypes</a>
+  <h1>Schemes — browse &amp; choose</h1>
+  <p class="lede">Several cattle-induction schemes can run at once (different subsidy, animal, funding, eligibility). The member sees the <b>list</b> of schemes open at their society, opens one for details, and then checks eligibility / expresses interest <b>for that specific scheme</b>. Settled mock = the spec for <code>GET /cattle-induction/schemes</code> (list) + <code>…/schemes/:version</code> (one).</p>
+
+  <div class="stage">
+    <div class="phone">
+      <div class="screen">
+        <div class="bar" id="bar"><div><div class="t">Cattle Induction Schemes</div><div class="s">Ramesh Mahto · SOC-RANCHI-014</div></div></div>
+        <div class="body" id="body"></div>
+      </div>
+    </div>
+
+    <div class="spec">
+      <h2>Mock JSON — GET /cattle-induction/schemes</h2>
+      <pre id="jsonOut"></pre>
+      <div class="note">
+        <b>Rules this mock encodes (→ backend spec):</b><br>
+        • <span class="k">Multiple schemes coexist</span> — the list returns every scheme <span class="k">active for the member's society/district</span>, each with its own <code>rules_json</code>. (New: the API moves from one "published" scheme to <span class="k">listSchemes</span> + <code>schemes/:version</code>.)<br>
+        • Every term is <span class="k">config</span> per scheme; each is versioned + immutable, and an application <span class="k">pins</span> the scheme version it was submitted under.<br>
+        • Eligibility and EOI are <span class="k">scoped to one scheme</span> — the chosen <code>schemeVersion</code> flows into <code>GET …/eligibility?scheme=</code> and <code>POST …/interest</code>.<br>
+        • A member may hold at most one open application <span class="k">per scheme</span>; buffalo vs cattle caps are per-scheme config.
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const schemes = [
+  { schemeVersion:'CIA_UK_2026_v2', title:'Pashudhan — milch-animal induction', animal:'Cattle · HF / Jersey CB', animalTag:'animal', fund:'State + NLM',
+    likelyEligible:true,
+    rules:{ subsidyPct:50, beneficiaryContributionPct:15, loanComponentPct:35, priceCeiling:70000, maxCattlePerBeneficiary:2, minMembershipMonths:12, minAvgMonthlyMilkValue:3000, insuranceRequired:true },
+    documentChecklist:[ {key:'aadhaar',label:'Aadhaar card',required:'MANDATORY'},{key:'bank_passbook',label:'Bank passbook',required:'MANDATORY'},{key:'photo',label:'Your photo',required:'OPTIONAL'} ] },
+  { schemeVersion:'CIA_UK_NLM_SCST_2026', title:'NLM Dairy Booster — SC/ST members', animal:'Cattle / Buffalo', animalTag:'scst', fund:'NLM 90:10 (Him)',
+    likelyEligible:true,
+    rules:{ subsidyPct:60, beneficiaryContributionPct:10, loanComponentPct:30, priceCeiling:80000, maxCattlePerBeneficiary:2, minMembershipMonths:6, minAvgMonthlyMilkValue:2000, insuranceRequired:true },
+    documentChecklist:[ {key:'aadhaar',label:'Aadhaar card',required:'MANDATORY'},{key:'bank_passbook',label:'Bank passbook',required:'MANDATORY'},{key:'caste_cert',label:'Caste certificate',required:'MANDATORY'} ] },
+  { schemeVersion:'CIA_UK_BUFFALO_2026', title:'Murrah buffalo induction', animal:'Buffalo · Murrah', animalTag:'buf', fund:'State',
+    likelyEligible:false,
+    rules:{ subsidyPct:40, beneficiaryContributionPct:20, loanComponentPct:40, priceCeiling:90000, maxCattlePerBeneficiary:1, minMembershipMonths:24, minAvgMonthlyMilkValue:4000, insuranceRequired:true },
+    documentChecklist:[ {key:'aadhaar',label:'Aadhaar card',required:'MANDATORY'},{key:'bank_passbook',label:'Bank passbook',required:'MANDATORY'},{key:'land_shed',label:'Shed / land proof',required:'CONDITIONAL'} ] },
+];
+const rupee = (n)=> '₹'+n.toLocaleString('en-IN');
+const tagClass = (t)=> t==='scst'?'tag scst':t==='buf'?'tag buf':'tag animal';
+
+function renderList(){
+  document.getElementById('bar').innerHTML = `<div><div class="t">Cattle Induction Schemes</div><div class="s">Ramesh Mahto · SOC-RANCHI-014</div></div>`;
+  const cards = schemes.map((s,i)=>`
+    <div class="sc" onclick="openScheme(${i})">
+      <div class="top"><div class="ttl">${s.title}</div><div class="subsidy">${s.rules.subsidyPct}%<div style="font-size:9px;color:var(--muted);font-weight:700;text-align:right">subsidy</div></div></div>
+      <div class="tags"><span class="${tagClass(s.animalTag)}">${s.animal}</span><span class="tag fund">${s.fund}</span></div>
+      <div class="facts"><span>Ceiling <b>${rupee(s.rules.priceCeiling)}</b></span><span>Max <b>${s.rules.maxCattlePerBeneficiary}</b></span><span>Min <b>${s.rules.minMembershipMonths}mo</b></span></div>
+      <div class="fit ${s.likelyEligible?'ok':'no'}">${s.likelyEligible?'✓ You likely qualify':'△ Check the criteria'}<span class="go">View →</span></div>
+    </div>`).join('');
+  document.getElementById('body').innerHTML = `<div class="count">${schemes.length} schemes open at your society</div>${cards}`;
+  document.getElementById('jsonOut').textContent = JSON.stringify({ schemes: schemes.map(s=>({schemeVersion:s.schemeVersion,title:s.title,animal:s.animal,fund:s.fund,likelyEligible:s.likelyEligible,rules:s.rules})) }, null, 2);
+}
+
+function openScheme(i){
+  const s = schemes[i];
+  document.getElementById('bar').innerHTML = `<button class="lnk" onclick="renderList()">‹ All schemes</button><div><div class="t" style="font-size:14px">Scheme details</div></div>`;
+  const docs = s.documentChecklist.map(d=>`<div class="doc"><div class="ic">${d.key==='caste_cert'?'📜':d.key==='land_shed'?'🏠':d.key==='bank_passbook'?'🏦':d.key==='photo'?'🧑':'🪪'}</div><div class="n">${d.label}</div><span class="r ${d.required==='OPTIONAL'?'o':'m'}">${d.required}</span></div>`).join('');
+  document.getElementById('body').innerHTML = `
+    <div class="hero"><div class="ttl">${s.title}</div><div class="ver">SCHEME ${s.schemeVersion}</div></div>
+    <div class="sec">What you get</div>
+    <div class="grid">
+      <div class="fact"><div class="v">${s.rules.subsidyPct}%</div><div class="l">Subsidy on the animal</div></div>
+      <div class="fact"><div class="v">${s.rules.beneficiaryContributionPct}%</div><div class="l">Your contribution</div></div>
+      <div class="fact"><div class="v">${rupee(s.rules.priceCeiling)}</div><div class="l">Price ceiling / animal</div></div>
+      <div class="fact"><div class="v">up to ${s.rules.maxCattlePerBeneficiary}</div><div class="l">${s.animalTag==='buf'?'Buffalo':'Cattle'} per member</div></div>
+    </div>
+    <div class="sec">Who can apply</div>
+    <div class="grid">
+      <div class="fact"><div class="v">${s.rules.minMembershipMonths} mo</div><div class="l">Min DCS membership</div></div>
+      <div class="fact"><div class="v">${rupee(s.rules.minAvgMonthlyMilkValue)}+</div><div class="l">Avg monthly milk value</div></div>
+    </div>
+    <div class="sec">What you'll need</div>${docs}
+    <div class="cta">
+      <button class="primary" onclick="location.href='farmer-eligibility.html?scheme=${s.schemeVersion}'">Check my eligibility</button>
+      <button class="ghost" onclick="location.href='farmer-eoi.html?scheme=${s.schemeVersion}'">Interested</button>
+    </div>`;
+  document.getElementById('jsonOut').textContent = JSON.stringify({ scheme: {schemeVersion:s.schemeVersion,title:s.title,animal:s.animal,fund:s.fund,rules:s.rules,documentChecklist:s.documentChecklist} }, null, 2);
+}
+renderList();
+</script>
+</body>
+</html>

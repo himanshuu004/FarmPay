@@ -1,0 +1,84 @@
+# Allied KCC — production stack for one VPS.
+# Postgres (pgvector + PostGIS), Redis, RabbitMQ, the Node API, and Caddy
+# (HTTPS front door). Only Caddy is exposed to the internet (ports 80/443);
+# everything else talks on the private Docker network.
+#
+#   cd deploy
+#   docker compose -f docker-compose.prod.yml up -d --build
+services:
+  postgres:
+    build:
+      context: ../backend/db
+      dockerfile: Dockerfile.postgres
+    image: akcc-postgres:16
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ../backend/db/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    volumes:
+      - redisdata:/data
+
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    restart: unless-stopped
+    environment:
+      RABBITMQ_DEFAULT_USER: ${DB_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD}
+    volumes:
+      - rabbitdata:/var/lib/rabbitmq
+
+  backend:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile
+    image: akcc-backend:latest
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      NODE_ENV: production
+      PORT: "3000"
+      DB_HOST: postgres
+      DB_PORT: "5432"
+      REDIS_HOST: redis
+      REDIS_PORT: "6379"
+      RABBITMQ_URL: amqp://${DB_USER}:${RABBITMQ_PASSWORD}@rabbitmq:5672
+    volumes:
+      - erpdata:/app/data
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  caddy:
+    image: caddy:2
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - ./web:/srv/web:ro
+      - caddydata:/data
+      - caddyconfig:/config
+    depends_on:
+      - backend
+
+volumes:
+  pgdata:
+  redisdata:
+  rabbitdata:
+  erpdata:
+  caddydata:
+  caddyconfig:

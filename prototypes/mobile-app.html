@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Allied KCC — Integrated mobile prototype</title>
+<style>
+  :root{--brand:#0f7a4d;--brand-d:#0a5c3a;--ink:#14201b;--muted:#6b7c74;--line:#e2e8e4;--bg:#eef1f0;--amber:#b45309;--amberbg:#fef3e2}
+  *{box-sizing:border-box}
+  body{margin:0;background:#0b120e;color:var(--ink);font:15px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;min-height:100vh;display:flex;flex-direction:column;align-items:center;gap:14px;padding:22px 12px 40px}
+  .head{color:#cfe;text-align:center;max-width:420px}
+  .head h1{font-size:19px;margin:0 0 4px;color:#eafff3}
+  .head p{font-size:12.5px;color:#8fb;margin:0;line-height:1.5}
+  /* phone */
+  .phone{width:390px;max-width:96vw;height:812px;max-height:86vh;background:#050806;border-radius:44px;padding:11px;box-shadow:0 30px 70px rgba(0,0,0,.5);flex:0 0 auto}
+  .device{background:#fff;border-radius:34px;overflow:hidden;height:100%;display:flex;flex-direction:column;position:relative}
+  .bar{background:var(--brand-d);color:#fff;padding:13px 16px;display:flex;align-items:center;gap:10px;flex:0 0 auto}
+  .bar .bk{font-size:20px;font-weight:800;cursor:pointer;width:22px;opacity:0;pointer-events:none}
+  .bar.screen .bk{opacity:1;pointer-events:auto}
+  .bar .t{font-weight:800;font-size:15px;flex:1}
+  .bar .badge{font-size:9px;font-weight:800;background:var(--amberbg);color:var(--amber);padding:3px 7px;border-radius:99px;text-transform:uppercase;display:none}
+  .bar.desktop .badge{display:inline-block}
+  .body{flex:1;position:relative;overflow:hidden;background:var(--bg)}
+  /* menu */
+  .menu{position:absolute;inset:0;display:flex;flex-direction:column;overflow:hidden}
+  .note{background:#e6f0f6;color:#0b5c8a;font-size:11.5px;padding:9px 14px;line-height:1.45}
+  .chips{display:flex;gap:7px;overflow-x:auto;padding:11px 12px;flex:0 0 auto;-webkit-overflow-scrolling:touch}
+  .chip{white-space:nowrap;border:1px solid var(--line);background:#fff;color:var(--brand-d);font-weight:800;font-size:12.5px;border-radius:99px;padding:7px 13px;cursor:pointer}
+  .chip.on{background:var(--brand);color:#fff;border-color:var(--brand)}
+  .list{flex:1;overflow:auto;padding:2px 12px 16px}
+  .persona-lede{font-size:12px;color:var(--muted);padding:4px 2px 10px}
+  .card{display:flex;align-items:center;gap:11px;background:#fff;border:1px solid var(--line);border-radius:13px;padding:12px 13px;margin-bottom:8px;cursor:pointer}
+  .card .ic{font-size:20px;width:24px;text-align:center;flex:0 0 auto}
+  .card .tx{flex:1}
+  .card .tx b{font-size:14px;display:block}
+  .card .tx span{font-size:11.5px;color:var(--muted)}
+  .card .go{color:var(--brand-d);font-weight:800;font-size:12px}
+  .card .dk{font-size:8.5px;font-weight:800;color:var(--amber);background:var(--amberbg);padding:2px 6px;border-radius:99px;text-transform:uppercase}
+  /* screen iframe */
+  .view{position:absolute;inset:0;background:#fff;display:none}
+  .view.on{display:block}
+  iframe{width:100%;height:100%;border:0;background:#fff}
+  .home{height:5px;width:120px;background:#000;opacity:.18;border-radius:99px;margin:6px auto 0;flex:0 0 auto}
+  .hint{color:#7fb;font-size:11px;text-align:center;max-width:390px}
+</style>
+</head>
+<body>
+  <div class="head">
+    <h1>Allied KCC — one mobile shell, every persona</h1>
+    <p>Switch persona at the top. Farmer &amp; field screens are mobile-native and fill the phone. Back-office screens (DCS · DUSS · Bank · UCDF) are desktop dashboards — shown here cramped on purpose, which is exactly why they stay web.</p>
+  </div>
+
+  <div class="phone">
+    <div class="device">
+      <div class="bar" id="bar">
+        <span class="bk" id="back">‹</span>
+        <span class="t" id="title">Choose a persona</span>
+        <span class="badge">desktop</span>
+      </div>
+      <div class="body">
+        <div class="menu" id="menu">
+          <div class="note" id="note"></div>
+          <div class="chips" id="chips"></div>
+          <div class="list" id="list"></div>
+        </div>
+        <div class="view" id="view"><iframe id="frame" title="screen"></iframe></div>
+      </div>
+      <div class="home"></div>
+    </div>
+  </div>
+  <div class="hint">Same clickable prototypes as the gallery — re-hosted in a single phone frame to show the integrated mobile experience.</div>
+
+<script>
+const CIA = 'cattle-induction/';
+const PERSONAS = [
+  { key:'farmer', label:'👨‍🌾 Farmer', mobile:true,
+    lede:'The member app — mobile-native, offline-first. The full CIA journey.',
+    screens:[
+      { ic:'📋', t:'Scheme info',        s:'terms · docs · how it works',   f:CIA+'farmer-scheme.html' },
+      { ic:'✅', t:'Eligibility check',   s:'non-binding · reasons',         f:CIA+'farmer-eligibility.html' },
+      { ic:'🙋', t:'Express interest',    s:'one-tap EOI to DCS',            f:CIA+'farmer-eoi.html' },
+      { ic:'🗂️', t:'Application + docs',  s:'ERP pre-fill · camera-first',   f:CIA+'farmer-application.html' },
+      { ic:'📍', t:'Status tracker',      s:'honest "as of" timeline',       f:CIA+'farmer-status.html' },
+      { ic:'🏦', t:'Loan & subsidy',      s:'breakdown · unlock purchase',   f:CIA+'farmer-loan-status.html' },
+      { ic:'🐄', t:'Guided purchase',     s:'gated stepper · live capture',  f:CIA+'farmer-purchase.html' },
+      { ic:'🛡️', t:'Transit & cattle insurance', s:'KAVACH · no backdating', f:CIA+'farmer-insurance.html' },
+      { ic:'🧾', t:'EMI schedule',        s:'loan↔milk · installments',      f:CIA+'farmer-emi-schedule.html' },
+      { ic:'💧', t:'Milk-payment EMI ledger', s:'deducted vs due',           f:CIA+'farmer-emi-ledger.html' },
+      { ic:'✍️', t:'EMI deduction consent', s:'tri-partite · track→initiate', f:CIA+'farmer-emi-consent.html' },
+      { ic:'📄', t:'Cattle claim',        s:'4-doc · 15-day SLA · 12% penal', f:CIA+'farmer-claim.html' },
+    ]},
+  { key:'field', label:'🩺 Field (VO/Supervisor)', mobile:true,
+    lede:'Route supervisor + vet — one offline PWA, phone/tablet in the field. Role-gated.',
+    screens:[
+      { ic:'🔍', t:'Supervisor verification', s:'checklist · geo · live photos', f:CIA+'field-verification.html' },
+      { ic:'🩺', t:'Vet exam & valuation',    s:'BCS · e-sign',                 f:CIA+'field-vet-exam.html' },
+      { ic:'📅', t:'Post-purchase inspection', s:'7/30/90-day · asset exists',   f:CIA+'field-inspection.html' },
+    ]},
+  { key:'dcs', label:'🏘️ DCS', mobile:false,
+    lede:'Society secretary / board. Selection & resolution — light enough for mobile, but built web.',
+    screens:[
+      { ic:'🗳️', t:'DCS selection / agenda', s:'board decision + resolution', f:CIA+'dcs-selection.html', desktop:true },
+    ]},
+  { key:'duss', label:'🏢 DUSS', mobile:false,
+    lede:'District union — bulk maker-checker scrutiny. Genuinely desktop-shaped work.',
+    screens:[
+      { ic:'📥', t:'DUSS bulk inbox', s:'scrutiny · deficiency · bank batch', f:CIA+'duss-inbox.html', desktop:true },
+    ]},
+  { key:'bank', label:'🏦 Bank', mobile:false,
+    lede:'Cooperative bank — sanction/disbursement maker-checker with matched/unmatched tables.',
+    screens:[
+      { ic:'📊', t:'Bank sanction upload', s:'matched/unmatched preview', f:CIA+'bank-sanction.html', desktop:true },
+      { ic:'🔐', t:'Payment gate', s:'gate checklist · recommend-not-execute', f:CIA+'finance-payment-gate.html', desktop:true },
+    ]},
+  { key:'ucdf', label:'🏛️ UCDF', mobile:false,
+    lede:'UCDF command centre — funnels, league tables, exception queues. Desktop dashboards.',
+    screens:[
+      { ic:'📈', t:'Command dashboard', s:'funnel · league table · exceptions', f:CIA+'ucdf-dashboard.html', desktop:true },
+      { ic:'🚩', t:'Fraud exception panel', s:'shadow · review & clear', f:CIA+'ucdf-fraud-panel.html', desktop:true },
+    ]},
+];
+
+let cur = 0;
+const $ = (id)=>document.getElementById(id);
+const chips=$('chips'), list=$('list'), note=$('note'), frame=$('frame'), view=$('view'), menu=$('menu'), bar=$('bar');
+
+function renderMenu(){
+  chips.innerHTML=''; list.innerHTML='';
+  PERSONAS.forEach((p,i)=>{
+    const c=document.createElement('div'); c.className='chip'+(i===cur?' on':''); c.textContent=p.label;
+    c.onclick=()=>{cur=i;renderMenu();}; chips.appendChild(c);
+  });
+  const p=PERSONAS[cur];
+  note.textContent = p.mobile ? '📱 Mobile-native — fills the phone.' : '🖥️ Desktop dashboard — shown cramped in the phone on purpose.';
+  const lede=document.createElement('div'); lede.className='persona-lede'; lede.textContent=p.lede; list.appendChild(lede);
+  p.screens.forEach((s)=>{
+    const card=document.createElement('div'); card.className='card';
+    card.innerHTML=`<div class="ic">${s.ic}</div><div class="tx"><b>${s.t}</b><span>${s.s}</span></div>`+
+      (s.desktop?'<span class="dk">web</span>':'<span class="go">open ›</span>');
+    card.onclick=()=>openScreen(s); list.appendChild(card);
+  });
+  $('title').textContent = 'Choose a screen'; bar.className='bar';
+}
+
+function openScreen(s){
+  $('title').textContent = s.t;
+  bar.className = 'bar screen' + (s.desktop ? ' desktop' : '');
+  frame.onload = ()=>{ if(!s.desktop) stripToPhone(); };
+  frame.src = s.f;
+  menu.style.display='none'; view.classList.add('on');
+}
+function back(){ view.classList.remove('on'); menu.style.display='flex'; frame.src='about:blank'; renderMenu(); }
+$('back').onclick=back;
+
+// Same-origin: strip a prototype's desktop chrome (title, lede, spec panel) so only the
+// in-page phone .screen remains, filling our mobile shell.
+function stripToPhone(){
+  try{
+    const d=frame.contentDocument; if(!d) return;
+    d.querySelectorAll('.spec, a.back, .wrap > h1, .wrap > .lede, .wrap > .phase').forEach(e=>e.style.display='none');
+    const set=(el,css)=>{ if(el) Object.assign(el.style, css); };
+    set(d.documentElement,{height:'100%'}); set(d.body,{height:'100%',margin:'0',background:'#fff'});
+    set(d.querySelector('.wrap'),{maxWidth:'none',padding:'0',margin:'0',height:'100%'});
+    set(d.querySelector('.stage'),{display:'block',height:'100%',gap:'0'});
+    set(d.querySelector('.phone'),{width:'100%',height:'100%',padding:'0',margin:'0',boxShadow:'none',borderRadius:'0',background:'none'});
+    set(d.querySelector('.screen'),{height:'100%',borderRadius:'0'});
+  }catch(e){/* cross-doc or unexpected markup — leave as-is */}
+}
+
+renderMenu();
+</script>
+</body>
+</html>

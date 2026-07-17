@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Allied KCC — Credit (KCC-AH) Prototype</title>
+<style>
+  :root{
+    --bg:#f4f6f5; --card:#fff; --ink:#14201b; --muted:#6b7c74; --line:#e2e8e4;
+    --brand:#0f7a4d; --brand-d:#0a5c3a; --accent:#e8f5ee; --warn:#b4530a; --danger:#b3261e;
+    --meter-bg:#e2ece7; --gold:#8a6d1f; --goldbg:#fbf3d9; --blue:#0b5c8a; --bluebg:#e6f0f6;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+  .wrap{max-width:1120px;margin:0 auto;padding:24px;display:flex;gap:28px;flex-wrap:wrap;justify-content:center}
+  .phone{position:relative;width:360px;background:var(--card);border-radius:28px;box-shadow:0 12px 40px rgba(20,40,30,.12);overflow:hidden;border:1px solid var(--line)}
+  .status{height:26px;background:var(--brand-d)}
+  .top{background:var(--brand);color:#fff;padding:14px 18px}
+  .top h1{margin:0;font-size:16px;font-weight:650}
+  .top .sub{opacity:.85;font-size:12px;margin-top:2px}
+  .screen{display:none;padding:16px 16px 84px;min-height:560px}
+  .screen.on{display:block}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px;margin-bottom:12px}
+  .card h2{margin:0 0 10px;font-size:13px;letter-spacing:.02em;text-transform:uppercase;color:var(--muted)}
+  .kpi{font-size:26px;font-weight:720} .kpi.small{font-size:20px}
+  .row{display:flex;justify-content:space-between;align-items:center;gap:10px}
+  .muted{color:var(--muted)}
+  .chip{display:inline-block;font-size:11px;padding:3px 8px;border-radius:999px;background:var(--accent);color:var(--brand-d);font-weight:600}
+  .chip.gold{background:var(--goldbg);color:var(--gold)} .chip.blue{background:var(--bluebg);color:var(--blue)} .chip.warn{background:#fff8ec;color:var(--warn)}
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  th,td{text-align:right;padding:7px 4px;border-bottom:1px solid var(--line)}
+  th:first-child,td:first-child{text-align:left} th{color:var(--muted);font-weight:600}
+  .btn{display:block;width:100%;border:0;border-radius:12px;padding:13px;font-size:15px;font-weight:650;background:var(--brand);color:#fff;cursor:pointer}
+  .btn:disabled{background:#b8c6bf;cursor:not-allowed} .btn.ghost{background:var(--accent);color:var(--brand-d)} .btn.small{padding:9px;font-size:13px}
+  .nav{position:absolute;bottom:0;left:0;right:0;display:flex;border-top:1px solid var(--line);background:#fff}
+  .nav button{flex:1;border:0;background:none;padding:10px 2px 12px;font-size:10px;color:var(--muted);cursor:pointer}
+  .nav button.on{color:var(--brand);font-weight:700} .nav .ico{font-size:17px;display:block}
+  .item{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--line)} .item:last-child{border-bottom:0}
+  .step{display:flex;gap:10px;align-items:flex-start;padding:5px 0}
+  .dot{width:13px;height:13px;border-radius:50%;margin-top:3px;flex:none;background:var(--line)}
+  .dot.done{background:var(--brand)} .dot.now{background:var(--warn);box-shadow:0 0 0 4px #f6e3cf}
+  .step .lbl{font-size:13px} .step .who{font-size:11px;color:var(--muted)}
+  .note{font-size:12px;color:var(--muted);margin-top:6px}
+  .banner{background:#e6f0f6;border:1px solid #cfe0ec;color:var(--blue);border-radius:12px;padding:10px 12px;font-size:12px;margin-bottom:12px}
+  .meter{height:14px;border-radius:999px;background:var(--meter-bg);overflow:hidden;margin:8px 0}
+  .meter > span{display:block;height:100%;background:linear-gradient(90deg,var(--brand),var(--brand-d))}
+  input[type=number]{width:100%;border:1px solid var(--line);border-radius:10px;padding:10px;font-size:15px}
+  .seg{display:flex;gap:6px;margin:6px 0 10px}
+  .seg button{flex:1;border:1px solid var(--line);background:#fff;border-radius:10px;padding:9px;font-size:13px;cursor:pointer}
+  .seg button.on{background:var(--accent);border-color:var(--brand);color:var(--brand-d);font-weight:650}
+  .band{display:inline-block;font-weight:700;padding:2px 10px;border-radius:8px}
+  .legend{font-size:11px;color:var(--muted);text-align:center;margin-top:10px;max-width:360px}
+  h3.side{width:100%;text-align:center;color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.08em;margin:4px 0 -8px}
+  .doc{background:#fff;border:1px solid var(--line);border-radius:10px;padding:12px;font-size:12px}
+  .doc h4{margin:0 0 6px;font-size:12px} .doc .r{text-align:right}
+  code{font-family:ui-monospace,Menlo,monospace;font-size:11px}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h3 class="side">Composite KCC-AH — the credit journey (mock data · Limit Engine math is real, Illustration 1(B))</h3>
+
+<div class="phone">
+  <div class="status"></div>
+  <div class="top"><h1>Your KCC</h1><div class="sub">Asha Devi · UK · units live from your herd register</div></div>
+
+  <!-- CALCULATOR -->
+  <section class="screen on" id="s-calc">
+    <div class="banner">Your KCC limit is built from your <b>logbook + passbook</b> — the logbook is the credit file. No forms to fill.</div>
+    <div class="card">
+      <h2>Composite limit calculator</h2>
+      <div class="item"><div>Dairy — cross-bred cows <span class="muted">(from register)</span></div>
+        <div class="seg" style="margin:0"><button onclick="setUnits(this,1)">1</button><button class="on" onclick="setUnits(this,2)">2</button><button onclick="setUnits(this,3)">3</button></div></div>
+      <div class="note">Scale of Finance ₹7,000/cow (notified, Uttarakhand) · scheme KCC_DIR_2026</div>
+    </div>
+    <div class="card">
+      <h2>Year-1 working capital</h2>
+      <table>
+        <tr><td>WC (SoF × units)</td><td id="wc">₹14,000</td></tr>
+        <tr><td>+ 10% consumption <span class="muted">(once)</span></td><td id="cons">₹1,400</td></tr>
+        <tr><td>+ 20% maintenance/tech</td><td id="maint">₹2,800</td></tr>
+        <tr><td>+ insurance premium</td><td id="ins">₹400</td></tr>
+        <tr><td><b>MPL year 1</b></td><td><b id="mpl1">₹18,600</b></td></tr>
+      </table>
+    </div>
+    <div class="card">
+      <h2>6-year composite limit</h2>
+      <div class="row"><div class="muted">MPL compounds ×1.10 / yr</div><div class="kpi small" id="cmpl">₹29,956</div></div>
+      <table id="sched"></table>
+      <div class="note">Collateral-free up to ₹2 lakh (¶23) · <span class="chip">CMPL = 6th-yr MPL + LT investment</span></div>
+    </div>
+    <button class="btn" onclick="go('elig')">Check my eligibility ▸</button>
+  </section>
+
+  <!-- ELIGIBILITY + TRUST -->
+  <section class="screen" id="s-elig">
+    <div class="card">
+      <h2>Trust score</h2>
+      <div class="row"><div class="kpi" id="tscore">750</div><span class="band" id="tband" style="background:var(--accent);color:var(--brand-d)">ESTABLISHED</span></div>
+      <div class="meter"><span style="width:75%"></span></div>
+      <div class="note">1000-pt scale · decision support with reason codes — the sanctioned number is always the engine's statutory math.</div>
+    </div>
+    <div class="card">
+      <h2>Why (reason codes)</h2>
+      <div class="item"><div>✅ Linked dairy-society member</div><b>+200</b></div>
+      <div class="item"><div>✅ 6 months milk-supply history</div><b>+300</b></div>
+      <div class="item"><div>✅ Supply consistency 1.0</div><b>+300</b></div>
+      <div class="item"><div>✅ Outstanding milk payables ₹4,000 <span class="muted">(¶16(4) receivables)</span></div><b>+200</b></div>
+      <div class="note">Pillars pending (Phase 3+): production · financial discipline · asset base · insurance.</div>
+    </div>
+    <div class="card"><div class="row"><div>Collateral-free ceiling</div><b class="chip">≤ ₹2,00,000</b></div></div>
+    <button class="btn" onclick="go('apply')">Apply for KCC ▸</button>
+  </section>
+
+  <!-- APPLICATION -->
+  <section class="screen" id="s-apply">
+    <div class="card">
+      <h2>Application status</h2>
+      <div class="step"><span class="dot done"></span><div><div class="lbl"><b>Draft</b></div><div class="who">you · computed from register</div></div></div>
+      <div class="step"><span class="dot done"></span><div><div class="lbl">Submitted</div><div class="who">you</div></div></div>
+      <div class="step"><span class="dot done"></span><div><div class="lbl">Under review → forwarded to bank</div><div class="who">back-office</div></div></div>
+      <div class="step"><span class="dot now"></span><div><div class="lbl"><b>Sanctioned</b></div><div class="who">bank · ₹29,956</div></div></div>
+      <div class="step"><span class="dot"></span><div><div class="lbl">Disbursed → Active</div></div></div>
+      <div class="step"><span class="dot"></span><div><div class="lbl">Renewal due (annual)</div></div></div>
+    </div>
+    <div class="banner">Your <b>renewal pack PDF</b> is the banker interface in v1 — generated from your data, zero re-paperwork.</div>
+    <button class="btn ghost" onclick="go('pack')">View renewal / application pack ▸</button>
+  </section>
+
+  <!-- LIMIT DASHBOARD -->
+  <section class="screen" id="s-limit">
+    <div class="card">
+      <h2>Sanctioned limit</h2>
+      <div class="row"><div>Composite MPL (CMPL)</div><div class="kpi small">₹29,956</div></div>
+      <table>
+        <tr><td>ST sub-limit (cash credit)</td><td>₹29,956</td></tr>
+        <tr><td>LT sub-limit (investment)</td><td>₹0</td></tr>
+        <tr><td>Drawing power <span class="muted">(¶16(4))</span></td><td>₹10,000</td></tr>
+      </table>
+      <div class="note">Drawing power pulls your co-op milk receivables as evidence — capped at the ST sub-limit.</div>
+    </div>
+    <div class="card">
+      <h2>Co-op credit is separate</h2>
+      <div class="note">Your 70%-of-milk input credit is <b>never</b> counted inside this KCC limit (it's receivables evidence only). No double-count.</div>
+    </div>
+    <button class="btn" onclick="go('draw')">Buy an animal / equipment (LT) ▸</button>
+  </section>
+
+  <!-- LT DRAWDOWN -->
+  <section class="screen" id="s-draw">
+    <div class="card">
+      <h2>LT drawdown (¶19(2))</h2>
+      <div class="seg"><button class="on">🐄 Animal</button><button>🏚️ Shed</button><button>⚙️ Equipment</button></div>
+      <label class="muted" style="font-size:12px">Amount (₹)</label>
+      <input type="number" value="60000">
+      <div class="row" style="margin-top:8px"><span class="chip">📷 Quotation photo / OCR</span><span class="muted" style="font-size:12px">headroom ₹60,000</span></div>
+    </div>
+    <div class="card">
+      <h2>Status</h2>
+      <div class="step"><span class="dot done"></span><div><div class="lbl">Draft → Submitted</div><div class="who">you</div></div></div>
+      <div class="step"><span class="dot now"></span><div><div class="lbl"><b>Bank approved → Disbursed</b></div><div class="who">bank</div></div></div>
+    </div>
+    <div class="banner">On disbursement, the purchased animal <b>auto-enters your herd register</b> and you get an <b>insurance nudge</b> — the asset · loan · policy triangle closes.</div>
+    <button class="btn" onclick="alert('Drawdown submitted for bank approval')">Submit drawdown ▸</button>
+  </section>
+
+  <!-- RENEWAL / APPLICATION PACK -->
+  <section class="screen" id="s-pack">
+    <div class="card">
+      <h2>Application pack <span class="chip blue">banker interface</span></h2>
+      <div class="doc">
+        <h4>KCC-AH Application Pack — KCC_DIR_2026 · UK</h4>
+        <div class="item"><span>Applicant</span><b>Asha Devi</b></div>
+        <div class="item"><span>Composite MPL</span><b>₹29,956</b></div>
+        <div class="item"><span>ST / LT sub-limit</span><b>₹29,956 / ₹0</b></div>
+        <div class="item"><span>Collateral-free</span><b>Yes (≤ ₹2 lakh)</b></div>
+        <div class="item"><span>Activity</span><b>DAIRY · 2 CB cows (live)</b></div>
+        <div class="item"><span>Drawing power</span><b>₹10,000 · milk receivables ₹4,000</b></div>
+        <div style="margin-top:8px" class="muted">Deterministic per RBI KCC Directions 2026 · co-op input credit NOT part of this limit.</div>
+      </div>
+      <div class="note">Generated as a print-ready document (no data entry). Phase-4 adds a live banker dashboard.</div>
+    </div>
+    <button class="btn ghost small" onclick="alert('PDF/HTML pack downloaded')">⬇ Download pack (PDF)</button>
+  </section>
+
+  <div class="nav">
+    <button class="on" data-s="calc" onclick="go('calc')"><span class="ico">🧮</span>Calc</button>
+    <button data-s="elig" onclick="go('elig')"><span class="ico">⭐</span>Trust</button>
+    <button data-s="apply" onclick="go('apply')"><span class="ico">📝</span>Apply</button>
+    <button data-s="limit" onclick="go('limit')"><span class="ico">💳</span>Limit</button>
+    <button data-s="draw" onclick="go('draw')"><span class="ico">🐄</span>Drawdown</button>
+    <button data-s="pack" onclick="go('pack')"><span class="ico">📄</span>Pack</button>
+  </div>
+</div>
+
+<p class="legend">Composite KCC-AH. The calculator mirrors <b>limitEngine.js</b> exactly — Illustration 1(B): 2 CB cows, SoF ₹7,000 → year-1 ₹18,600, 6th-year MPL ₹29,956. Statutory math is never a model. Screens map to <code>/api/v1/kcc</code>.</p>
+</div>
+
+<script>
+  const SOF=7000, INS=200; // notified DAIRY params (mirror the seed): SoF ₹7,000/cow, insurance ₹200/cow
+  const inr=(n)=>'₹'+Math.round(n).toLocaleString('en-IN');
+  const half=(n)=>Math.round(n); // round HALF-UP to rupee
+  let units=2;
+  function setUnits(b,u){ document.querySelectorAll('#s-calc .seg button').forEach(x=>x.classList.remove('on')); b.classList.add('on'); units=u; recompute(); }
+  function recompute(){
+    const wc=SOF*units, cons=0.10*wc, maint=0.20*wc, ins=INS*units;
+    const mpl1=half(wc+cons+maint+ins);
+    document.getElementById('wc').textContent=inr(wc);
+    document.getElementById('cons').textContent=inr(cons);
+    document.getElementById('maint').textContent=inr(maint);
+    document.getElementById('ins').textContent=inr(ins);
+    document.getElementById('mpl1').textContent=inr(mpl1);
+    // 6-year MPL series: ×1.10 rounded half-up each year
+    let mpl=mpl1, rows='', last=mpl1;
+    const t=document.getElementById('sched');
+    for(let y=1;y<=6;y++){ if(y>1){ mpl=half(mpl*1.10); } last=mpl; rows+=`<tr><td>Year ${y}</td><td>${inr(mpl)}</td></tr>`; }
+    t.innerHTML='<tr><th>Year</th><th class="r">MPL</th></tr>'+rows;
+    document.getElementById('cmpl').textContent=inr(last);
+  }
+  function go(s){
+    document.querySelectorAll('.screen').forEach(x=>x.classList.remove('on'));
+    document.getElementById('s-'+s).classList.add('on');
+    document.querySelectorAll('.nav button').forEach(x=>x.classList.toggle('on', x.dataset.s===s));
+    window.scrollTo(0,0);
+  }
+  recompute();
+</script>
+</body>
+</html>

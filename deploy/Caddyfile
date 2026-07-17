@@ -1,0 +1,18 @@
+# Caddy — the public front door. Terminates HTTPS (free auto-certificates from
+# Let's Encrypt) and forwards traffic to the backend container.
+# Requires: api.farmerpay.ai points at this server, and ports 80 + 443 are open.
+
+api.farmerpay.ai {
+	encode gzip
+	reverse_proxy backend:3000
+}
+
+# (Optional) When you build the web app (npx expo export --platform web) and
+# copy its `dist/` into deploy/web/, uncomment this to serve it:
+#
+# app.farmerpay.ai {
+# 	encode gzip
+# 	root * /srv/web
+# 	try_files {path} /index.html
+# 	file_server
+# }

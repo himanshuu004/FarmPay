@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CIA · Application status tracker (farmer)</title>
+<style>
+  :root{--bg:#f4f6f5;--card:#fff;--ink:#14201b;--muted:#6b7c74;--line:#e2e8e4;--brand:#0f7a4d;--brand-d:#0a5c3a;--accent:#e8f5ee;--warn:#b45309;--warnbg:#fef3e2;--blue:#0b5c8a;--bluebg:#e6f0f6;--grey:#c3ccc7}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+  .wrap{max-width:1040px;margin:0 auto;padding:28px 20px 60px}
+  a.back{color:var(--brand-d);font-size:13px;text-decoration:none;font-weight:700}
+  h1{font-size:24px;margin:8px 0 2px}
+  .lede{color:var(--muted);margin:0 0 18px;max-width:640px;font-size:14px}
+  .stage{display:flex;gap:20px;flex-wrap:wrap;align-items:flex-start}
+  .phone{width:340px;background:#0b120e;border-radius:34px;padding:10px;box-shadow:0 20px 50px rgba(10,30,20,.22);flex:0 0 auto}
+  .screen{background:var(--bg);border-radius:26px;overflow:hidden;height:660px;display:flex;flex-direction:column}
+  .bar{background:var(--brand-d);color:#fff;padding:12px 16px}
+  .bar .t{font-weight:700;font-size:15px}
+  .bar .s{font-size:12px;opacity:.85}
+  .asof{background:var(--bluebg);color:var(--blue);font-size:12px;padding:6px 16px;border-bottom:1px solid #d4e6f1;display:flex;justify-content:space-between}
+  .body{padding:16px;overflow:auto;flex:1}
+  .now{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:13px 14px;margin-bottom:16px}
+  .now .lab{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+  .now .st{font-size:18px;font-weight:800;color:var(--brand-d);margin:2px 0}
+  .now .nx{font-size:13px;color:var(--muted)}
+  /* timeline */
+  .tl{position:relative;margin:0;padding:0 0 0 8px;list-style:none}
+  .tl li{position:relative;padding:0 0 18px 26px}
+  .tl li::before{content:'';position:absolute;left:0;top:2px;width:14px;height:14px;border-radius:50%;background:var(--grey);border:2px solid var(--bg)}
+  .tl li::after{content:'';position:absolute;left:6px;top:16px;bottom:0;width:2px;background:var(--line)}
+  .tl li:last-child::after{display:none}
+  .tl li.done::before{background:var(--brand)}
+  .tl li.now::before{background:#fff;border:3px solid var(--brand);width:16px;height:16px;left:-1px;box-shadow:0 0 0 3px var(--accent)}
+  .tl li.future{opacity:.5}
+  .tl .h{font-weight:700;font-size:14px}
+  .tl .t{font-size:12px;color:var(--muted)}
+  .tl li.now .h{color:var(--brand-d)}
+  .rtn{background:var(--warnbg);color:var(--warn);border:1px solid #f3e2c8;border-radius:8px;padding:7px 9px;font-size:12px;margin-top:5px}
+  .spec{flex:1;min-width:280px}
+  .spec h2{font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:6px 0 8px}
+  pre{background:#0b120e;color:#d6f5e3;border-radius:12px;padding:14px;font-size:12px;line-height:1.5;overflow:auto;max-height:320px}
+  .note{font-size:13px;color:var(--muted);border-top:1px solid var(--line);margin-top:14px;padding-top:12px}
+  .k{color:#7fd0a3}
+  .seg{display:flex;gap:6px;margin:10px 0 4px}
+  .seg button{flex:1;border:1px solid var(--line);background:#fff;border-radius:8px;padding:6px;font-size:12px;font-weight:700;color:var(--brand-d);cursor:pointer}
+  .seg button.on{background:var(--brand);color:#fff;border-color:var(--brand)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="index.html">← CIA prototypes</a>
+  <h1>Application status tracker</h1>
+  <p class="lede">One honest timeline from EOI to sanction. Each step shows when it happened; the header shows an "as of" freshness stamp (data is last-synced, never pretend-live). Built from the <code>domain_events</code> outbox. Settled mock = the spec for Slice C.</p>
+
+  <div class="stage">
+    <div class="phone">
+      <div class="screen">
+        <div class="bar"><div class="t">My application</div><div class="s" id="appref">CIA-2026-000481 · Kanke DCS</div></div>
+        <div class="asof"><span>Status as of <b id="asof">today, 9:12 AM</b></span><span>↻ pull to refresh</span></div>
+        <div class="body">
+          <div class="now">
+            <div class="lab">Current step</div>
+            <div class="st" id="curSt">Supervisor verification</div>
+            <div class="nx" id="curNx">Next: a route supervisor visits to verify your details.</div>
+          </div>
+          <div class="seg">
+            <button class="on" onclick="scenario('happy',this)">On track</button>
+            <button onclick="scenario('returned',this)">Returned</button>
+          </div>
+          <ul class="tl" id="tl"></ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="spec">
+      <h2>Mock JSON — GET /applications/:id/status</h2>
+      <pre id="jsonOut"></pre>
+      <div class="note">
+        <b>Rules this mock encodes (→ backend spec):</b><br>
+        • Timeline is derived from the <span class="k">append-only domain_events</span> outbox (one row per transition), not a mutable log.<br>
+        • Every card carries an <span class="k">"as of" timestamp</span> — screens show last-synced state honestly (offline-first).<br>
+        • A <span class="k">RETURNED_FOR_CORRECTION</span> step shows the reason and the action the farmer must take; the clock restarts on the farmer.<br>
+        • Read is <span class="k">scoped to the owner</span> (a farmer sees only their own application).<br>
+        • Money/purchase steps appear greyed as "future" in CIA-1 (they light up in CIA-2/3).
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const STEPS = [
+  { key:'INTEREST_SUBMITTED',        h:'Interest submitted',        who:'You' },
+  { key:'PENDING_DCS_REVIEW',        h:'Society reviewing',         who:'DCS Secretary' },
+  { key:'SELECTED_BY_DCS',           h:'Selected by DCS board',     who:'DCS Board' },
+  { key:'APPLICATION_PENDING',       h:'Application + documents',   who:'You' },
+  { key:'PENDING_SUPERVISOR_VERIFY', h:'Supervisor verification',   who:'Route Supervisor' },
+  { key:'FORWARDED_TO_DUSS',         h:'Forwarded to DUSS',         who:'Supervisor' },
+  { key:'UNDER_DUSS_SCRUTINY',       h:'DUSS scrutiny',             who:'DUSS' },
+  { key:'SUBMITTED_TO_BANK',         h:'Submitted to bank',         who:'DUSS' },
+  { key:'LOAN_SANCTIONED',           h:'Loan sanctioned',           who:'Bank', future:true },
+];
+const T = ['24 Jun','25 Jun','28 Jun','30 Jun','2 Jul','—','—','—','—'];
+
+const scenarios = {
+  happy:    { current:'PENDING_SUPERVISOR_VERIFY', next:'Next: a route supervisor visits to verify your details.', returnedAt:null },
+  returned: { current:'APPLICATION_PENDING', next:'Action needed: re-upload a clearer bank passbook, then resubmit.', returnedAt:'PENDING_SUPERVISOR_VERIFY' },
+};
+
+function scenario(name, btn){
+  document.querySelectorAll('.seg button').forEach(b=>b.classList.remove('on'));
+  if(btn) btn.classList.add('on');
+  const sc = scenarios[name];
+  const curIdx = STEPS.findIndex(s=>s.key===sc.current);
+  document.getElementById('curSt').textContent = STEPS[curIdx].h;
+  document.getElementById('curNx').textContent = sc.next;
+
+  const ul = document.getElementById('tl'); ul.innerHTML='';
+  const events = [];
+  STEPS.forEach((s,i)=>{
+    let cls = i<curIdx ? 'done' : (i===curIdx ? 'now' : 'future');
+    const li = document.createElement('li'); li.className = cls;
+    let extra = '';
+    if(name==='returned' && s.key==='PENDING_SUPERVISOR_VERIFY'){
+      extra = '<div class="rtn">↩ Returned for correction — "bank passbook photo unclear"</div>';
+    }
+    li.innerHTML = `<div class="h">${s.h}</div><div class="t">${cls==='future'?'pending':T[i]+' · '+s.who}</div>${extra}`;
+    ul.appendChild(li);
+    if(cls!=='future') events.push({ eventType:'cia.'+s.key.toLowerCase(), at:T[i], by:s.who });
+  });
+
+  document.getElementById('jsonOut').textContent = JSON.stringify({
+    applicationUuid:'a1f0…mock', reference:'CIA-2026-000481',
+    status: sc.current, asOf:'2026-07-11T09:12:00+05:30',
+    nextStep: sc.next,
+    returnedFor: sc.returnedAt ? { fromStatus: sc.returnedAt, reason:'bank passbook photo unclear' } : null,
+    timeline: events,
+  }, null, 2);
+}
+scenario('happy', null);
+</script>
+</body>
+</html>

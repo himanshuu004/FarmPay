@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CIA · Milk-payment EMI ledger (farmer)</title>
+<style>
+  :root{--bg:#f4f6f5;--card:#fff;--ink:#14201b;--muted:#6b7c74;--line:#e2e8e4;--brand:#0f7a4d;--brand-d:#0a5c3a;--accent:#e8f5ee;--warn:#b45309;--warnbg:#fef3e2;--blue:#0b5c8a;--bluebg:#e6f0f6;--danger:#b42318}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+  .wrap{max-width:1040px;margin:0 auto;padding:26px 20px 60px}
+  a.back{color:var(--brand-d);font-size:13px;text-decoration:none;font-weight:700}
+  h1{font-size:24px;margin:8px 0 2px}
+  .phase{display:inline-block;background:var(--warnbg);color:var(--warn);border-radius:99px;padding:2px 10px;font-size:11px;font-weight:800;margin-left:6px}
+  .lede{color:var(--muted);margin:0 0 16px;max-width:680px;font-size:14px}
+  .stage{display:flex;gap:20px;flex-wrap:wrap;align-items:flex-start}
+  .phone{width:340px;background:#0b120e;border-radius:34px;padding:10px;box-shadow:0 20px 50px rgba(10,30,20,.22);flex:0 0 auto}
+  .screen{background:var(--bg);border-radius:26px;overflow:hidden;height:668px;display:flex;flex-direction:column}
+  .bar{background:var(--brand-d);color:#fff;padding:12px 15px}.bar .t{font-weight:700}.bar .s{font-size:12px;opacity:.85}
+  .asof{background:var(--bluebg);color:var(--blue);font-size:12px;padding:6px 15px;border-bottom:1px solid #d4e6f1}
+  .body{padding:14px 15px;overflow:auto;flex:1}
+  .mode{background:var(--warnbg);color:var(--warn);border:1px solid #f3e2c8;border-radius:10px;padding:9px 11px;font-size:12px;margin-bottom:12px}
+  .out{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center}
+  .out .v{font-size:20px;font-weight:800;color:var(--brand-d)}.out .l{font-size:12px;color:var(--muted)}
+  .m{display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:11px 12px;margin-bottom:8px}
+  .m .mo{width:56px;font-weight:800;font-size:13px}
+  .m .g{flex:1;font-size:12px;color:var(--muted)}
+  .m .g b{color:var(--ink);font-weight:700}
+  .st{font-size:10px;font-weight:800;padding:2px 8px;border-radius:99px;white-space:nowrap}
+  .st-paid{background:var(--accent);color:var(--brand-d)} .st-part{background:var(--warnbg);color:var(--warn)} .st-over{background:#fdeeec;color:var(--danger)} .st-due{background:var(--bluebg);color:var(--blue)}
+  .spec{flex:1;min-width:280px}
+  .spec h2{font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:6px 0 8px}
+  pre{background:#0b120e;color:#d6f5e3;border-radius:12px;padding:14px;font-size:12px;line-height:1.5;overflow:auto;max-height:300px}
+  .note{font-size:13px;color:var(--muted);border-top:1px solid var(--line);margin-top:14px;padding-top:12px}
+  .k{color:#7fd0a3}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="index.html">← CIA prototypes</a>
+  <h1>Milk-payment EMI ledger <span class="phase">CIA-2</span></h1>
+  <p class="lede">The honest recovery view: each month's EMI vs what was actually deducted from the farmer's milk payment and remitted to the loan. Reconciled from the ERP settlement file; classified paid / partial / overdue / default. Settled mock = the spec for Slice L.</p>
+
+  <div class="stage">
+    <div class="phone">
+      <div class="screen">
+        <div class="bar"><div class="t">Loan recovery</div><div class="s">CIA-2026-000481 · SBIN ••••7781</div></div>
+        <div class="asof">as of yesterday's settlement file</div>
+        <div class="body">
+          <div class="mode">🔒 Track-only mode — deductions are read from the ERP. The app will <b>initiate</b> deductions only once a farmer–society–bank consent is on file (open-question #1).</div>
+          <div class="out"><div><div class="v">₹18,350</div><div class="l">outstanding</div></div><div><div class="l" style="text-align:right">next EMI</div><b>₹2,150 · Dec 1</b></div></div>
+          <div id="rows"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="spec">
+      <h2>Mock JSON — GET /applications/:id/emi (ledger)</h2>
+      <pre id="jsonOut"></pre>
+      <div class="note">
+        <b>Rules this mock encodes (→ backend spec):</b><br>
+        • ERP deductions are reconciled against the schedule: <span class="k">due ↔ deducted ↔ remitted ↔ pending</span>.<br>
+        • Each installment is classified <span class="k">PAID / PARTIAL / OVERDUE / DEFAULT</span> per config (grace days, default buckets — open-question #12).<br>
+        • <span class="k">Track by default</span>; the app initiates a deduction ONLY where a recorded legal-authorisation + tri-partite consent artefact exists, else stays track-only (Convention 33). No consent → the initiate path is dark.<br>
+        • Honest freshness — <span class="k">"as of yesterday's settlement"</span>, never pretend-live.<br>
+        • Partial / overdue notify farmer + DCS; CIA credit ≠ KCC ≠ COOP (Convention 34).
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const rows = [
+  { mo:'Aug', due:2150, deducted:2150, remitted:2150, status:'PAID' },
+  { mo:'Sep', due:2150, deducted:2150, remitted:2150, status:'PAID' },
+  { mo:'Oct', due:2150, deducted:1200, remitted:1200, status:'PARTIAL' },
+  { mo:'Nov', due:2150, deducted:0,    remitted:0,    status:'OVERDUE' },
+  { mo:'Dec', due:2150, deducted:0,    remitted:0,    status:'DUE' },
+];
+const cls = { PAID:'st-paid', PARTIAL:'st-part', OVERDUE:'st-over', DUE:'st-due', DEFAULT:'st-over' };
+const rupee = (n) => '₹' + n.toLocaleString('en-IN');
+document.getElementById('rows').innerHTML = rows.map((r) => {
+  const pending = r.due - r.deducted;
+  const detail = r.status === 'PAID' ? `deducted ${rupee(r.deducted)}` :
+    r.status === 'PARTIAL' ? `deducted <b>${rupee(r.deducted)}</b> · pending ${rupee(pending)}` :
+    r.status === 'OVERDUE' ? `nothing deducted · <b>${rupee(pending)}</b> overdue` : `due ${rupee(r.due)}`;
+  return `<div class="m"><div class="mo">${r.mo}</div><div class="g">${detail}</div><span class="st ${cls[r.status]}">${r.status.toLowerCase()}</span></div>`;
+}).join('');
+document.getElementById('jsonOut').textContent = JSON.stringify({
+  applicationUuid:'a1f0…mock', mode:'track-only', consentOnFile:false,
+  outstanding:18350, nextEmi:{ amount:2150, dueDate:'2026-12-01' },
+  ledger: rows.map((r) => ({ month:r.mo, emiDue:r.due, amountDeducted:r.deducted, amountRemitted:r.remitted, pending:r.due-r.deducted, status:r.status })),
+}, null, 2);
+</script>
+</body>
+</html>

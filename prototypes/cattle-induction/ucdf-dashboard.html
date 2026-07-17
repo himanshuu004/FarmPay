@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CIA · UCDF command dashboard</title>
+<style>
+  :root{--bg:#f4f6f5;--card:#fff;--ink:#14201b;--muted:#6b7c74;--line:#e2e8e4;--brand:#0f7a4d;--brand-d:#0a5c3a;--accent:#e8f5ee;--warn:#b45309;--warnbg:#fef3e2;--blue:#0b5c8a;--bluebg:#e6f0f6;--danger:#b42318;--purple:#6b3fa0;--purplebg:#f0eaf8}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+  .wrap{max-width:1120px;margin:0 auto;padding:26px 22px 60px}
+  a.back{color:var(--brand-d);font-size:13px;text-decoration:none;font-weight:700}
+  h1{font-size:24px;margin:8px 0 2px}
+  .lede{color:var(--muted);margin:0 0 16px;max-width:800px;font-size:14px}
+  .head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px}
+  .asof{font-size:12px;color:var(--blue);background:var(--bluebg);padding:4px 10px;border-radius:99px}
+  .tiles{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
+  @media(max-width:820px){.tiles{grid-template-columns:repeat(3,1fr)}}
+  @media(max-width:520px){.tiles{grid-template-columns:repeat(2,1fr)}}
+  .tile{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 13px;cursor:pointer;transition:transform .1s}
+  .tile:hover{transform:translateY(-2px)}
+  .tile .v{font-size:24px;font-weight:800;color:var(--brand-d)}
+  .tile .l{font-size:12px;color:var(--muted)}
+  .cols{display:grid;grid-template-columns:1.4fr 1fr;gap:14px;margin-top:14px}
+  @media(max-width:820px){.cols{grid-template-columns:1fr}}
+  .panel{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 16px}
+  .panel h3{margin:0 0 10px;font-size:14px}
+  .funnel .f{display:flex;align-items:center;gap:10px;margin-bottom:6px}
+  .funnel .bar{height:22px;border-radius:6px;background:var(--accent);position:relative;flex:1}
+  .funnel .bar i{position:absolute;inset:0;background:var(--brand);border-radius:6px}
+  .funnel .lab{width:130px;font-size:12px;color:var(--muted)}
+  .funnel .num{width:34px;text-align:right;font-weight:800;font-size:13px}
+  .exc{display:flex;align-items:flex-start;gap:9px;padding:8px 0;border-bottom:1px solid var(--line);font-size:13px}
+  .exc:last-child{border-bottom:0}
+  .dot{width:8px;height:8px;border-radius:50%;margin-top:6px;flex:0 0 auto}
+  .d-sla{background:var(--danger)}.d-out{background:var(--warn)}.d-dup{background:var(--purple)}
+  .exc b{display:block}.exc span{color:var(--muted);font-size:12px}
+  .tag{font-size:11px;font-weight:800;padding:2px 8px;border-radius:99px;background:var(--warnbg);color:var(--warn)}
+  .spec{margin-top:16px}
+  .spec h2{font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:6px 0 8px}
+  pre{background:#0b120e;color:#d6f5e3;border-radius:12px;padding:14px;font-size:12px;line-height:1.5;overflow:auto;max-height:240px}
+  .note{font-size:13px;color:var(--muted);border-top:1px solid var(--line);margin-top:14px;padding-top:12px}
+  .k{color:#7fd0a3}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="index.html">← CIA prototypes</a>
+  <h1>UCDF command dashboard</h1>
+  <p class="lede">UCDF's live line of sight over the whole programme — counts by stage, the EOI→sanction funnel, and an exception panel (SLA breaches, price outliers, duplicate tags). Read-only; every tile drills to the underlying applications. Built from the append-only <code>domain_events</code> outbox. Settled mock = the spec for Slice I.</p>
+
+  <div class="head">
+    <div style="font-weight:800">Uttarakhand · all districts</div>
+    <div class="asof">counts as of 11 Jul 2026, 09:12 (last sync)</div>
+  </div>
+
+  <div class="tiles" id="tiles"></div>
+
+  <div class="cols">
+    <div class="panel funnel">
+      <h3>Funnel — EOI → sanction</h3>
+      <div id="funnel"></div>
+    </div>
+    <div class="panel">
+      <h3>⚠ Exceptions <span class="tag" id="excCount"></span></h3>
+      <div id="exc"></div>
+    </div>
+  </div>
+
+  <div class="spec">
+    <h2>Mock JSON — GET /admin/cattle-induction/dashboard</h2>
+    <pre id="jsonOut"></pre>
+    <div class="note">
+      <b>Rules this mock encodes (→ backend spec):</b><br>
+      • Tiles + funnel are <span class="k">aggregates over domain_events / application status</span> — every tile drills to rows.<br>
+      • The exception panel surfaces <span class="k">SLA breaches</span> from ciaStageSlaJob (a stage sitting past its configured TAT escalates one level and appears here).<br>
+      • Everything is <span class="k">read-only</span>; the AUDITOR sees the same plus the append-only audit log.<br>
+      • Freshness is honest — an <span class="k">"as of" (last sync)</span> label, never pretend-live.<br>
+      • Banker/gov consumption in v1 is generated documents (packet, reports); live dashboards for them are Phase 4.
+    </div>
+  </div>
+</div>
+
+<script>
+const tiles = [
+  { l:'Expressions of interest', v:128 }, { l:'Selected by DCS', v:96 }, { l:'Pending supervisor', v:22 },
+  { l:'With DUSS', v:18 }, { l:'Submitted to bank', v:41 }, { l:'Loan sanctioned', v:33 },
+  { l:'Cattle captured', v:19 }, { l:'Awaiting verification', v:7 }, { l:'Returned/rejected', v:11 }, { l:'SLA breaches', v:4 },
+];
+const funnel = [
+  { lab:'EOI', n:128 }, { lab:'Selected', n:96 }, { lab:'Verified', n:74 },
+  { lab:'Submitted to bank', n:41 }, { lab:'Sanctioned', n:33 }, { lab:'Cattle captured', n:19 },
+];
+const exceptions = [
+  { t:'sla', b:'Bank appraisal overdue (15d)', s:'3 applications · Ranchi branch → escalated to Regional' },
+  { t:'sla', b:'Supervisor verification overdue (5d)', s:'1 application · Kanke DCS → escalated to DUSS' },
+  { t:'out', b:'Price outlier', s:'₹92,000 vs breed band ₹55–70k · flagged for review' },
+  { t:'dup', b:'Duplicate ear-tag attempt', s:'tag 4471… blocked at capture' },
+];
+
+document.getElementById('tiles').innerHTML = tiles.map(t=>`<div class="tile"><div class="v">${t.v}</div><div class="l">${t.l}</div></div>`).join('');
+const max = funnel[0].n;
+document.getElementById('funnel').innerHTML = funnel.map(f=>`<div class="f"><div class="lab">${f.lab}</div><div class="bar"><i style="width:${Math.round(100*f.n/max)}%"></i></div><div class="num">${f.n}</div></div>`).join('');
+document.getElementById('excCount').textContent = exceptions.length;
+document.getElementById('exc').innerHTML = exceptions.map(e=>`<div class="exc"><span class="dot d-${e.t}"></span><div><b>${e.b}</b><span>${e.s}</span></div></div>`).join('');
+document.getElementById('jsonOut').textContent = JSON.stringify({
+  asOf:'2026-07-11T09:12:00+05:30',
+  tiles: Object.fromEntries(tiles.map(t=>[t.l.toLowerCase().replace(/[^a-z]+/g,'_'), t.v])),
+  funnel, exceptions: exceptions.length, source:'domain_events',
+}, null, 2);
+</script>
+</body>
+</html>

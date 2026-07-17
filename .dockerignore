@@ -1,0 +1,9 @@
+node_modules
+app
+.git
+.expo
+prototypes
+data
+**/*.log
+.env
+deploy/.env

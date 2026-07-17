@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CIA · Application + Documents (farmer)</title>
+<style>
+  :root{--bg:#f4f6f5;--card:#fff;--ink:#14201b;--muted:#6b7c74;--line:#e2e8e4;--brand:#0f7a4d;--brand-d:#0a5c3a;--accent:#e8f5ee;--warn:#b45309;--warnbg:#fef3e2;--blue:#0b5c8a;--bluebg:#e6f0f6;--danger:#b42318}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+  .wrap{max-width:1040px;margin:0 auto;padding:28px 20px 60px}
+  a.back{color:var(--brand-d);font-size:13px;text-decoration:none;font-weight:700}
+  h1{font-size:24px;margin:8px 0 2px}
+  .lede{color:var(--muted);margin:0 0 18px;max-width:640px;font-size:14px}
+  .stage{display:flex;gap:20px;flex-wrap:wrap;align-items:flex-start}
+  /* phone */
+  .phone{width:340px;background:#0b120e;border-radius:34px;padding:10px;box-shadow:0 20px 50px rgba(10,30,20,.22);flex:0 0 auto}
+  .screen{background:var(--bg);border-radius:26px;overflow:hidden;height:660px;display:flex;flex-direction:column}
+  .bar{background:var(--brand-d);color:#fff;padding:12px 16px}
+  .bar .t{font-weight:700;font-size:15px}
+  .bar .s{font-size:12px;opacity:.85}
+  .off{background:var(--warnbg);color:var(--warn);font-size:12px;padding:6px 16px;display:flex;gap:6px;align-items:center;border-bottom:1px solid #f3e2c8}
+  .body{padding:14px 16px;overflow:auto;flex:1}
+  .prog{height:6px;background:var(--line);border-radius:99px;overflow:hidden;margin:2px 0 14px}
+  .prog i{display:block;height:100%;background:var(--brand);width:40%;transition:width .3s}
+  label{display:block;font-size:12px;color:var(--muted);font-weight:700;margin:12px 0 4px;text-transform:uppercase;letter-spacing:.04em}
+  .fld{display:flex;align-items:center;gap:8px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+  .fld input{border:0;outline:0;font-size:15px;width:100%;background:transparent;color:var(--ink)}
+  .pill{font-size:10px;font-weight:800;padding:2px 7px;border-radius:99px;white-space:nowrap}
+  .pill.erp{background:var(--bluebg);color:var(--blue)}
+  .pill.edited{background:var(--warnbg);color:var(--warn)}
+  .doc{display:flex;align-items:center;gap:11px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:11px 12px;margin-bottom:9px}
+  .doc .ic{width:40px;height:40px;border-radius:10px;background:var(--accent);display:grid;place-items:center;font-size:19px;flex:0 0 auto}
+  .doc .n{flex:1}
+  .doc .n b{display:block;font-size:14px}
+  .doc .n span{font-size:12px;color:var(--muted)}
+  .doc .req{font-size:10px;font-weight:800;color:var(--danger)}
+  .doc.done{border-color:#bfe3cf;background:#f2fbf5}
+  .doc.done .ic{background:#d8f0e1}
+  .cap{border:0;background:var(--brand);color:#fff;font-weight:700;font-size:13px;border-radius:10px;padding:8px 12px;cursor:pointer}
+  .cap.re{background:#fff;color:var(--brand-d);border:1px solid var(--line)}
+  .qc{font-size:11px;margin-top:2px}
+  .qc.ok{color:var(--brand-d)} .qc.bad{color:var(--danger)}
+  .btnrow{display:flex;gap:8px;margin-top:16px}
+  button.primary{flex:1;border:0;background:var(--brand);color:#fff;font-weight:800;font-size:15px;border-radius:12px;padding:13px;cursor:pointer}
+  button.primary:disabled{background:#b9c6bf;cursor:not-allowed}
+  button.ghost{border:1px solid var(--line);background:#fff;color:var(--brand-d);font-weight:700;border-radius:12px;padding:13px 14px;cursor:pointer}
+  .hint{font-size:12px;color:var(--muted);margin-top:8px;text-align:center}
+  .err{background:#fdeeec;color:var(--danger);border:1px solid #f6cfc9;border-radius:10px;padding:9px 11px;font-size:12px;margin-top:10px;display:none}
+  .err.on{display:block}
+  /* spec panel */
+  .spec{flex:1;min-width:280px}
+  .spec h2{font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:6px 0 8px}
+  pre{background:#0b120e;color:#d6f5e3;border-radius:12px;padding:14px;font-size:12px;line-height:1.5;overflow:auto;max-height:300px}
+  .note{font-size:13px;color:var(--muted);border-top:1px solid var(--line);margin-top:14px;padding-top:12px}
+  .k{color:#7fd0a3}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="index.html">← CIA prototypes</a>
+  <h1>Application + Documents</h1>
+  <p class="lede">Farmer fills the application (pre-filled from the ERP — barely any typing) and photographs the checklist documents. Draft persists offline; submit is blocked until every <b>mandatory</b> document is captured. Settled mock = the spec for Slice B.</p>
+
+  <div class="stage">
+    <!-- PHONE -->
+    <div class="phone">
+      <div class="screen">
+        <div class="bar"><div class="t">Cattle scheme — application</div><div class="s">Ramesh Mahto · SOC-RANCHI-014</div></div>
+        <div class="off">⚠ Offline — saved on this phone, will sync when you have signal</div>
+        <div class="body">
+          <div class="prog"><i id="prog"></i></div>
+
+          <label>Applicant (from Aanchal ERP)</label>
+          <div class="fld"><input value="Ramesh Mahto" readonly><span class="pill erp">ERP</span></div>
+          <label>Mobile</label>
+          <div class="fld"><input value="90000 00001" readonly><span class="pill erp">ERP</span></div>
+          <label>Society / DCS</label>
+          <div class="fld"><input value="Kanke DCS (SOC-RANCHI-014)" readonly><span class="pill erp">ERP</span></div>
+          <label>Bank account (loan a/c)</label>
+          <div class="fld"><input id="acct" value="SBI ••••7781" oninput="edited('acct')"><span id="acctPill" class="pill erp">ERP</span></div>
+
+          <label>How many cattle? (max 2)</label>
+          <div class="fld"><input id="count" type="number" min="1" max="2" value="1"></div>
+          <label>Preferred breed (optional)</label>
+          <div class="fld"><input id="breed" placeholder="e.g. HF crossbred"></div>
+
+          <label style="margin-top:16px">Documents (📷 camera only)</label>
+          <div id="docs"></div>
+
+          <div class="err" id="err">📄 Capture the mandatory documents before submitting.</div>
+          <div class="btnrow">
+            <button class="ghost" onclick="alert('Draft saved on device ✓ (offline). Resume anytime.')">Save draft</button>
+            <button class="primary" id="submitBtn" onclick="submitApp()" disabled>Submit</button>
+          </div>
+          <div class="hint" id="hint">1 of 2 mandatory documents captured</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SPEC -->
+    <div class="spec">
+      <h2>Mock JSON — mirrors the CIA-1 API</h2>
+      <pre id="jsonOut"></pre>
+      <div class="note">
+        <b>Rules this mock encodes (→ backend spec):</b><br>
+        • Identity/bank/society fields <span class="k">pre-filled from ERP</span>, editable — an edit flags the field <span class="k">EDITED</span> for verification.<br>
+        • Checklist is <span class="k">config</span> (<code>cia_scheme_configs.doc_checklist</code>): per item <code>MANDATORY|OPTIONAL|CONDITIONAL</code>.<br>
+        • Capture is <span class="k">camera-only</span> + on-device quality check (retake on blur); each file content-addressed + hashed, EXIF/GPS preserved.<br>
+        • <code>POST …/applications/:id/submit</code> is <span class="k">blocked</span> until every MANDATORY key is present → <code>APPLICATION_PENDING → PENDING_SUPERVISOR_VERIFY</code>.<br>
+        • Draft persists offline (local queue → idempotent sync).
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// Mock JSON — the shape the real /api/v1/cattle-induction endpoints return.
+const scheme = {
+  schemeVersion: 'CIA_UK_2026_v2',
+  documentChecklist: [
+    { key:'aadhaar',       label:'Aadhaar card',   required:'MANDATORY', icon:'🪪' },
+    { key:'bank_passbook', label:'Bank passbook',  required:'MANDATORY', icon:'🏦' },
+    { key:'photo',         label:'Your photo',     required:'OPTIONAL',  icon:'🧑' },
+  ],
+};
+const application = {
+  applicationUuid: 'a1f0…mock', status:'APPLICATION_PENDING', schemeVersion: scheme.schemeVersion,
+  prefill:{ name:'Ramesh Mahto', mobile:'9000000001', dcsRef:'SOC-RANCHI-014', bankAccount:'SBI••••7781', source:'ERP' },
+  requestedCattleCount:1, documents:[],
+};
+const captured = {};      // key -> {docRef, contentHash}
+const editedFields = {};
+
+function renderDocs(){
+  const el = document.getElementById('docs'); el.innerHTML='';
+  scheme.documentChecklist.forEach(d=>{
+    const done = !!captured[d.key];
+    const row = document.createElement('div');
+    row.className = 'doc' + (done?' done':'');
+    row.innerHTML = `<div class="ic">${done?'✅':d.icon}</div>
+      <div class="n"><b>${d.label}</b>
+        <span>${done? 'captured · hash '+captured[d.key].contentHash.slice(0,8)+'…' : (d.required==='MANDATORY'?'<span class=req>REQUIRED</span>':'optional')}</span>
+        ${done?'':'<div class="qc" id="qc_'+d.key+'"></div>'}</div>
+      <button class="cap ${done?'re':''}" onclick="capture('${d.key}')">${done?'Retake':'📷 Capture'}</button>`;
+    el.appendChild(row);
+  });
+  recalc();
+}
+function capture(key){
+  // Simulate an on-device quality check: first tap on aadhaar "blurs" to show retake UX.
+  if(key==='aadhaar' && !captured.__aadhaarTried){ captured.__aadhaarTried=true;
+    const qc=document.getElementById('qc_'+key); if(qc){qc.className='qc bad';qc.textContent='⚠ Too blurry — hold steady and retake';}
+    return;
+  }
+  const hash = [...cryptoRandom()].map(b=>b.toString(16).padStart(2,'0')).join('');
+  captured[key] = { docRef:'s3://cia/'+key+'/'+hash.slice(0,10), contentHash:hash };
+  renderDocs();
+}
+function cryptoRandom(){ const a=new Uint8Array(32); (window.crypto||{getRandomValues:x=>x}).getRandomValues?window.crypto.getRandomValues(a):a.forEach((_,i)=>a[i]=i*7); return a; }
+function edited(id){ editedFields[id]=true; const p=document.getElementById(id+'Pill'); if(p){p.className='pill edited';p.textContent='EDITED';} recalc(); }
+
+function mandatoryDone(){ return scheme.documentChecklist.filter(d=>d.required==='MANDATORY').every(d=>captured[d.key]); }
+function recalc(){
+  const mand = scheme.documentChecklist.filter(d=>d.required==='MANDATORY');
+  const got = mand.filter(d=>captured[d.key]).length;
+  document.getElementById('hint').textContent = `${got} of ${mand.length} mandatory documents captured`;
+  document.getElementById('prog').style.width = (40 + 60*got/mand.length) + '%';
+  document.getElementById('submitBtn').disabled = !mandatoryDone();
+  document.getElementById('err').classList.toggle('on', false);
+  // live JSON
+  application.documents = Object.keys(captured).filter(k=>!k.startsWith('__')).map(k=>({checklistKey:k, ...captured[k]}));
+  application.editedFields = Object.keys(editedFields);
+  document.getElementById('jsonOut').textContent = JSON.stringify({ scheme, application }, null, 2);
+}
+function submitApp(){
+  if(!mandatoryDone()){ document.getElementById('err').classList.add('on'); return; }
+  alert('✅ Submitted. Status: APPLICATION_PENDING → PENDING_SUPERVISOR_VERIFY.\nA route supervisor will field-verify next.');
+}
+renderDocs();
+</script>
+</body>
+</html>

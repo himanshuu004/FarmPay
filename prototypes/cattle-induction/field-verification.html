@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CIA · Supervisor field verification (offline)</title>
+<style>
+  :root{--bg:#f4f6f5;--card:#fff;--ink:#14201b;--muted:#6b7c74;--line:#e2e8e4;--brand:#0f7a4d;--brand-d:#0a5c3a;--accent:#e8f5ee;--warn:#b45309;--warnbg:#fef3e2;--blue:#0b5c8a;--bluebg:#e6f0f6;--danger:#b42318;--ok:#0f7a4d}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+  .wrap{max-width:1060px;margin:0 auto;padding:26px 20px 60px}
+  a.back{color:var(--brand-d);font-size:13px;text-decoration:none;font-weight:700}
+  h1{font-size:24px;margin:8px 0 2px}
+  .lede{color:var(--muted);margin:0 0 16px;max-width:720px;font-size:14px}
+  .stage{display:flex;gap:20px;flex-wrap:wrap;align-items:flex-start}
+  .phone{width:346px;background:#0b120e;border-radius:34px;padding:10px;box-shadow:0 20px 50px rgba(10,30,20,.22);flex:0 0 auto}
+  .screen{background:var(--bg);border-radius:26px;overflow:hidden;height:684px;display:flex;flex-direction:column}
+  .bar{background:var(--brand-d);color:#fff;padding:11px 15px;display:flex;justify-content:space-between;align-items:center}
+  .bar .t{font-weight:700;font-size:14px}
+  .net{font-size:11px;font-weight:800;padding:3px 8px;border-radius:99px;cursor:pointer;border:0}
+  .net.off{background:var(--warnbg);color:var(--warn)} .net.on{background:#d8f0e1;color:var(--brand-d)}
+  .body{padding:13px 15px;overflow:auto;flex:1}
+  .who{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin-bottom:12px}
+  .who b{font-size:15px}.who span{font-size:12px;color:var(--muted)}
+  .sec{font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);font-weight:800;margin:14px 0 6px}
+  .chk{display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin-bottom:7px;cursor:pointer}
+  .chk .bx{width:22px;height:22px;border-radius:6px;border:2px solid var(--line);display:grid;place-items:center;font-size:14px;color:#fff;flex:0 0 auto}
+  .chk.on .bx{background:var(--ok);border-color:var(--ok)}
+  .chk .l{flex:1;font-size:14px}
+  .chk .l small{display:block;color:var(--muted);font-size:12px}
+  .geo{display:flex;gap:8px}
+  .geo .g{flex:1;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:9px;font-size:12px;text-align:center;cursor:pointer}
+  .geo .g.on{border-color:#bfe3cf;background:#f2fbf5}
+  .geo .g b{display:block;font-size:12px}
+  .geo .g span{color:var(--muted);font-size:11px}
+  .photos{display:flex;gap:8px;margin-top:6px}
+  .ph{width:64px;height:64px;border-radius:10px;border:2px dashed var(--line);display:grid;place-items:center;font-size:22px;color:var(--muted);cursor:pointer;background:var(--card)}
+  .ph.on{border-style:solid;border-color:#bfe3cf;background:#eef9f2;color:var(--brand-d)}
+  textarea{width:100%;border:1px solid var(--line);border-radius:10px;padding:9px;font-size:13px;font-family:inherit;margin-top:4px}
+  .acts{display:flex;gap:7px;margin-top:12px}
+  .acts button{flex:1;border:1px solid var(--line);background:#fff;border-radius:11px;padding:11px 6px;font-weight:800;font-size:13px;cursor:pointer}
+  .acts .ap.on{background:var(--ok);color:#fff;border-color:var(--ok)} .acts .rt.on{background:var(--warn);color:#fff;border-color:var(--warn)} .acts .rj.on{background:var(--danger);color:#fff;border-color:var(--danger)}
+  .queue{border-top:1px solid var(--line);margin-top:12px;padding-top:10px}
+  .qitem{display:flex;justify-content:space-between;align-items:center;font-size:12px;padding:5px 0}
+  .badge{font-size:10px;font-weight:800;padding:2px 7px;border-radius:99px}
+  .b-q{background:var(--warnbg);color:var(--warn)} .b-s{background:var(--bluebg);color:var(--blue)} .b-ok{background:#d8f0e1;color:var(--brand-d)} .b-c{background:#fdeeec;color:var(--danger)}
+  .submit{border:0;background:var(--brand);color:#fff;font-weight:800;font-size:15px;border-radius:12px;padding:12px;width:100%;cursor:pointer;margin-top:10px}
+  .submit:disabled{background:#b9c6bf;cursor:not-allowed}
+  .spec{flex:1;min-width:280px}
+  .spec h2{font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:6px 0 8px}
+  pre{background:#0b120e;color:#d6f5e3;border-radius:12px;padding:14px;font-size:12px;line-height:1.5;overflow:auto;max-height:300px}
+  .note{font-size:13px;color:var(--muted);border-top:1px solid var(--line);margin-top:14px;padding-top:12px}
+  .k{color:#7fd0a3}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="index.html">← CIA prototypes</a>
+  <h1>Supervisor field verification <span style="font-size:14px;color:var(--muted)">· offline field PWA</span></h1>
+  <p class="lede">The route supervisor verifies reality on the ground — identity, membership, milk-pouring, existing cattle, shed/residence geo-tags, live photos — with <b>no signal</b>. Everything queues on the device and syncs idempotently later. Toggle "Offline/Online" to see the local queue drain. Settled mock = the spec for Slice E.</p>
+
+  <div class="stage">
+    <div class="phone">
+      <div class="screen">
+        <div class="bar"><div class="t">Field verification</div><button class="net off" id="net" onclick="toggleNet()">● Offline</button></div>
+        <div class="body">
+          <div class="who"><b>Ramesh Mahto · F1001</b><br><span>CIA-2026-000481 · Kanke DCS · assigned to you</span></div>
+
+          <div class="sec">Checks</div>
+          <div id="checks"></div>
+
+          <div class="sec">Geo-tag (live GPS)</div>
+          <div class="geo">
+            <div class="g" id="g_shed" onclick="geo('shed')"><b>📍 Shed</b><span>tap to capture</span></div>
+            <div class="g" id="g_res" onclick="geo('res')"><b>📍 Residence</b><span>tap to capture</span></div>
+          </div>
+
+          <div class="sec">Live photos (camera only)</div>
+          <div class="photos" id="photos"></div>
+
+          <div class="sec">Remarks</div>
+          <textarea id="remarks" rows="2" placeholder="Required if returning or rejecting"></textarea>
+
+          <div class="sec">Decision</div>
+          <div class="acts">
+            <button class="ap" onclick="setAct('APPROVED')">✔ Approve</button>
+            <button class="rt" onclick="setAct('RETURNED')">↩ Return</button>
+            <button class="rj" onclick="setAct('REJECTED')">✕ Reject</button>
+          </div>
+          <button class="submit" id="submit" disabled onclick="queueSubmit()">Save (queues on device)</button>
+
+          <div class="queue" id="queueWrap" style="display:none">
+            <div class="sec" style="margin-top:0">Local sync queue</div>
+            <div id="queue"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="spec">
+      <h2>Mock JSON — POST /field/verify/:appUuid (queued) → /field/sync</h2>
+      <pre id="jsonOut"></pre>
+      <div class="note">
+        <b>Rules this mock encodes (→ backend spec):</b><br>
+        • Works fully <span class="k">offline</span>: verify writes queue locally (QUEUED_LOCAL → SYNCING → SYNCED), sync is <span class="k">idempotent</span> (replay-safe by client op id).<br>
+        • Geo (shed + residence) and <span class="k">≥1 live photo</span> are mandatory; media keep EXIF/GPS <span class="k">lossless</span>, content-addressed.<br>
+        • Remarks mandatory on Return/Reject. Approve → <span class="k">FORWARDED_TO_DUSS</span>; Return → <span class="k">RETURNED_FOR_CORRECTION</span> (clock restarts on farmer); Reject → rejected.<br>
+        • Conflict on sync → <span class="k">server-wins</span> + notify (shown as a CONFLICT badge).<br>
+        • Route supervisor acts <span class="k">in-app</span> — the CIA carve-out (Convention 30).
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const CHECKS = [
+  { key:'identity_ok',     l:'Identity verified',      s:'photo ID matches the member' },
+  { key:'membership_ok',   l:'DCS membership verified', s:'active member of this society' },
+  { key:'milk_pouring_ok', l:'Milk-pouring history',    s:'pulled from ERP · pouring regularly' },
+  { key:'existing_cattle', l:'Existing cattle checked',  s:'counted + photographed' },
+];
+const state = { checks:{}, geo:{}, photos:[false,false], act:null };
+let online=false; const queue=[]; let opSeq=0;
+
+function renderChecks(){
+  const el=document.getElementById('checks'); el.innerHTML='';
+  CHECKS.forEach(c=>{
+    const on=!!state.checks[c.key];
+    const d=document.createElement('div'); d.className='chk'+(on?' on':''); d.onclick=()=>{state.checks[c.key]=!on;renderChecks();recalc();};
+    d.innerHTML=`<div class="bx">${on?'✓':''}</div><div class="l">${c.l}<small>${c.s}</small></div>`;
+    el.appendChild(d);
+  });
+}
+function renderPhotos(){
+  const el=document.getElementById('photos'); el.innerHTML='';
+  state.photos.forEach((on,i)=>{
+    const d=document.createElement('div'); d.className='ph'+(on?' on':''); d.onclick=()=>{state.photos[i]=!on;renderPhotos();recalc();};
+    d.textContent=on?'✅':'📷'; el.appendChild(d);
+  });
+}
+function geo(which){ state.geo[which]={lat:30.31+Math.random()*0.01, lng:78.03+Math.random()*0.01, at:'live'};
+  const g=document.getElementById(which==='shed'?'g_shed':'g_res'); g.classList.add('on');
+  g.querySelector('span').textContent=state.geo[which].lat.toFixed(4)+', '+state.geo[which].lng.toFixed(4); recalc(); }
+function setAct(a){ state.act=a; document.querySelectorAll('.acts button').forEach(b=>b.classList.remove('on'));
+  document.querySelector('.acts .'+({APPROVED:'ap',RETURNED:'rt',REJECTED:'rj'})[a]).classList.add('on'); recalc(); }
+
+function ready(){
+  const allChecks=CHECKS.every(c=>state.checks[c.key]);
+  const geoOk=state.geo.shed&&state.geo.res;
+  const photoOk=state.photos.some(Boolean);
+  const remarkOk=state.act==='APPROVED' || document.getElementById('remarks').value.trim();
+  return state.act && geoOk && photoOk && (state.act==='APPROVED'?allChecks:true) && remarkOk;
+}
+function recalc(){
+  document.getElementById('submit').disabled=!ready();
+  const nextStatus={APPROVED:'FORWARDED_TO_DUSS',RETURNED:'RETURNED_FOR_CORRECTION',REJECTED:'REJECTED'}[state.act]||null;
+  document.getElementById('jsonOut').textContent=JSON.stringify({
+    opId:'op-'+(opSeq+1), applicationUuid:'a1f0…mock', result:state.act,
+    checks:state.checks, shedGeo:state.geo.shed||null, residenceGeo:state.geo.res||null,
+    mediaRefs:state.photos.map((on,i)=>on?('s3://cia/verify/photo'+i):null).filter(Boolean),
+    remarks:document.getElementById('remarks').value||undefined, capturedOffline:!online, nextStatus,
+  },null,2);
+}
+document.getElementById('remarks').addEventListener('input',recalc);
+
+function toggleNet(){ online=!online; const b=document.getElementById('net');
+  b.className='net '+(online?'on':'off'); b.textContent=online?'● Online':'● Offline';
+  if(online) drain();
+}
+function queueSubmit(){ if(!ready())return;
+  const item={ id:'op-'+(++opSeq), result:state.act, status:'QUEUED_LOCAL' };
+  queue.push(item); document.getElementById('queueWrap').style.display='block'; renderQueue();
+  alert('Saved on device ✓ ('+ (online?'will sync now':'offline — will sync when online') +')');
+  if(online) drain();
+}
+function renderQueue(){
+  const el=document.getElementById('queue'); el.innerHTML='';
+  queue.forEach(q=>{ const cls={QUEUED_LOCAL:'b-q',SYNCING:'b-s',SYNCED:'b-ok',CONFLICT:'b-c'}[q.status];
+    const d=document.createElement('div'); d.className='qitem';
+    d.innerHTML=`<span>${q.id} · ${q.result}</span><span class="badge ${cls}">${q.status}</span>`; el.appendChild(d); });
+}
+function drain(){
+  queue.filter(q=>q.status==='QUEUED_LOCAL').forEach((q,i)=>{
+    q.status='SYNCING'; renderQueue();
+    setTimeout(()=>{ // 2nd replay of the same op id = idempotent no-op; here first sync wins
+      q.status = (q.result==='REJECTED' && i===99) ? 'CONFLICT' : 'SYNCED'; renderQueue();
+    }, 500+i*300);
+  });
+}
+renderChecks(); renderPhotos(); recalc();
+</script>
+</body>
+</html>

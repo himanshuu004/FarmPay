@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Allied KCC — Society (Wedge) Prototype</title>
+<style>
+  :root{
+    --bg:#f4f6f5; --card:#fff; --ink:#14201b; --muted:#6b7c74; --line:#e2e8e4;
+    --brand:#0f7a4d; --brand-d:#0a5c3a; --accent:#e8f5ee; --warn:#b4530a; --danger:#b3261e;
+    --meter-bg:#e2ece7;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+  .wrap{max-width:1000px;margin:0 auto;padding:24px;display:flex;gap:28px;flex-wrap:wrap;justify-content:center}
+  .phone{width:360px;background:var(--card);border-radius:28px;box-shadow:0 12px 40px rgba(20,40,30,.12);overflow:hidden;border:1px solid var(--line)}
+  .status{height:26px;background:var(--brand-d)}
+  .top{background:var(--brand);color:#fff;padding:14px 18px}
+  .top h1{margin:0;font-size:16px;font-weight:650}
+  .top .sub{opacity:.85;font-size:12px;margin-top:2px}
+  .screen{display:none;padding:16px 16px 84px;min-height:560px}
+  .screen.on{display:block}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px;margin-bottom:12px}
+  .card h2{margin:0 0 10px;font-size:13px;letter-spacing:.02em;text-transform:uppercase;color:var(--muted)}
+  .kpi{font-size:26px;font-weight:720}
+  .kpi.small{font-size:20px}
+  .row{display:flex;justify-content:space-between;align-items:center;gap:10px}
+  .muted{color:var(--muted)}
+  .chip{display:inline-block;font-size:11px;padding:3px 8px;border-radius:999px;background:var(--accent);color:var(--brand-d);font-weight:600}
+  .freshness{font-size:11px;color:var(--warn);margin-top:4px}
+  .meter{height:14px;border-radius:999px;background:var(--meter-bg);overflow:hidden;margin:8px 0}
+  .meter > span{display:block;height:100%;background:linear-gradient(90deg,var(--brand),var(--brand-d))}
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  th,td{text-align:right;padding:7px 4px;border-bottom:1px solid var(--line)}
+  th:first-child,td:first-child{text-align:left}
+  th{color:var(--muted);font-weight:600}
+  .btn{display:block;width:100%;border:0;border-radius:12px;padding:13px;font-size:15px;font-weight:650;background:var(--brand);color:#fff;cursor:pointer}
+  .btn:disabled{background:#b8c6bf;cursor:not-allowed}
+  .btn.ghost{background:var(--accent);color:var(--brand-d)}
+  .btn.small{padding:9px;font-size:13px}
+  .tabs{position:absolute}
+  .nav{display:flex;border-top:1px solid var(--line);background:#fff}
+  .nav button{flex:1;border:0;background:none;padding:10px 4px 12px;font-size:11px;color:var(--muted);cursor:pointer}
+  .nav button.on{color:var(--brand);font-weight:700}
+  .nav .ico{font-size:18px;display:block}
+  .item{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--line)}
+  .step{display:flex;gap:10px;align-items:flex-start;padding:6px 0}
+  .dot{width:14px;height:14px;border-radius:50%;margin-top:3px;flex:none;background:var(--line)}
+  .dot.done{background:var(--brand)} .dot.now{background:var(--warn);box-shadow:0 0 0 4px #f6e3cf}
+  .step .lbl{font-size:13px} .step .who{font-size:11px;color:var(--muted)}
+  .qty{display:flex;align-items:center;gap:8px}
+  .qty button{width:28px;height:28px;border-radius:8px;border:1px solid var(--line);background:#fff;font-size:16px;cursor:pointer}
+  .note{font-size:12px;color:var(--muted);margin-top:6px}
+  .legend{font-size:11px;color:var(--muted);text-align:center;margin-top:10px;max-width:360px}
+  h3.side{width:100%;text-align:center;color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.08em;margin:4px 0 -8px}
+  .banner{background:#fff8ec;border:1px solid #f0dcc0;color:var(--warn);border-radius:12px;padding:10px 12px;font-size:12px;margin-bottom:12px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div>
+    <h3 class="side">Member — the wedge</h3>
+    <div class="phone">
+      <div class="status"></div>
+      <div class="top">
+        <h1>Aanchal · Kanke DCS</h1>
+        <div class="sub">Ramesh Mahto · Member F1001</div>
+      </div>
+
+      <!-- PASSBOOK -->
+      <section class="screen on" data-screen="passbook">
+        <div class="card">
+          <h2>Milk passbook</h2>
+          <div class="row"><div class="kpi" id="pbTotal">₹44,460</div><span class="chip">6 months</span></div>
+          <div class="freshness">⧗ as of yesterday (filedrop)</div>
+          <table>
+            <tr><th>Month</th><th>Litres</th><th>Value</th></tr>
+            <tbody id="pbRows"></tbody>
+          </table>
+        </div>
+        <div class="card">
+          <h2>Input credit limit — 70% of milk dues</h2>
+          <div class="row"><span class="muted">Outstanding milk dues</span><b id="pbOut">₹5,000</b></div>
+          <div class="meter"><span id="pbMeter" style="width:100%"></span></div>
+          <div class="row"><span class="muted">Available to order</span><b id="pbAvail" style="color:var(--brand-d)">₹3,500</b></div>
+          <div class="note">70% × ₹5,000 − ₹0 in-flight orders</div>
+          <button class="btn" style="margin-top:12px" onclick="go('order')">Order inputs</button>
+        </div>
+      </section>
+
+      <!-- ORDER -->
+      <section class="screen" data-screen="order">
+        <div class="banner" id="windowBanner">🟢 Ordering open — 1st week window (1–7)</div>
+        <div class="card">
+          <h2>Feed &amp; input catalog</h2>
+          <div id="catalog"></div>
+        </div>
+        <div class="card">
+          <div class="row"><span class="muted">Order total</span><b id="ordTotal">₹0</b></div>
+          <div class="row"><span class="muted">Available limit</span><b id="ordAvail">₹3,500</b></div>
+          <div class="note" id="ordMsg"></div>
+          <button class="btn" id="submitBtn" style="margin-top:12px" disabled onclick="submitOrder()">Submit order</button>
+          <div class="note">Your society secretary approves in the Aanchal ERP — the app never approves.</div>
+        </div>
+      </section>
+
+      <!-- ORDERS TIMELINE -->
+      <section class="screen" data-screen="orders">
+        <div class="card">
+          <h2>Order #A1 · ₹3,000</h2>
+          <div id="timeline"></div>
+          <button class="btn" id="receiptBtn" style="margin-top:12px;display:none" onclick="go('receipt')">Confirm receipt</button>
+        </div>
+        <div class="note">Approvals flow in from the ERP. You act only twice: submit, and confirm receipt.</div>
+      </section>
+
+      <!-- RECEIPT -->
+      <section class="screen" data-screen="receipt">
+        <div class="card" style="text-align:center">
+          <div style="font-size:44px">📦</div>
+          <h2 style="justify-content:center">Confirm you received</h2>
+          <div class="kpi small">4 × Cattle Feed 50kg</div>
+          <div class="muted" style="margin:6px 0 14px">Order #A1 · ₹3,000</div>
+          <button class="btn" onclick="confirmReceipt()">Yes, received ✔</button>
+          <div class="note">On receipt this auto-logs as a ₹3,000 <b>feed cost</b> in your dairy P&amp;L — one tap, both systems.</div>
+        </div>
+      </section>
+
+      <div class="nav">
+        <button class="on" data-nav="passbook" onclick="go('passbook')"><span class="ico">📗</span>Passbook</button>
+        <button data-nav="order" onclick="go('order')"><span class="ico">🛒</span>Order</button>
+        <button data-nav="orders" onclick="go('orders')"><span class="ico">📋</span>Orders</button>
+        <button data-nav="receipt" onclick="go('receipt')"><span class="ico">📦</span>Receipt</button>
+      </div>
+    </div>
+  </div>
+
+  <div>
+    <h3 class="side">Non-member — the funnel</h3>
+    <div class="phone">
+      <div class="status"></div>
+      <div class="top"><h1>Allied KCC</h1><div class="sub">Not linked to a society</div></div>
+      <section class="screen on">
+        <div class="card" style="text-align:center">
+          <div style="font-size:44px">🐄</div>
+          <h2 style="justify-content:center">Join your village dairy society</h2>
+          <p class="muted" style="font-size:13px">Members get a milk passbook, input credit up to <b>70% of their milk dues</b>, and a path to a KCC.</p>
+          <button class="btn">Find my society</button>
+          <button class="btn ghost small" style="margin-top:8px">Use voice logbook instead</button>
+        </div>
+        <div class="card">
+          <h2>Why join</h2>
+          <div class="item"><span>Passbook — see milk money daily</span><span class="chip">free</span></div>
+          <div class="item"><span>Input credit at 1st &amp; 3rd week</span><span class="chip">70%</span></div>
+          <div class="item" style="border:0"><span>Build toward a composite KCC</span><span class="chip">next</span></div>
+        </div>
+      </section>
+    </div>
+    <div class="legend">Clickable spec for the <b>society-*</b> screens (blueprint §7 · P0 rule). Mock JSON mirrors <code>/api/v1/coop</code>. State machine: DRAFT → SUBMITTED★ → SECRETARY → SUPERVISOR → DUSS → DISPATCHED → RECEIPT★ (★ = app-authored).</div>
+  </div>
+</div>
+
+<script>
+// Mock JSON — mirrors the real /api/v1/coop responses.
+const passbook = {
+  months:[
+    {period:'2026-01',litres:195,value:7410},{period:'2026-02',litres:190,value:7220},
+    {period:'2026-03',litres:188,value:7140},{period:'2026-04',litres:182,value:6916},
+    {period:'2026-05',litres:180,value:6840},{period:'2026-06',litres:180,value:6840}],
+  outstandingPayables:5000, grossOrderLimit:3500, availableOrderLimit:3500, inFlightOrders:0
+};
+const catalog = [
+  {sku:'FEED-CATTLE-50',name:'Cattle Feed 50kg',subsidisedPrice:750},
+  {sku:'MIN-MIX-1',name:'Mineral Mix 1kg',subsidisedPrice:90},
+  {sku:'FODDER-SEED',name:'Fodder Seed 5kg',subsidisedPrice:260},
+];
+const rupee = n => '₹' + Number(n).toLocaleString('en-IN');
+const cart = {};
+
+// Passbook render
+document.getElementById('pbRows').innerHTML = passbook.months.map(m=>
+  `<tr><td>${m.period}</td><td>${m.litres}</td><td>${rupee(m.value)}</td></tr>`).join('');
+document.getElementById('pbTotal').textContent = rupee(passbook.months.reduce((s,m)=>s+m.value,0));
+document.getElementById('pbOut').textContent = rupee(passbook.outstandingPayables);
+document.getElementById('pbAvail').textContent = rupee(passbook.availableOrderLimit);
+
+// Catalog + cart
+function renderCatalog(){
+  document.getElementById('catalog').innerHTML = catalog.map(c=>`
+    <div class="item">
+      <div><div>${c.name}</div><div class="muted" style="font-size:12px">${rupee(c.subsidisedPrice)}</div></div>
+      <div class="qty">
+        <button onclick="chg('${c.sku}',-1)">−</button>
+        <b id="q_${c.sku}">${cart[c.sku]||0}</b>
+        <button onclick="chg('${c.sku}',1)">+</button>
+      </div>
+    </div>`).join('');
+}
+function chg(sku,d){ cart[sku]=Math.max(0,(cart[sku]||0)+d); document.getElementById('q_'+sku).textContent=cart[sku]; recalc(); }
+function recalc(){
+  const total = catalog.reduce((s,c)=>s+(cart[c.sku]||0)*c.subsidisedPrice,0);
+  document.getElementById('ordTotal').textContent = rupee(total);
+  const avail = passbook.availableOrderLimit;
+  const btn = document.getElementById('submitBtn'), msg=document.getElementById('ordMsg');
+  const windowOpen = true; // 1st-week window (mock "today" = 5th)
+  if(total===0){ btn.disabled=true; msg.textContent=''; }
+  else if(!windowOpen){ btn.disabled=true; msg.style.color='var(--danger)'; msg.textContent='Ordering closed — opens 1st & 3rd week.'; }
+  else if(total>avail){ btn.disabled=true; msg.style.color='var(--danger)'; msg.textContent=`Over your ${rupee(avail)} limit.`; }
+  else { btn.disabled=false; msg.style.color='var(--muted)'; msg.textContent=`Within limit (${rupee(avail)}).`; }
+}
+renderCatalog();
+
+// Timeline (order state machine)
+const STAGES=[
+  {k:'SUBMITTED',lbl:'Submitted',who:'you ★'},
+  {k:'SECRETARY_APPROVED',lbl:'Secretary approved',who:'ERP'},
+  {k:'SUPERVISOR_APPROVED',lbl:'Route supervisor approved',who:'ERP'},
+  {k:'DUSS_PROCESSING',lbl:'DUSS processing',who:'ERP'},
+  {k:'DISPATCHED',lbl:'Dispatched',who:'ERP'},
+  {k:'RECEIPT_CONFIRMED',lbl:'Receipt confirmed',who:'you ★'},
+];
+let stage = 4; // DISPATCHED — receipt is the member's next action
+function renderTimeline(){
+  document.getElementById('timeline').innerHTML = STAGES.map((s,i)=>{
+    const cls = i<stage?'done':(i===stage?'now':'');
+    return `<div class="step"><div class="dot ${cls}"></div><div><div class="lbl">${s.lbl}</div><div class="who">${s.who}</div></div></div>`;
+  }).join('');
+  document.getElementById('receiptBtn').style.display = STAGES[stage].k==='DISPATCHED' ? 'block':'none';
+}
+renderTimeline();
+
+function submitOrder(){ stage=0; renderTimeline(); alert('Order submitted ★ — now awaiting ERP approvals.'); go('orders');
+  setTimeout(()=>{stage=4;renderTimeline();},400); }
+function confirmReceipt(){ stage=5; renderTimeline();
+  alert('Receipt confirmed ★ — ₹3,000 auto-logged as feed cost in your dairy P&L.'); go('orders'); }
+
+// Navigation
+function go(name){
+  document.querySelectorAll('[data-screen]').forEach(s=>s.classList.toggle('on',s.dataset.screen===name));
+  document.querySelectorAll('[data-nav]').forEach(b=>b.classList.toggle('on',b.dataset.nav===name));
+  if(name==='order') recalc();
+}
+</script>
+</body>
+</html>

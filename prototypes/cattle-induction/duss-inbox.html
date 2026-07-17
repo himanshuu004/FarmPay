@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CIA · DUSS bulk processing</title>
+<style>
+  :root{--bg:#f4f6f5;--card:#fff;--ink:#14201b;--muted:#6b7c74;--line:#e2e8e4;--brand:#0f7a4d;--brand-d:#0a5c3a;--accent:#e8f5ee;--warn:#b45309;--warnbg:#fef3e2;--blue:#0b5c8a;--bluebg:#e6f0f6;--danger:#b42318;--ok:#0f7a4d;--purple:#6b3fa0;--purplebg:#f0eaf8}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+  .wrap{max-width:1120px;margin:0 auto;padding:26px 22px 60px}
+  a.back{color:var(--brand-d);font-size:13px;text-decoration:none;font-weight:700}
+  h1{font-size:24px;margin:8px 0 2px}
+  .lede{color:var(--muted);margin:0 0 16px;max-width:780px;font-size:14px}
+  .portal{background:var(--card);border:1px solid var(--line);border-radius:16px;overflow:hidden;box-shadow:0 12px 30px rgba(20,40,30,.06)}
+  .phead{background:var(--brand-d);color:#fff;padding:14px 18px;display:flex;justify-content:space-between;align-items:center}
+  .phead .t{font-weight:800}
+  .rolepill{font-size:11px;font-weight:800;padding:3px 9px;border-radius:99px;background:#fff;color:var(--brand-d);cursor:pointer;border:0}
+  .toolbar{display:flex;justify-content:space-between;align-items:center;padding:10px 16px;border-bottom:1px solid var(--line);font-size:13px;color:var(--muted);gap:10px;flex-wrap:wrap}
+  .bulk{display:flex;gap:7px}
+  .bulk button{border:1px solid var(--line);background:#fff;border-radius:8px;padding:6px 10px;font-weight:700;font-size:12px;cursor:pointer;color:var(--brand-d)}
+  .bulk button:disabled{opacity:.45;cursor:not-allowed}
+  table{width:100%;border-collapse:collapse}
+  th,td{text-align:left;padding:10px 16px;font-size:14px;border-bottom:1px solid var(--line)}
+  th{font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+  tr.sel{background:var(--accent)}
+  .st{font-size:11px;font-weight:800;padding:2px 8px;border-radius:99px}
+  .st-fwd{background:var(--bluebg);color:var(--blue)} .st-scr{background:var(--purplebg);color:var(--purple)} .st-def{background:var(--warnbg);color:var(--warn)} .st-bank{background:#d8f0e1;color:var(--brand-d)}
+  .foot{padding:12px 16px;background:#fbfdfc;border-top:1px solid var(--line);font-size:13px;color:var(--muted)}
+  .banner{margin:10px 16px;padding:9px 11px;border-radius:8px;font-size:12px}
+  .banner.warn{background:var(--warnbg);color:var(--warn)}
+  .spec{margin-top:16px}
+  .spec h2{font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:6px 0 8px}
+  pre{background:#0b120e;color:#d6f5e3;border-radius:12px;padding:14px;font-size:12px;line-height:1.5;overflow:auto;max-height:260px}
+  .note{font-size:13px;color:var(--muted);border-top:1px solid var(--line);margin-top:14px;padding-top:12px}
+  .k{color:#7fd0a3}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="index.html">← CIA prototypes</a>
+  <h1>DUSS bulk processing</h1>
+  <p class="lede">The district union processes verified applications in bulk. <b>Maker</b> (data-entry) scrutinises + raises deficiencies; <b>Checker</b> (approving officer) generates the bank-wise packet in the prescribed format. Switch the role pill to see maker vs checker actions. Settled mock = the spec for Slice F.</p>
+
+  <div class="portal">
+    <div class="phead"><div class="t">DUSS Ranchi · UNI-RANCHI</div><button class="rolepill" id="role" onclick="toggleRole()">Role: DUSS_MAKER ⇄</button></div>
+    <div class="banner warn" id="fmtBanner">📄 Prescribed bank/govt form template is pending (open question #4) — the packet generator ships against a <b>configurable placeholder</b> now and swaps to the real UCDF/bank form once provided.</div>
+    <div class="toolbar">
+      <span id="sel">0 selected</span>
+      <div class="bulk" id="bulk"></div>
+    </div>
+    <table>
+      <thead><tr><th></th><th>Applicant</th><th>DCS</th><th>Verified</th><th>Status</th></tr></thead>
+      <tbody id="rows"></tbody>
+    </table>
+    <div class="foot" id="foot">Maker prepares · Checker approves — two-person control. The maker who scrutinised cannot also generate the batch (segregation of duties).</div>
+  </div>
+
+  <div class="spec">
+    <h2>Mock JSON — POST /duss/batch (role: DUSS_CHECKER)</h2>
+    <pre id="jsonOut"></pre>
+    <div class="note">
+      <b>Rules this mock encodes (→ backend spec):</b><br>
+      • Inbox = <span class="k">FORWARDED_TO_DUSS</span> (own DUSS). Maker: scrutinise (→ UNDER_DUSS_SCRUTINY), raise deficiency (→ DOCUMENTS_INCOMPLETE, itemised, back to farmer).<br>
+      • Checker: <span class="k">generate bank batch</span> — a bank-wise packet (content-addressed PDF/Excel, prescribed format) → each app <span class="k">SUBMITTED_TO_BANK</span>.<br>
+      • <span class="k">Maker-checker segregation</span>: the checker who generates a batch must differ from the maker who scrutinised (enforced server-side, 403 on violation).<br>
+      • Only <span class="k">verified</span> applications can be batched; every action writes the domain_events outbox.<br>
+      • No money moves in CIA-1 — subsidy/disbursement land in CIA-2.
+    </div>
+  </div>
+</div>
+
+<script>
+let role = 'DUSS_MAKER';
+const apps = [
+  { uuid:'a1…101', name:'Ramesh Mahto', dcs:'Kanke', verified:'2 Jul', status:'FORWARDED_TO_DUSS', maker:null },
+  { uuid:'a2…104', name:'Geeta Kumari', dcs:'Kanke', verified:'2 Jul', status:'UNDER_DUSS_SCRUTINY', maker:'op.meena' },
+  { uuid:'a3…102', name:'Sunita Devi',  dcs:'Namkum', verified:'3 Jul', status:'FORWARDED_TO_DUSS', maker:null },
+];
+const sel = new Set();
+
+function stCls(s){ return { FORWARDED_TO_DUSS:'st-fwd', UNDER_DUSS_SCRUTINY:'st-scr', DOCUMENTS_INCOMPLETE:'st-def', SUBMITTED_TO_BANK:'st-bank' }[s]; }
+function renderRows(){
+  const tb=document.getElementById('rows'); tb.innerHTML='';
+  apps.forEach((a,i)=>{
+    const on=sel.has(i);
+    const tr=document.createElement('tr'); if(on) tr.className='sel';
+    tr.innerHTML=`<td><input type="checkbox" ${on?'checked':''} onchange="tog(${i})"></td>
+      <td><b>${a.name}</b><br><span style="font-size:12px;color:var(--muted)">${a.uuid}</span></td>
+      <td>${a.dcs}</td><td>${a.verified}</td>
+      <td><span class="st ${stCls(a.status)}">${a.status.replace(/_/g,' ')}</span></td>`;
+    tb.appendChild(tr);
+  });
+  document.getElementById('sel').textContent = sel.size+' selected';
+  renderBulk();
+}
+function tog(i){ sel.has(i)?sel.delete(i):sel.add(i); renderRows(); }
+function renderBulk(){
+  const b=document.getElementById('bulk'); const any=sel.size>0;
+  if(role==='DUSS_MAKER'){
+    b.innerHTML = `<button ${any?'':'disabled'} onclick="act('scrutinise')">Scrutinise</button>
+                   <button ${any?'':'disabled'} onclick="act('deficiency')">Raise deficiency</button>`;
+  } else {
+    b.innerHTML = `<button ${any?'':'disabled'} onclick="act('batch')">Generate bank batch</button>`;
+  }
+  updateJson();
+}
+function toggleRole(){ role = role==='DUSS_MAKER'?'DUSS_CHECKER':'DUSS_MAKER';
+  document.getElementById('role').textContent='Role: '+role+' ⇄'; renderBulk(); }
+function chosen(){ return [...sel].map(i=>apps[i]); }
+function updateJson(){
+  document.getElementById('jsonOut').textContent = JSON.stringify(
+    role==='DUSS_CHECKER'
+      ? { action:'generateBankBatch', bankRef:'COOPBANK-RANCHI', applicationUuids: chosen().map(a=>a.uuid), prescribedFormat:'PLACEHOLDER_v0', note:'checker must differ from scrutinising maker' }
+      : { action:'scrutinise|deficiency', applicationUuids: chosen().map(a=>a.uuid) },
+    null, 2);
+}
+function act(kind){
+  const names = chosen().map(a=>a.name).join(', ');
+  if(kind==='scrutinise'){ chosen().forEach(a=>a.status='UNDER_DUSS_SCRUTINY'); alert('Scrutiny recorded (maker) → UNDER_DUSS_SCRUTINY: '+names); }
+  if(kind==='deficiency'){ chosen().forEach(a=>a.status='DOCUMENTS_INCOMPLETE'); alert('Deficiency memo raised → back to farmer: '+names); }
+  if(kind==='batch'){ chosen().forEach(a=>a.status='SUBMITTED_TO_BANK'); alert('Bank packet generated (checker) → SUBMITTED_TO_BANK.\nSegregation: blocked if you also scrutinised these.'); }
+  sel.clear(); renderRows();
+}
+renderRows();
+</script>
+</body>
+</html>

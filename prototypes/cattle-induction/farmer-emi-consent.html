@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CIA · EMI deduction consent (farmer)</title>
+<style>
+  :root{--bg:#f4f6f5;--card:#fff;--ink:#14201b;--muted:#6b7c74;--line:#e2e8e4;--brand:#0f7a4d;--brand-d:#0a5c3a;--accent:#e8f5ee;--warn:#b45309;--warnbg:#fef3e2;--blue:#0b5c8a;--bluebg:#e6f0f6;--danger:#b42318}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+  .wrap{max-width:1040px;margin:0 auto;padding:26px 20px 60px}
+  a.back{color:var(--brand-d);font-size:13px;text-decoration:none;font-weight:700}
+  h1{font-size:24px;margin:8px 0 2px}
+  .phase{display:inline-block;background:var(--warnbg);color:var(--warn);border-radius:99px;padding:2px 10px;font-size:11px;font-weight:800;margin-left:6px}
+  .lede{color:var(--muted);margin:0 0 16px;max-width:680px;font-size:14px}
+  .stage{display:flex;gap:20px;flex-wrap:wrap;align-items:flex-start}
+  .phone{width:340px;background:#0b120e;border-radius:34px;padding:10px;box-shadow:0 20px 50px rgba(10,30,20,.22);flex:0 0 auto}
+  .screen{background:var(--bg);border-radius:26px;overflow:hidden;height:668px;display:flex;flex-direction:column}
+  .bar{background:var(--brand-d);color:#fff;padding:12px 15px}.bar .t{font-weight:700}.bar .s{font-size:12px;opacity:.85}
+  .body{padding:15px;overflow:auto;flex:1}
+  .parties{display:flex;gap:8px;margin-bottom:14px}
+  .p{flex:1;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px;text-align:center}
+  .p .ic{font-size:20px}.p .n{font-size:12px;font-weight:700;margin-top:2px}.p .s{font-size:10px;color:var(--muted)}
+  .auth{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:13px;font-size:13px;margin-bottom:12px}
+  .auth h3{margin:0 0 6px;font-size:14px}
+  .auth ul{margin:6px 0 0;padding-left:18px;color:var(--muted)}
+  .auth li{margin-bottom:4px}
+  .pending{background:var(--warnbg);color:var(--warn);border:1px solid #f3e2c8;border-radius:10px;padding:8px 10px;font-size:12px;margin-bottom:12px}
+  .dpdp{font-size:11px;color:var(--muted);margin:10px 0}
+  .chk{display:flex;gap:9px;align-items:flex-start;font-size:13px;margin-bottom:12px;cursor:pointer}
+  .chk .bx{width:22px;height:22px;border-radius:6px;border:2px solid var(--line);display:grid;place-items:center;color:#fff;flex:0 0 auto}
+  .chk.on .bx{background:var(--brand);border-color:var(--brand)}
+  button.primary{border:0;background:var(--brand);color:#fff;font-weight:800;font-size:15px;border-radius:12px;padding:13px;width:100%;cursor:pointer}
+  button.primary:disabled{background:#b9c6bf;cursor:not-allowed}
+  button.link{border:0;background:none;color:var(--danger);font-weight:700;font-size:13px;cursor:pointer;margin-top:10px;width:100%}
+  .state{background:var(--accent);color:var(--brand-d);border-radius:10px;padding:9px 11px;font-size:12px;font-weight:700;margin-bottom:12px;text-align:center}
+  .spec{flex:1;min-width:280px}
+  .spec h2{font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:6px 0 8px}
+  pre{background:#0b120e;color:#d6f5e3;border-radius:12px;padding:14px;font-size:12px;line-height:1.5;overflow:auto;max-height:300px}
+  .note{font-size:13px;color:var(--muted);border-top:1px solid var(--line);margin-top:14px;padding-top:12px}
+  .k{color:#7fd0a3}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="index.html">← CIA prototypes</a>
+  <h1>EMI deduction consent <span class="phase">CIA-2</span></h1>
+  <p class="lede">The farmer records the tri-partite (farmer–society–bank) authorisation that lets the app <b>initiate</b> EMI deductions from milk payment. Without it, recovery stays track-only. This is the artefact that resolves open-question #1. Settled mock = the spec for Slice N.</p>
+
+  <div class="stage">
+    <div class="phone">
+      <div class="screen">
+        <div class="bar"><div class="t">Repayment authorisation</div><div class="s">Loan CIA-2026-000481</div></div>
+        <div class="body">
+          <div class="state" id="state">Current mode: TRACK-ONLY (no consent on file)</div>
+          <div class="parties">
+            <div class="p"><div class="ic">👨‍🌾</div><div class="n">You</div><div class="s">F1001</div></div>
+            <div class="p"><div class="ic">🏘️</div><div class="n">Society</div><div class="s">Kanke DCS</div></div>
+            <div class="p"><div class="ic">🏦</div><div class="n">Bank</div><div class="s">Co-op · Ranchi</div></div>
+          </div>
+          <div class="pending">📄 Exact legal wording is pending UCDF/legal (open-question #1) — this screen records the consent artefact; the text below is a placeholder.</div>
+          <div class="auth">
+            <h3>You authorise, until you revoke:</h3>
+            <ul>
+              <li>your society + the co-op bank to <b>deduct the monthly EMI</b> from your milk payment</li>
+              <li>the deduction to be <b>remitted to your loan account</b> (SBIN ••••7781)</li>
+              <li>deduction only up to the EMI due; any shortfall stays payable</li>
+            </ul>
+          </div>
+          <label class="chk" id="chk" onclick="toggle()"><span class="bx" id="bx"></span><span>I have read and give this authorisation. I understand I can revoke it anytime.</span></label>
+          <div class="dpdp">DPDP: consent is purpose-bound (<b>emi_deduction</b>), recorded with a timestamp, and revocable. Separate from the <b>model_improvement</b> purpose.</div>
+          <button class="primary" id="give" disabled onclick="give()">Give consent</button>
+          <button class="link" id="revoke" style="display:none" onclick="revoke()">Revoke consent</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="spec">
+      <h2>Mock JSON — POST /applications/:id/emi/consent</h2>
+      <pre id="jsonOut"></pre>
+      <div class="note">
+        <b>Rules this mock encodes (→ backend spec):</b><br>
+        • Records a <span class="k">CiaEmiConsent</span> (farmer_ref, society_ref, bank_ref, authorisation_ref, purpose=emi_deduction, status ACTIVE|REVOKED, timestamps).<br>
+        • An ACTIVE consent flips the EMI mode <span class="k">TRACK → INITIATE</span>; revoke flips it back.<br>
+        • With consent, initiate calls <span class="k">coopbank.initiateEmiDeduction(consentRef)</span> — works in mock, live is <span class="k">notReady</span> until the bank contract (#2).<br>
+        • Consent is <span class="k">DPDP purpose-bound + revocable</span>; recorded to the append-only outbox.<br>
+        • No consent → the app <span class="k">never</span> initiates; recovery stays track-only (Convention 33).
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+let checked = false; let consented = false;
+function toggle(){ checked = !checked; document.getElementById('chk').classList.toggle('on', checked); document.getElementById('give').disabled = !checked || consented; render(); }
+function give(){ consented = true; render(); }
+function revoke(){ consented = false; checked = false; document.getElementById('chk').classList.remove('on'); render(); }
+function render(){
+  document.getElementById('state').textContent = consented ? 'Current mode: INITIATE (consent active)' : 'Current mode: TRACK-ONLY (no consent on file)';
+  document.getElementById('state').style.background = consented ? '#d8f0e1' : '#e8f5ee';
+  document.getElementById('give').style.display = consented ? 'none' : 'block';
+  document.getElementById('give').disabled = !checked || consented;
+  document.getElementById('revoke').style.display = consented ? 'block' : 'none';
+  document.getElementById('jsonOut').textContent = JSON.stringify(consented ? {
+    consent: { consentUuid:'c1…mock', farmerRef:'F1001', societyRef:'SOC-RANCHI-014', bankRef:'COOPBANK-RANCHI',
+      purpose:'emi_deduction', authorisationRef:'AUTH-DEED-PLACEHOLDER', status:'ACTIVE', consentedAt:'2026-11-01T10:00:00+05:30' },
+    emiMode:'INITIATE',
+  } : { consent:null, emiMode:'TRACK' }, null, 2);
+}
+render();
+</script>
+</body>
+</html>

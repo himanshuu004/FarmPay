@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Allied KCC — Prototype Launcher</title>
+<style>
+  :root{--bg:#f4f6f5;--card:#fff;--ink:#14201b;--muted:#6b7c74;--line:#e2e8e4;--brand:#0f7a4d;--brand-d:#0a5c3a;--accent:#e8f5ee;--gold:#8a6d1f;--goldbg:#fbf3d9;--blue:#0b5c8a;--bluebg:#e6f0f6}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+  .wrap{max-width:860px;margin:0 auto;padding:40px 24px 60px}
+  .brand{font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--brand-d);font-weight:700}
+  h1{font-size:30px;margin:6px 0 4px} .lede{color:var(--muted);margin:0 0 6px;max-width:620px}
+  .thesis{display:flex;gap:8px;flex-wrap:wrap;margin:18px 0 26px;font-size:12px}
+  .thesis span{background:#fff;border:1px solid var(--line);border-radius:999px;padding:5px 12px;color:var(--muted)}
+  .thesis b{color:var(--ink)}
+  .cards{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  @media(max-width:640px){.cards{grid-template-columns:1fr}}
+  a.card{display:block;text-decoration:none;color:inherit;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:20px;transition:transform .12s,box-shadow .12s}
+  a.card:hover{transform:translateY(-2px);box-shadow:0 12px 30px rgba(20,40,30,.10)}
+  .ico{font-size:26px} .tag{float:right;font-size:11px;font-weight:700;padding:3px 9px;border-radius:999px}
+  .t-record{background:var(--goldbg);color:var(--gold)} .t-unlock{background:var(--bluebg);color:var(--blue)} .t-protect{background:var(--accent);color:var(--brand-d)} .t-field{background:#eee;color:#555}
+  a.card h2{margin:10px 0 4px;font-size:18px} a.card p{margin:0;color:var(--muted);font-size:13px}
+  a.card .go{margin-top:12px;font-size:13px;font-weight:650;color:var(--brand)}
+  a.card.soon{opacity:.6;pointer-events:none}
+  .foot{margin-top:30px;color:var(--muted);font-size:12px;border-top:1px solid var(--line);padding-top:14px}
+  code{font-family:ui-monospace,Menlo,monospace;font-size:12px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="brand">Allied KCC · UCDF / Aanchal</div>
+  <h1>The member app that also gets you a KCC</h1>
+  <p class="lede">One app for the UCDF dairy-society farmer. The logbook is the credit file: record daily → prove a P&L → unlock a composite KCC → protect the herd.</p>
+  <div class="thesis">
+    <span>1 · <b>RECORD</b> passbook + logbook</span>
+    <span>2 · <b>PROVE</b> P&L → trust</span>
+    <span>3 · <b>UNLOCK</b> composite KCC</span>
+    <span>4 · <b>PROTECT</b> Pashu Suraksha</span>
+  </div>
+
+  <div class="cards">
+    <a class="card" href="society/index.html">
+      <span class="tag t-record">THE WEDGE</span><div class="ico">🥛</div>
+      <h2>Milk passbook & society</h2>
+      <p>The daily-pull surface — passbook from the ERP (zero data entry), 70%-of-payables input credit, windowed ordering, receipts.</p>
+      <div class="go">Open society prototype →</div>
+    </a>
+    <a class="card" href="kcc/index.html">
+      <span class="tag t-unlock">CREDIT</span><div class="ico">💳</div>
+      <h2>Composite KCC-AH</h2>
+      <p>Limit calculator (Illustration 1B math, live), TRUST score + reason codes, 11-state application, LT drawdown, renewal-pack PDF.</p>
+      <div class="go">Open KCC prototype →</div>
+    </a>
+    <a class="card" href="insurance/index.html">
+      <span class="tag t-protect">PROTECT</span><div class="ico">🛡️</div>
+      <h2>Pashu Suraksha (NLM)</h2>
+      <p>Premium quote (15%/85%, Himalayan), 6-state tag-first enrolment, muzzle 2nd factor, 4-doc claim + 15-day SLA, one-tap renewal.</p>
+      <div class="go">Open insurance prototype →</div>
+    </a>
+    <a class="card soon" href="#">
+      <span class="tag t-field">FIELD PWA</span><div class="ico">🩺</div>
+      <h2>VO · Surveyor · POSP</h2>
+      <p>Role-gated field queues on one offline PWA: exams + e-PM + honorarium ledger, SLA survey filing, POSP escrow card. (Next.)</p>
+      <div class="go">Coming next</div>
+    </a>
+  </div>
+
+  <p class="foot">Prototype-first per §8A — settled prototypes are the spec. Screens mirror the live contracts: <code>/api/v1/{coop, kcc, kavach, claims, identity}</code>. Backend is built, audited &amp; runtime-smoke-verified; these are the clickable specs for the React Native port.</p>
+</div>
+</body>
+</html>

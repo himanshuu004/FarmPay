@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CIA · Post-purchase inspection (field PWA)</title>
+<style>
+  :root{--bg:#f4f6f5;--card:#fff;--ink:#14201b;--muted:#6b7c74;--line:#e2e8e4;--brand:#0f7a4d;--brand-d:#0a5c3a;--accent:#e8f5ee;--warn:#b45309;--warnbg:#fef3e2;--blue:#0b5c8a;--bluebg:#e6f0f6;--danger:#b42318;--ok:#0f7a4d;--lock:#c3ccc7}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+  .wrap{max-width:1040px;margin:0 auto;padding:26px 20px 60px}
+  a.back{color:var(--brand-d);font-size:13px;text-decoration:none;font-weight:700}
+  h1{font-size:24px;margin:8px 0 2px}
+  .phase{display:inline-block;background:#e2f0fb;color:#0b5c8a;border-radius:99px;padding:2px 10px;font-size:11px;font-weight:800;margin-left:6px}
+  .lede{color:var(--muted);margin:0 0 16px;max-width:700px;font-size:14px}
+  .stage{display:flex;gap:20px;flex-wrap:wrap;align-items:flex-start}
+  .phone{width:346px;background:#0b120e;border-radius:34px;padding:10px;box-shadow:0 20px 50px rgba(10,30,20,.22);flex:0 0 auto}
+  .screen{background:var(--bg);border-radius:26px;overflow:hidden;height:682px;display:flex;flex-direction:column}
+  .bar{background:var(--brand-d);color:#fff;padding:11px 15px;display:flex;justify-content:space-between;align-items:center}
+  .bar .t{font-weight:700;font-size:14px}.bar .r{font-size:11px;font-weight:800;background:#fff;color:var(--brand-d);padding:2px 8px;border-radius:99px}
+  .body{padding:14px 15px;overflow:auto;flex:1}
+  .sched{display:flex;gap:7px;margin-bottom:12px}
+  .sc{flex:1;border:1px solid var(--line);border-radius:10px;padding:8px;text-align:center;background:var(--card);font-size:12px}
+  .sc.done{border-color:#bfe3cf;background:#f2fbf5;color:var(--brand-d)} .sc.now{border-color:var(--brand);background:var(--accent);font-weight:800} .sc b{display:block;font-size:14px}
+  .who{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin-bottom:12px}
+  .who b{font-size:15px}.who span{font-size:12px;color:var(--muted)}
+  .sec{font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);font-weight:800;margin:12px 0 6px}
+  .chk{display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin-bottom:7px;cursor:pointer}
+  .chk .bx{width:22px;height:22px;border-radius:6px;border:2px solid var(--line);display:grid;place-items:center;color:#fff;flex:0 0 auto}
+  .chk.on .bx{background:var(--ok);border-color:var(--ok)}
+  .chk .l{flex:1;font-size:14px}.chk .l small{display:block;color:var(--muted);font-size:12px}
+  .fld{display:flex;gap:8px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:9px 11px;align-items:center}
+  .fld input{border:0;outline:0;font-size:15px;width:100%;background:transparent}
+  .fld .u{font-size:12px;color:var(--muted)}
+  .yield{font-size:12px;margin-top:4px}.yield.ok{color:var(--brand-d)} .yield.low{color:var(--warn)}
+  .ph{width:64px;height:64px;border-radius:10px;border:2px dashed var(--line);display:grid;place-items:center;font-size:22px;color:var(--muted);cursor:pointer;background:var(--card)}
+  .ph.on{border-style:solid;border-color:#bfe3cf;background:#eef9f2;color:var(--brand-d)}
+  .flag{background:var(--warnbg);color:var(--warn);border:1px solid #f3e2c8;border-radius:8px;padding:8px 10px;font-size:12px;margin-top:8px;display:none}
+  .flag.on{display:block}
+  button.b{border:0;background:var(--brand);color:#fff;font-weight:800;font-size:15px;border-radius:12px;padding:12px;width:100%;cursor:pointer;margin-top:12px}
+  button.b:disabled{background:#b9c6bf;cursor:not-allowed}
+  .spec{flex:1;min-width:280px}
+  .spec h2{font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:6px 0 8px}
+  pre{background:#0b120e;color:#d6f5e3;border-radius:12px;padding:14px;font-size:12px;line-height:1.5;overflow:auto;max-height:320px}
+  .note{font-size:13px;color:var(--muted);border-top:1px solid var(--line);margin-top:14px;padding-top:12px}
+  .k{color:#7fd0a3}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="index.html">← CIA prototypes</a>
+  <h1>Post-purchase inspection <span class="phase">CIA-4 · field PWA</span></h1>
+  <p class="lede">After the animal is delivered, scheduled 7 / 30 / 90-day inspections protect the asset and the loan: <b>asset-existence</b> (re-confirm the ear tag + re-photograph the same animal), a health check, and milk-yield vs the valued yield. A tag mismatch or missing animal flags for review. Settled mock = the spec for Slice T.</p>
+
+  <div class="stage">
+    <div class="phone">
+      <div class="screen">
+        <div class="bar"><div class="t">Inspection · F1001</div><div class="r">DAY 7</div></div>
+        <div class="body">
+          <div class="sched">
+            <div class="sc now"><b>7d</b>due today</div>
+            <div class="sc"><b>30d</b>15 Dec</div>
+            <div class="sc"><b>90d</b>13 Feb</div>
+          </div>
+          <div class="who"><b>HF crossbred · ear tag 1234 5678 9012</b><br><span>Delivered 15 Nov · valued yield 10 L/day</span></div>
+
+          <div class="sec">Asset existence</div>
+          <div class="chk" id="c_tag" onclick="tagScan()"><div class="bx">✓</div><div class="l">Re-confirm ear tag<small id="tagsub">tap to scan the 12-digit tag</small></div></div>
+          <div class="sec">Re-photograph (live)</div>
+          <div style="display:flex;gap:8px"><div class="ph" id="ph1" onclick="this.classList.toggle('on');this.textContent=this.classList.contains('on')?'✅':'📷';recalc()">📷</div><div class="ph" id="ph2" onclick="this.classList.toggle('on');this.textContent=this.classList.contains('on')?'✅':'📷';recalc()">📷</div></div>
+          <div class="flag" id="tagflag">⚠ Ear tag does not match the insured animal — possible substitution, flagged for review (not auto-rejected).</div>
+
+          <div class="sec">Health &amp; production</div>
+          <div class="chk" id="c_health" onclick="this.classList.toggle('on');recalc()"><div class="bx">✓</div><div class="l">Healthy · no clinical signs</div></div>
+          <label class="sec" style="margin-top:8px">Milk yield now</label>
+          <div class="fld"><input id="yield" type="number" value="9.5" oninput="recalc()"><span class="u">L/day</span></div>
+          <div class="yield ok" id="yieldmsg"></div>
+
+          <button class="b" id="submit" disabled onclick="submitI()">Submit inspection</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="spec">
+      <h2>Mock JSON — POST /field/inspection/:appUuid</h2>
+      <pre id="jsonOut"></pre>
+      <div class="note">
+        <b>Rules this mock encodes (→ backend spec):</b><br>
+        • ciaPostPurchaseInspectionJob schedules <span class="k">7 / 30 / 90-day</span> inspections from delivery (config).<br>
+        • <span class="k">Asset existence</span> = ear-tag re-confirm + live re-photo of the SAME animal; a tag mismatch raises <span class="k">SUBSTITUTION_SUSPECTED</span> (shadow → exception panel), never auto-rejected (Convention 32).<br>
+        • Milk yield below a config threshold of the valued yield flags <span class="k">YIELD_SHORTFALL</span> (advisory).<br>
+        • Records health + vaccination/deworming/insurance-renewal reminders; every inspection → domain_events.<br>
+        • Muzzle re-ID (Slice V) later adds a biometric second factor to asset existence.
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const EXPECTED_TAG='123456789012', VALUED_YIELD=10, MIN_RATIO=0.7;
+const st={ tag:null, health:false };
+function tagScan(){ const v = prompt('Scan / enter the 12-digit ear tag:', '123456789012'); if(v===null) return;
+  st.tag=v.replace(/\D/g,'').slice(0,12);
+  document.getElementById('c_tag').classList.toggle('on', st.tag.length===12);
+  document.getElementById('tagsub').textContent = st.tag.length===12 ? (st.tag===EXPECTED_TAG?'✓ matches insured animal':'tag '+st.tag) : (st.tag.length+'/12');
+  recalc();
+}
+function photos(){ return ['ph1','ph2'].filter(id=>document.getElementById(id).classList.contains('on')).length; }
+function recalc(){
+  const tagOk = st.tag && st.tag.length===12;
+  const match = st.tag===EXPECTED_TAG;
+  const y=+document.getElementById('yield').value; const low = y < VALUED_YIELD*MIN_RATIO;
+  document.getElementById('tagflag').classList.toggle('on', tagOk && !match);
+  const ym=document.getElementById('yieldmsg'); ym.className='yield '+(low?'low':'ok'); ym.textContent= low? ('⚠ '+y+' L/day is below 70% of valued 10 L — YIELD_SHORTFALL (advisory)') : (y+' L/day · ok vs valued 10 L');
+  st.health = document.getElementById('c_health').classList.contains('on');
+  document.getElementById('submit').disabled = !(tagOk && photos()>=1);
+  const flags=[]; if(tagOk&&!match) flags.push('SUBSTITUTION_SUSPECTED'); if(low) flags.push('YIELD_SHORTFALL');
+  document.getElementById('jsonOut').textContent = JSON.stringify({
+    applicationUuid:'a1f0…mock', dueDay:7, earTagConfirmed:tagOk, earTagMatch:match,
+    assetExists: tagOk && photos()>=1, photos:photos(), healthy:st.health, milkYield:y, valuedYield:VALUED_YIELD,
+    exceptionFlags:flags, nextInspection:'30d',
+  }, null, 2);
+}
+function submitI(){ alert('Inspection recorded ✓ asset-existence verified'+ (st.tag!==EXPECTED_TAG?' — SUBSTITUTION flagged for review':'') +'. Next: 30-day.'); }
+recalc();
+</script>
+</body>
+</html>

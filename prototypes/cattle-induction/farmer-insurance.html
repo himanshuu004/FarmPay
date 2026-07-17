@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CIA · Transit + cattle insurance (farmer)</title>
+<style>
+  :root{--bg:#f4f6f5;--card:#fff;--ink:#14201b;--muted:#6b7c74;--line:#e2e8e4;--brand:#0f7a4d;--brand-d:#0a5c3a;--accent:#e8f5ee;--warn:#b45309;--warnbg:#fef3e2;--blue:#0b5c8a;--bluebg:#e6f0f6;--danger:#b42318;--ok:#0f7a4d;--lock:#c3ccc7}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+  .wrap{max-width:1040px;margin:0 auto;padding:26px 20px 60px}
+  a.back{color:var(--brand-d);font-size:13px;text-decoration:none;font-weight:700}
+  h1{font-size:24px;margin:8px 0 2px}
+  .phase{display:inline-block;background:#ede9fb;color:#6b3fa0;border-radius:99px;padding:2px 10px;font-size:11px;font-weight:800;margin-left:6px}
+  .lede{color:var(--muted);margin:0 0 16px;max-width:700px;font-size:14px}
+  .stage{display:flex;gap:20px;flex-wrap:wrap;align-items:flex-start}
+  .phone{width:346px;background:#0b120e;border-radius:34px;padding:10px;box-shadow:0 20px 50px rgba(10,30,20,.22);flex:0 0 auto}
+  .screen{background:var(--bg);border-radius:26px;overflow:hidden;height:680px;display:flex;flex-direction:column}
+  .bar{background:var(--brand-d);color:#fff;padding:12px 15px}.bar .t{font-weight:700}.bar .s{font-size:12px;opacity:.85}
+  .body{padding:14px 15px;overflow:auto;flex:1}
+  .step{border:1px solid var(--line);border-radius:14px;background:var(--card);padding:13px;margin-bottom:12px}
+  .step h3{margin:0 0 3px;font-size:15px;display:flex;justify-content:space-between;align-items:center}
+  .badge{font-size:10px;font-weight:800;padding:2px 8px;border-radius:99px}
+  .b-todo{background:var(--bluebg);color:var(--blue)} .b-done{background:#d8f0e1;color:var(--brand-d)} .b-lock{background:#eef0ee;color:var(--muted)}
+  .step p{margin:2px 0 8px;font-size:12px;color:var(--muted)}
+  label{display:block;font-size:11px;color:var(--muted);font-weight:700;margin:8px 0 3px;text-transform:uppercase}
+  .fld{display:flex;gap:8px;background:var(--bg);border:1px solid var(--line);border-radius:9px;padding:8px 10px}
+  .fld input{border:0;outline:0;font-size:14px;width:100%;background:transparent}
+  button.b{border:0;background:var(--brand);color:#fff;font-weight:800;font-size:14px;border-radius:10px;padding:10px;width:100%;cursor:pointer;margin-top:8px}
+  button.b:disabled{background:#b9c6bf;cursor:not-allowed}
+  .lockmsg{background:#eef0ee;color:var(--muted);border-radius:8px;padding:8px 10px;font-size:12px}
+  .warn{background:var(--warnbg);color:var(--warn);border:1px solid #f3e2c8;border-radius:8px;padding:7px 9px;font-size:12px;margin-top:6px;display:none}
+  .warn.on{display:block}
+  .spec{flex:1;min-width:280px}
+  .spec h2{font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:6px 0 8px}
+  pre{background:#0b120e;color:#d6f5e3;border-radius:12px;padding:14px;font-size:12px;line-height:1.5;overflow:auto;max-height:320px}
+  .note{font-size:13px;color:var(--muted);border-top:1px solid var(--line);margin-top:14px;padding-top:12px}
+  .k{color:#7fd0a3}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="index.html">← CIA prototypes</a>
+  <h1>Transit &amp; cattle insurance <span class="phase">CIA-3</span></h1>
+  <p class="lede">Two policies via KAVACH: a <b>transit</b> policy before the animal moves, and a <b>cattle</b> policy on arrival. No backdating — the cattle policy's effective date cannot precede arrival. Both are the payment-gate inputs <code>transit_insured</code> + <code>cattle_insured</code>. Settled mock = the spec for Slice Q.</p>
+
+  <div class="stage">
+    <div class="phone">
+      <div class="screen">
+        <div class="bar"><div class="t">Insure your animal</div><div class="s">Purchase APPROVED · ready to move</div></div>
+        <div class="body">
+          <div class="step">
+            <h3>1 · Transit insurance <span class="badge b-todo" id="tb">before movement</span></h3>
+            <p>Covers the animal in transit from the seller to your shed.</p>
+            <label>Sum insured (= market value)</label><div class="fld"><input value="₹60,000" readonly></div>
+            <button class="b" id="transitBtn" onclick="issueTransit()">Issue transit policy</button>
+          </div>
+
+          <div class="step">
+            <h3>2 · Move &amp; confirm arrival <span class="badge b-lock" id="ab">locked</span></h3>
+            <p id="arrP">Transit policy required before you can move.</p>
+            <button class="b" id="arriveBtn" disabled onclick="arrive()">Confirm arrival at my shed</button>
+          </div>
+
+          <div class="step">
+            <h3>3 · Cattle insurance <span class="badge b-lock" id="cb">locked</span></h3>
+            <p>Full policy, assigned to the bank. Effective from arrival.</p>
+            <label>Effective date</label><div class="fld"><input id="eff" type="date" disabled></div>
+            <div class="warn" id="backdate">⛔ Effective date cannot be before arrival (no backdated cover).</div>
+            <button class="b" id="cattleBtn" disabled onclick="issueCattle()">Issue cattle policy</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="spec">
+      <h2>Mock JSON — purchase insurance state</h2>
+      <pre id="jsonOut"></pre>
+      <div class="note">
+        <b>Rules this mock encodes (→ backend spec):</b><br>
+        • <span class="k">Transit before movement</span>: TRANSIT_IN_PROGRESS/arrival cannot complete without a transit policy.<br>
+        • <span class="k">No backdating</span>: cattle policy effective date ≥ arrival confirmation (Convention 32).<br>
+        • Policies issued via <span class="k">KAVACH</span> (insurer + SLA = config, #8); the cattle policy is <span class="k">assigned to the bank</span>.<br>
+        • Sets gate inputs <span class="k">transit_insured</span> + <span class="k">cattle_insured</span> on the purchase; recorded to cia_insurance_links.<br>
+        • Statuses: PURCHASE_APPROVED → TRANSIT_IN_PROGRESS → CATTLE_DELIVERED → INSURANCE_PENDING (→ gate, Slice R).
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const st = { transit:false, arrived:false, cattle:false, arrivalDate:null };
+function todayISO(){ return '2026-11-15'; } // fixed mock "today"
+function issueTransit(){ st.transit=true;
+  document.getElementById('tb').className='badge b-done'; document.getElementById('tb').textContent='issued';
+  document.getElementById('transitBtn').disabled=true; document.getElementById('transitBtn').textContent='✓ Transit policy TRN-77';
+  document.getElementById('arriveBtn').disabled=false; document.getElementById('ab').className='badge b-todo'; document.getElementById('ab').textContent='ready';
+  document.getElementById('arrP').textContent='Transit covered — move the animal, then confirm arrival.'; render();
+}
+function arrive(){ st.arrived=true; st.arrivalDate=todayISO();
+  document.getElementById('ab').className='badge b-done'; document.getElementById('ab').textContent='arrived';
+  document.getElementById('arriveBtn').disabled=true; document.getElementById('arriveBtn').textContent='✓ Arrived '+st.arrivalDate;
+  const eff=document.getElementById('eff'); eff.disabled=false; eff.min=st.arrivalDate; eff.value=st.arrivalDate;
+  document.getElementById('cb').className='badge b-todo'; document.getElementById('cb').textContent='ready';
+  document.getElementById('cattleBtn').disabled=false; render();
+}
+document.addEventListener('input',(e)=>{ if(e.target.id==='eff'){ const bad = e.target.value < st.arrivalDate;
+  document.getElementById('backdate').classList.toggle('on', bad); document.getElementById('cattleBtn').disabled = bad; }});
+function issueCattle(){ const eff=document.getElementById('eff').value; if(eff < st.arrivalDate) return; st.cattle=true;
+  document.getElementById('cb').className='badge b-done'; document.getElementById('cb').textContent='issued';
+  document.getElementById('cattleBtn').disabled=true; document.getElementById('cattleBtn').textContent='✓ Cattle policy CTL-91 (assigned to bank)';
+  alert('Both policies issued ✓ transit_insured + cattle_insured = true.\nStatus → INSURANCE_PENDING. Next: the payment gate (Slice R).'); render();
+}
+function render(){
+  document.getElementById('jsonOut').textContent = JSON.stringify({
+    applicationUuid:'a1f0…mock',
+    purchaseStatus: st.cattle?'INSURANCE_PENDING':(st.arrived?'CATTLE_DELIVERED':(st.transit?'TRANSIT_IN_PROGRESS':'PURCHASE_APPROVED')),
+    transitInsured: st.transit, transitPolicyNo: st.transit?'TRN-77':null,
+    arrivalConfirmedAt: st.arrivalDate,
+    cattleInsured: st.cattle, cattlePolicyNo: st.cattle?'CTL-91':null, cattleEffectiveDate: st.cattle?document.getElementById('eff').value:null,
+    assignedToBank: st.cattle, insurer:'via KAVACH',
+  }, null, 2);
+}
+render();
+</script>
+</body>
+</html>

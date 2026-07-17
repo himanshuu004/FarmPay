@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CIA · Cattle claim (farmer)</title>
+<style>
+  :root{--bg:#f4f6f5;--card:#fff;--ink:#14201b;--muted:#6b7c74;--line:#e2e8e4;--brand:#0f7a4d;--brand-d:#0a5c3a;--accent:#e8f5ee;--warn:#b45309;--warnbg:#fef3e2;--blue:#0b5c8a;--bluebg:#e6f0f6;--danger:#b42318;--ok:#0f7a4d;--grey:#c3ccc7}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+  .wrap{max-width:1040px;margin:0 auto;padding:26px 20px 60px}
+  a.back{color:var(--brand-d);font-size:13px;text-decoration:none;font-weight:700}
+  h1{font-size:24px;margin:8px 0 2px}
+  .phase{display:inline-block;background:#e2f0fb;color:#0b5c8a;border-radius:99px;padding:2px 10px;font-size:11px;font-weight:800;margin-left:6px}
+  .lede{color:var(--muted);margin:0 0 16px;max-width:700px;font-size:14px}
+  .stage{display:flex;gap:20px;flex-wrap:wrap;align-items:flex-start}
+  .phone{width:340px;background:#0b120e;border-radius:34px;padding:10px;box-shadow:0 20px 50px rgba(10,30,20,.22);flex:0 0 auto}
+  .screen{background:var(--bg);border-radius:26px;overflow:hidden;height:672px;display:flex;flex-direction:column}
+  .bar{background:var(--brand-d);color:#fff;padding:12px 15px}.bar .t{font-weight:700}.bar .s{font-size:12px;opacity:.85}
+  .body{padding:14px 15px;overflow:auto;flex:1}
+  .clock{background:var(--bluebg);border:1px solid #d4e6f1;border-radius:12px;padding:12px;margin-bottom:12px;text-align:center}
+  .clock .big{font-size:22px;font-weight:800;color:var(--blue)}
+  .clock.breach{background:#fdeeec;border-color:#f6cfc9}.clock.breach .big{color:var(--danger)}
+  .clock .l{font-size:12px;color:var(--muted)}
+  .penal{background:var(--warnbg);color:var(--warn);border:1px solid #f3e2c8;border-radius:8px;padding:8px 10px;font-size:12px;margin-bottom:12px;display:none}
+  .penal.on{display:block}
+  .docs{list-style:none;margin:0 0 12px;padding:0}
+  .docs li{display:flex;align-items:center;gap:9px;padding:8px 0;border-bottom:1px solid var(--line);font-size:13px}
+  .docs .ic{width:20px;height:20px;border-radius:5px;display:grid;place-items:center;font-size:11px;color:#fff;flex:0 0 auto}
+  .ic.ok{background:var(--ok)} .ic.no{background:var(--grey)}
+  .tl{list-style:none;margin:0;padding:0 0 0 8px}
+  .tl li{position:relative;padding:0 0 14px 24px}
+  .tl li::before{content:'';position:absolute;left:0;top:3px;width:12px;height:12px;border-radius:50%;background:var(--grey)}
+  .tl li::after{content:'';position:absolute;left:5px;top:15px;bottom:0;width:2px;background:var(--line)}
+  .tl li:last-child::after{display:none}
+  .tl li.done::before{background:var(--brand)} .tl li.now::before{background:#fff;border:3px solid var(--brand);left:-1px}
+  .tl .h{font-weight:700;font-size:13px}.tl .t{font-size:12px;color:var(--muted)}
+  button.b{border:0;background:var(--brand);color:#fff;font-weight:800;font-size:15px;border-radius:12px;padding:12px;width:100%;cursor:pointer;margin-top:8px}
+  .seg{display:flex;gap:6px;margin-bottom:10px}
+  .seg button{flex:1;border:1px solid var(--line);background:#fff;border-radius:8px;padding:6px;font-size:12px;font-weight:700;color:var(--brand-d);cursor:pointer}
+  .seg button.on{background:var(--brand);color:#fff;border-color:var(--brand)}
+  .spec{flex:1;min-width:280px}
+  .spec h2{font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:6px 0 8px}
+  pre{background:#0b120e;color:#d6f5e3;border-radius:12px;padding:14px;font-size:12px;line-height:1.5;overflow:auto;max-height:320px}
+  .note{font-size:13px;color:var(--muted);border-top:1px solid var(--line);margin-top:14px;padding-top:12px}
+  .k{color:#7fd0a3}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="index.html">← CIA prototypes</a>
+  <h1>Cattle insurance claim <span class="phase">CIA-4 · reuses KAVACH/CLAIMS</span></h1>
+  <p class="lede">On death/loss the farmer files a claim against the cattle policy — reusing the platform CLAIMS engine: only <b>4 documents</b>, a <b>15-day settlement clock</b> from docs-complete, and <b>12% p.a. penal interest</b> (farmer-visible) if the insurer breaches. On settlement the loan is adjusted. No auto-denial. Settled mock = the spec for Slice U.</p>
+
+  <div class="stage">
+    <div class="phone">
+      <div class="screen">
+        <div class="bar"><div class="t">Claim · CTL-91</div><div class="s">HF crossbred · tag 1234 5678 9012</div></div>
+        <div class="body">
+          <div class="seg">
+            <button class="on" onclick="scen('review',this)">Under review</button>
+            <button onclick="scen('breach',this)">SLA breached</button>
+            <button onclick="scen('settled',this)">Settled</button>
+          </div>
+          <div class="clock" id="clock"><div class="big" id="days">12 days left</div><div class="l">settlement clock (15 days from docs-complete)</div></div>
+          <div class="penal" id="penal">⏱ Deadline breached — 12% p.a. penal interest accruing: <b id="penalamt">₹0</b> (added to your settlement).</div>
+
+          <div style="font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);font-weight:800;margin-bottom:6px">4 documents (only)</div>
+          <ul class="docs" id="docs"></ul>
+
+          <div style="font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);font-weight:800;margin:6px 0">Progress</div>
+          <ul class="tl" id="tl"></ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="spec">
+      <h2>Mock JSON — POST /applications/:id/claim · GET .../claim</h2>
+      <pre id="jsonOut"></pre>
+      <div class="note">
+        <b>Rules this mock encodes (→ backend spec):</b><br>
+        • CIA cattle insurance issues a real <span class="k">KAVACH InsurancePolicy + PolicyAsset</span> (Slice Q retrofit); the claim calls <span class="k">claimService.intimate(policyUuid)</span> — full reuse.<br>
+        • <span class="k">4-document checklist</span> only; docs-complete starts the <span class="k">15-day</span> settlement clock; breach accrues <span class="k">12% p.a. compound penal interest</span>, farmer-visible.<br>
+        • Claim events are <span class="k">hash-chained</span> (append-only); waiting-period + one-open-claim-per-animal enforced; <span class="k">no auto-denial</span> — a human decides.<br>
+        • On SETTLED → <span class="k">loan adjustment</span> (cia.claim.loan_adjusted); policy assigned to bank.
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const DOCS=['Death certificate (vet)','Ear tag / carcass photo','Post-mortem report','Policy copy'];
+const SCEN={
+  review:{ status:'UNDER_REVIEW', daysLeft:12, breach:false, penal:0, docs:4, stage:3 },
+  breach:{ status:'UNDER_REVIEW', daysLeft:-4, breach:true, penal:395, docs:4, stage:3 },
+  settled:{ status:'SETTLED', daysLeft:0, breach:false, penal:0, docs:4, stage:5, settled:58000 },
+};
+const STAGES=['Intimated','Survey done','Post-mortem','Docs submitted','Under review','Settled'];
+function scen(name,btn){
+  document.querySelectorAll('.seg button').forEach(b=>b.classList.remove('on')); if(btn)btn.classList.add('on');
+  const s=SCEN[name];
+  const clock=document.getElementById('clock'); clock.className='clock'+(s.breach?' breach':'');
+  document.getElementById('days').textContent = s.status==='SETTLED'?'Settled':(s.breach?Math.abs(s.daysLeft)+' days overdue':s.daysLeft+' days left');
+  document.getElementById('penal').classList.toggle('on', s.breach);
+  document.getElementById('penalamt').textContent='₹'+s.penal.toLocaleString('en-IN');
+  const dl=document.getElementById('docs'); dl.innerHTML='';
+  DOCS.forEach((d,i)=>{ const ok=i<s.docs; dl.innerHTML+=`<li><span class="ic ${ok?'ok':'no'}">${ok?'✓':''}</span>${d}</li>`; });
+  const tl=document.getElementById('tl'); tl.innerHTML='';
+  STAGES.forEach((st,i)=>{ const cls=i<s.stage?'done':(i===s.stage?'now':''); tl.innerHTML+=`<li class="${cls}"><div class="h">${st}</div></li>`; });
+  document.getElementById('jsonOut').textContent = JSON.stringify({
+    applicationUuid:'a1f0…mock', claimUuid:'c1…mock', policyUuid:'p1…mock', claimType:'livestock_death',
+    status:s.status, docsComplete:true, settlementDeadlineDays:s.daysLeft,
+    penalInterestAccrued:s.penal, penalRatePctPa:12, autoDenial:false,
+    settledAmount: s.settled||null, loanAdjusted: s.status==='SETTLED',
+  },null,2);
+}
+scen('review',null);
+</script>
+</body>
+</html>

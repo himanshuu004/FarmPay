@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CIA · Payment gate + seller-payment recommendation</title>
+<style>
+  :root{--bg:#f4f6f5;--card:#fff;--ink:#14201b;--muted:#6b7c74;--line:#e2e8e4;--brand:#0f7a4d;--brand-d:#0a5c3a;--accent:#e8f5ee;--warn:#b45309;--warnbg:#fef3e2;--blue:#0b5c8a;--bluebg:#e6f0f6;--danger:#b42318;--ok:#0f7a4d}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+  .wrap{max-width:1060px;margin:0 auto;padding:26px 22px 60px}
+  a.back{color:var(--brand-d);font-size:13px;text-decoration:none;font-weight:700}
+  h1{font-size:24px;margin:8px 0 2px}
+  .phase{display:inline-block;background:#ede9fb;color:#6b3fa0;border-radius:99px;padding:2px 10px;font-size:11px;font-weight:800;margin-left:6px}
+  .lede{color:var(--muted);margin:0 0 16px;max-width:760px;font-size:14px}
+  .portal{background:var(--card);border:1px solid var(--line);border-radius:16px;overflow:hidden;box-shadow:0 12px 30px rgba(20,40,30,.06);max-width:560px}
+  .phead{background:var(--brand-d);color:#fff;padding:14px 18px;display:flex;justify-content:space-between;align-items:center}
+  .phead .t{font-weight:800}
+  .seg{display:flex;gap:6px;padding:12px 16px 0}
+  .seg button{flex:1;border:1px solid var(--line);background:#fff;border-radius:8px;padding:7px;font-size:12px;font-weight:700;color:var(--brand-d);cursor:pointer}
+  .seg button.on{background:var(--brand);color:#fff;border-color:var(--brand)}
+  .pad{padding:14px 18px 18px}
+  .chain{font-size:12px;color:var(--muted);background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:9px 11px;margin-bottom:12px}
+  .chain b{color:var(--ink)}
+  .gate{list-style:none;margin:0;padding:0}
+  .gate li{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--line);font-size:14px}
+  .gate li:last-child{border-bottom:0}
+  .ic{width:22px;height:22px;border-radius:50%;display:grid;place-items:center;font-size:12px;color:#fff;flex:0 0 auto}
+  .ic.ok{background:var(--ok)} .ic.no{background:var(--danger)} .ic.warn{background:var(--warn)}
+  .gate .sub{font-size:12px;color:var(--muted)}
+  .payout{margin-top:14px;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:11px}
+  .payout .r{display:flex;justify-content:space-between;font-size:13px;padding:2px 0}
+  .verdict{margin-top:12px;border-radius:10px;padding:11px 13px;font-size:13px;font-weight:700}
+  .verdict.ok{background:var(--accent);color:var(--brand-d)} .verdict.block{background:#fdeeec;color:var(--danger)}
+  button.rec{border:0;background:var(--brand);color:#fff;font-weight:800;font-size:15px;border-radius:12px;padding:13px;width:100%;cursor:pointer;margin-top:12px}
+  button.rec:disabled{background:#b9c6bf;cursor:not-allowed}
+  .exc{margin-top:10px;background:var(--warnbg);color:var(--warn);border:1px solid #f3e2c8;border-radius:8px;padding:8px 10px;font-size:12px;display:none}
+  .exc.on{display:block}
+  .spec{margin-top:16px}
+  .spec h2{font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:6px 0 8px}
+  pre{background:#0b120e;color:#d6f5e3;border-radius:12px;padding:14px;font-size:12px;line-height:1.5;overflow:auto;max-height:260px}
+  .note{font-size:13px;color:var(--muted);border-top:1px solid var(--line);margin-top:14px;padding-top:12px}
+  .k{color:#7fd0a3}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="index.html">← CIA prototypes</a>
+  <h1>Payment gate + seller-payment recommendation <span class="phase">CIA-3</span></h1>
+  <p class="lede">The gate (Convention 31). Seller payment is <b>recommended, never auto-executed</b>, and only when every input passes: vet certificate + transit &amp; cattle insurance + farmer acknowledgment, a complete traceability chain, and a payee that equals the penny-drop-verified registered seller. Any failure raises a human-review exception — it never blocks silently. Settled mock = the spec for Slice R.</p>
+
+  <div class="portal">
+    <div class="phead"><div class="t">Seller payment · CIA-2026-000481</div><span style="font-size:12px;color:#cfe8db">Finance / Bank checker</span></div>
+    <div class="seg">
+      <button class="on" onclick="scen('pass',this)">All pass</button>
+      <button onclick="scen('noins',this)">Missing insurance</button>
+      <button onclick="scen('payee',this)">Payee mismatch</button>
+    </div>
+    <div class="pad">
+      <div class="chain" id="chain"></div>
+      <ul class="gate" id="gate"></ul>
+      <div class="payout">
+        <div class="r"><span>Seller (registered)</span><b>Balbir Singh</b></div>
+        <div class="r"><span>Payee account (penny-drop)</span><b id="payee">SBIN ••••9999 ✓</b></div>
+        <div class="r"><span>Amount (approved price)</span><b>₹60,000</b></div>
+      </div>
+      <div class="verdict" id="verdict"></div>
+      <button class="rec" id="rec" disabled onclick="recommend()">Recommend seller payment</button>
+      <div class="exc" id="exc"></div>
+    </div>
+  </div>
+
+  <div class="spec">
+    <h2>Mock JSON — POST /applications/:id/purchase/seller-payment/recommend</h2>
+    <pre id="jsonOut"></pre>
+    <div class="note">
+      <b>Rules this mock encodes (→ backend spec):</b><br>
+      • SELLER_PAYMENT_PENDING is reachable ONLY when <span class="k">vet_certified + transit_insured + cattle_insured + farmer_acknowledged</span> AND the <span class="k">traceability chain</span> is complete AND payee = penny-drop-verified seller.<br>
+      • The action <span class="k">RECOMMENDS</span> a payout (paymentRails, mock; live notReady #9) — it never moves money itself; no auto-payment, no auto-rejection.<br>
+      • A missing input or a <span class="k">payee mismatch</span> raises a human-review exception and holds payment — never a silent block (Convention 31).<br>
+      • On payout confirmation: SELLER_PAID → app EMI_ACTIVE.<br>
+      • Blocking exceptions (payee mismatch) stop the gate; shadow flags (price outlier) are shown but don't.
+    </div>
+  </div>
+</div>
+
+<script>
+const SCEN = {
+  pass:  { vet:1, transit:1, cattle:1, ack:1, chain:1, payee:1, flags:[] },
+  noins: { vet:1, transit:1, cattle:0, ack:1, chain:1, payee:1, flags:[] },
+  payee: { vet:1, transit:1, cattle:1, ack:1, chain:1, payee:0, flags:['PAYEE_NAME_MISMATCH'] },
+};
+const ROWS = [
+  ['vet','Vet certificate','vet_certified'],
+  ['transit','Transit insurance','transit_insured'],
+  ['cattle','Cattle insurance','cattle_insured'],
+  ['ack','Farmer acknowledgment','farmer_acknowledged'],
+  ['chain','Traceability chain complete','farmer→animal→seller→transport→policies'],
+  ['payee','Payee = verified seller','penny-drop match'],
+];
+function scen(name, btn){
+  document.querySelectorAll('.seg button').forEach(b=>b.classList.remove('on')); if(btn) btn.classList.add('on');
+  const s = SCEN[name];
+  document.getElementById('chain').innerHTML = s.chain ? '🔗 <b>Chain:</b> farmer → animal(12345…) → seller(a/c ✓) → transport → transit+cattle policy' : '🔗 <b>Chain incomplete</b>';
+  document.getElementById('payee').innerHTML = s.payee ? 'SBIN ••••9999 ✓' : 'SBIN ••••0000 <span style="color:var(--danger)">✗ name mismatch</span>';
+  const g = document.getElementById('gate'); g.innerHTML='';
+  ROWS.forEach(([k,label,sub])=>{
+    const ok = s[k]===1;
+    const li=document.createElement('li');
+    li.innerHTML = `<span class="ic ${ok?'ok':'no'}">${ok?'✓':'✕'}</span><div>${label}<div class="sub">${sub}</div></div>`;
+    g.appendChild(li);
+  });
+  const allPass = ['vet','transit','cattle','ack','chain','payee'].every(k=>s[k]===1);
+  const v = document.getElementById('verdict');
+  v.className = 'verdict ' + (allPass?'ok':'block');
+  v.textContent = allPass ? '✓ Gate open — payment may be recommended (not executed).' : '⛔ Gate closed — resolve the failed input(s) below.';
+  document.getElementById('rec').disabled = !allPass;
+  const exc = document.getElementById('exc');
+  const blocking = !allPass;
+  exc.classList.toggle('on', blocking);
+  exc.textContent = blocking ? ('⚠ Exception raised for human review: ' + (s.payee?'missing gate input':'PAYEE_NAME_MISMATCH') + ' — payment held, not rejected.') : '';
+  document.getElementById('jsonOut').textContent = JSON.stringify({
+    applicationUuid:'a1f0…mock', gate:{ vetCertified:!!s.vet, transitInsured:!!s.transit, cattleInsured:!!s.cattle, farmerAcknowledged:!!s.ack, traceabilityComplete:!!s.chain, payeeVerified:!!s.payee },
+    gateOpen:allPass, action:'RECOMMEND_ONLY', exceptionFlags:s.flags,
+    recommendation: allPass ? { payeeAccount:'SBIN••••9999', amount:60000, via:'paymentRails(mock)', nextStatus:'SELLER_PAYMENT_PENDING' } : null,
+  }, null, 2);
+}
+function recommend(){ alert('Payout RECOMMENDED (not executed) → paymentRails.payout(mock).\nSELLER_PAYMENT_PENDING → on confirmation SELLER_PAID → app EMI_ACTIVE.'); }
+scen('pass', null);
+</script>
+</body>
+</html>

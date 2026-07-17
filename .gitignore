@@ -1,0 +1,44 @@
+# Dependencies
+node_modules/
+**/node_modules/
+
+# Environment / secrets
+.env
+.env.*
+!.env.example
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+
+# Local ERP filedrop working dirs (batch files are transient)
+data/erp/inbox/
+data/erp/outbox/
+data/erp/archive/
+
+# Build / coverage
+dist/
+build/
+coverage/
+
+# OS / editor
+.DS_Store
+*.swp
+.idea/
+.vscode/
+
+# Expo / RN (app/, field-pwa/)
+.expo/
+*.jks
+*.p12
+
+# Python (ai-services/)
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Production secrets (never commit)
+deploy/.env
+!deploy/.env.prod.example

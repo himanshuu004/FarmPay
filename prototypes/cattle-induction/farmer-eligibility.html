@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CIA · Eligibility checker (farmer)</title>
+<style>
+  :root{--bg:#f4f6f5;--card:#fff;--ink:#14201b;--muted:#6b7c74;--line:#e2e8e4;--brand:#0f7a4d;--brand-d:#0a5c3a;--accent:#e8f5ee;--warn:#b45309;--warnbg:#fef3e2;--blue:#0b5c8a;--bluebg:#e6f0f6;--danger:#b42318;--okbg:#e9f8ef;--okink:#0a5c3a}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+  .wrap{max-width:1040px;margin:0 auto;padding:28px 20px 60px}
+  a.back{color:var(--brand-d);font-size:13px;text-decoration:none;font-weight:700}
+  h1{font-size:24px;margin:8px 0 2px}
+  .lede{color:var(--muted);margin:0 0 18px;max-width:640px;font-size:14px}
+  .toggle{display:inline-flex;gap:6px;margin:0 0 14px;background:#e7ede9;border-radius:99px;padding:4px}
+  .toggle button{border:0;background:transparent;font-weight:700;font-size:12px;color:var(--muted);padding:6px 12px;border-radius:99px;cursor:pointer}
+  .toggle button.on{background:#fff;color:var(--brand-d);box-shadow:0 1px 3px rgba(0,0,0,.08)}
+  .stage{display:flex;gap:20px;flex-wrap:wrap;align-items:flex-start}
+  .phone{width:340px;background:#0b120e;border-radius:34px;padding:10px;box-shadow:0 20px 50px rgba(10,30,20,.22);flex:0 0 auto}
+  .screen{background:var(--bg);border-radius:26px;overflow:hidden;height:660px;display:flex;flex-direction:column}
+  .bar{background:var(--brand-d);color:#fff;padding:12px 16px}
+  .bar .t{font-weight:700;font-size:15px}
+  .bar .s{font-size:12px;opacity:.85}
+  .body{padding:14px 16px;overflow:auto;flex:1}
+  .schemechip{display:flex;align-items:center;gap:7px;background:var(--accent);border:1px solid #cfe8da;border-radius:11px;padding:8px 11px;margin-bottom:12px;font-size:12.5px}
+  .schemechip b{color:var(--brand-d)} .schemechip .sw{margin-left:auto;color:var(--brand-d);font-weight:800;font-size:12px;cursor:pointer;text-decoration:none}
+  .banner{border-radius:16px;padding:16px;margin-bottom:14px}
+  .banner.ok{background:var(--okbg);border:1px solid #bfe3cf}
+  .banner.no{background:var(--warnbg);border:1px solid #f3e2c8}
+  .banner .big{font-size:18px;font-weight:800}
+  .banner.ok .big{color:var(--okink)} .banner.no .big{color:var(--warn)}
+  .banner .sub{font-size:12.5px;color:var(--muted);margin-top:4px}
+  .adv{font-size:11px;font-weight:800;letter-spacing:.03em;background:#fff;border:1px dashed var(--line);color:var(--muted);border-radius:99px;padding:3px 9px;display:inline-block;margin-top:9px}
+  .check{display:flex;align-items:flex-start;gap:11px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:11px 12px;margin-bottom:8px}
+  .check .ic{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font-size:15px;flex:0 0 auto}
+  .check .ic.ok{background:#d8f0e1;color:var(--okink)} .check .ic.bad{background:#fdeeec;color:var(--danger)}
+  .check .n b{display:block;font-size:14px} .check .n span{font-size:12.5px;color:var(--muted)}
+  .src{font-size:10px;font-weight:800;color:var(--blue);background:var(--bluebg);padding:2px 6px;border-radius:99px;margin-left:auto;white-space:nowrap}
+  .cta{position:sticky;bottom:0;background:linear-gradient(transparent,var(--bg) 24%);padding-top:14px;display:flex;gap:8px}
+  button.primary{flex:1;border:0;background:var(--brand);color:#fff;font-weight:800;font-size:15px;border-radius:12px;padding:13px;cursor:pointer}
+  button.ghost{border:1px solid var(--line);background:#fff;color:var(--brand-d);font-weight:700;border-radius:12px;padding:13px 14px;cursor:pointer}
+  .spec{flex:1;min-width:280px}
+  .spec h2{font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:6px 0 8px}
+  pre{background:#0b120e;color:#d6f5e3;border-radius:12px;padding:14px;font-size:12px;line-height:1.5;overflow:auto;max-height:340px}
+  .note{font-size:13px;color:var(--muted);border-top:1px solid var(--line);margin-top:14px;padding-top:12px}
+  .k{color:#7fd0a3}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="index.html">← CIA prototypes</a>
+  <h1>Eligibility checker</h1>
+  <p class="lede">A <b>non-binding</b> pre-screen, run <b>against one chosen scheme</b> — it compares the member's ERP membership + milk history to <i>that scheme's</i> rules and returns plain-language reasons. It is a <b>guide, never an approval</b>: only the DCS board + bank decide. Settled mock = the spec for <code>GET /cattle-induction/eligibility?scheme=…</code>.</p>
+
+  <div class="toggle">
+    <button id="tOk" class="on" onclick="render('ok')">Likely eligible</button>
+    <button id="tNo" onclick="render('no')">Not yet</button>
+  </div>
+
+  <div class="stage">
+    <div class="phone">
+      <div class="screen">
+        <div class="bar"><div class="t">Am I eligible?</div><div class="s">Ramesh Mahto · SOC-RANCHI-014</div></div>
+        <div class="body" id="body"></div>
+      </div>
+    </div>
+
+    <div class="spec">
+      <h2>Mock JSON — GET /cattle-induction/eligibility?scheme=</h2>
+      <pre id="jsonOut"></pre>
+      <div class="note">
+        <b>Rules this mock encodes (→ backend spec):</b><br>
+        • Eligibility is <span class="k">scheme-scoped</span> — the same member can be eligible for one scheme and not another (thresholds differ per scheme's <code>rules_json</code>).<br>
+        • <span class="k">advisory:true</span> always — the response is <b>never</b> a sanction (rules propose, humans dispose).<br>
+        • Membership tenure from <code>coop_memberships.joined_on</code>; milk from the <span class="k">ERP</span> — if the ERP is degraded, the reason says so and the check still opens.<br>
+        • Backend delta: return a structured <span class="k">checks[]</span> (label · ok · detail · source) so the app renders ticks, not a sentence list.
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const SCHEME_TITLES = { CIA_UK_2026_v2:'Pashudhan 2026', CIA_UK_NLM_SCST_2026:'NLM Dairy Booster (SC/ST)', CIA_UK_BUFFALO_2026:'Murrah buffalo' };
+const schemeV = new URLSearchParams(location.search).get('scheme') || 'CIA_UK_2026_v2';
+const schemeTitle = SCHEME_TITLES[schemeV] || schemeV;
+
+const RESULTS = {
+  ok: {
+    isMember: true, advisory: true, likelyEligible: true,
+    reasons: ['Meets this scheme’s basic criteria — a guide, not an approval'],
+    checks: [
+      { ok:true, label:'Dairy-society member', detail:'Kanke DCS since Jun 2021 (5 yrs)', src:'ERP' },
+      { ok:true, label:'Milk supply', detail:'Avg ₹4,920 / month (last 6 mo)', src:'ERP' },
+      { ok:true, label:'No blocking cattle loan', detail:'No active induction loan on file', src:'ERP' },
+    ],
+  },
+  no: {
+    isMember: true, advisory: true, likelyEligible: false,
+    reasons: ['Avg monthly milk value ₹2,150 is below this scheme’s ₹4,000', 'This scheme needs 24 months’ membership'],
+    checks: [
+      { ok:false, label:'Membership tenure', detail:'20 months · this scheme needs 24', src:'ERP' },
+      { ok:false, label:'Milk supply', detail:'Avg ₹2,150 / month · this scheme needs ₹4,000', src:'ERP' },
+      { ok:true,  label:'No blocking cattle loan', detail:'No active induction loan on file', src:'ERP' },
+    ],
+  },
+};
+
+function render(k){
+  const r = { schemeVersion: schemeV, ...RESULTS[k] };
+  document.getElementById('tOk').classList.toggle('on', k==='ok');
+  document.getElementById('tNo').classList.toggle('on', k==='no');
+  const checks = r.checks.map(c=>`
+    <div class="check"><div class="ic ${c.ok?'ok':'bad'}">${c.ok?'✓':'✕'}</div>
+      <div class="n"><b>${c.label}</b><span>${c.detail}</span></div><span class="src">${c.src}</span></div>`).join('');
+  document.getElementById('body').innerHTML = `
+    <div class="schemechip">Checking for <b>${schemeTitle}</b><a class="sw" href="farmer-scheme.html">Change</a></div>
+    <div class="banner ${k==='ok'?'ok':'no'}">
+      <div class="big">${k==='ok'?'✓ Likely eligible':'Not yet — here’s why'}</div>
+      <div class="sub">${k==='ok'? 'You appear to meet this scheme’s basic criteria.' : r.reasons.join(' · ')}</div>
+      <div class="adv">⚖ A GUIDE, NOT AN APPROVAL</div>
+    </div>
+    ${checks}
+    <div class="cta">
+      <button class="primary" onclick="location.href='farmer-eoi.html?scheme=${schemeV}'">Express interest</button>
+      <button class="ghost" onclick="location.href='farmer-scheme.html'">Schemes</button>
+    </div>`;
+  document.getElementById('jsonOut').textContent = JSON.stringify(r, null, 2);
+}
+render('ok');
+</script>
+</body>
+</html>
