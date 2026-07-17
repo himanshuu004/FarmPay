@@ -7,6 +7,7 @@ import '../../../design_system/tokens.dart';
 import '../../../design_system/widgets/app_card.dart';
 import '../../../design_system/widgets/kpi_text.dart';
 import '../../../design_system/widgets/limit_meter.dart';
+import '../../../design_system/widgets/main_app_bar.dart';
 import '../../../l10n/generated/app_localizations.dart';
 import '../providers/coop_providers.dart';
 import '../widgets/society_join_nudge_card.dart';
@@ -52,7 +53,7 @@ class _SocietyPassbookScreenState extends ConsumerState<SocietyPassbookScreen> {
 
     if (_loading && _pb == null) {
       return Scaffold(
-        appBar: AppBar(title: Text(l10n.tabSociety)),
+        appBar: MainAppBar(title: l10n.tabSociety),
         body: const Center(child: CircularProgressIndicator()),
       );
     }
@@ -60,7 +61,7 @@ class _SocietyPassbookScreenState extends ConsumerState<SocietyPassbookScreen> {
     final pb = _pb;
     if (pb != null && pb['isMember'] == false) {
       return Scaffold(
-        appBar: AppBar(title: Text(l10n.tabSociety)),
+        appBar: MainAppBar(title: l10n.tabSociety),
         body: RefreshIndicator(
           onRefresh: _load,
           child: ListView(
@@ -78,7 +79,7 @@ class _SocietyPassbookScreenState extends ConsumerState<SocietyPassbookScreen> {
     final freshness = pb?['freshness'] as String?;
 
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.tabSociety)),
+      appBar: MainAppBar(title: l10n.tabSociety),
       body: RefreshIndicator(
         onRefresh: _load,
         child: ListView(

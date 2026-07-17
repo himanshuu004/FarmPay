@@ -56,6 +56,51 @@ final routerProvider = Provider<GoRouter>((ref) {
         parentNavigatorKey: _rootNavigatorKey,
         builder: (context, state) => const SocietyOrdersScreen(),
       ),
+      // Same route names as the RN app's Home journey cards
+      // (app/app/(tabs)/index.tsx) — phase-gated until their feature
+      // modules land; swap the builder in when each phase ships.
+      _pendingRoute(
+        '/dairy-log-revenue',
+        'Log milk',
+        'Voice-first dairy logbook ships in Phase 3.',
+        _rootNavigatorKey,
+      ),
+      _pendingRoute(
+        '/dairy-log-cost',
+        'Log expense',
+        'Voice-first dairy logbook ships in Phase 3.',
+        _rootNavigatorKey,
+      ),
+      _pendingRoute(
+        '/dairy-logbook',
+        'Logbook',
+        'Voice-first dairy logbook ships in Phase 3.',
+        _rootNavigatorKey,
+      ),
+      _pendingRoute(
+        '/dairy-animals',
+        'Animals',
+        'Herd register ships in Phase 3.',
+        _rootNavigatorKey,
+      ),
+      _pendingRoute(
+        '/dairy-treatment',
+        'Treatment',
+        'Treatment log ships in Phase 3.',
+        _rootNavigatorKey,
+      ),
+      _pendingRoute(
+        '/pashu-renew',
+        'Renewals',
+        'Policy renewals ship in Phase 5.',
+        _rootNavigatorKey,
+      ),
+      _pendingRoute(
+        '/cia-schemes',
+        'Cattle induction',
+        'The CIA loan-cum-subsidy programme ships in Phase 6.',
+        _rootNavigatorKey,
+      ),
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) =>
             MainShell(navigationShell: navigationShell),
@@ -116,6 +161,20 @@ final routerProvider = Provider<GoRouter>((ref) {
     ],
   );
 });
+
+GoRoute _pendingRoute(
+  String path,
+  String title,
+  String phaseLabel,
+  GlobalKey<NavigatorState> rootKey,
+) {
+  return GoRoute(
+    path: path,
+    parentNavigatorKey: rootKey,
+    builder: (context, state) =>
+        PhasePendingScreen(title: title, phaseLabel: phaseLabel),
+  );
+}
 
 class _SessionListenable extends ChangeNotifier {
   _SessionListenable(this.ref) {

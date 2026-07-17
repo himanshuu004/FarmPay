@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../design_system/tokens.dart';
+import '../../design_system/widgets/main_app_bar.dart';
 
 /// Honest placeholder for a tab whose feature module hasn't been built yet
 /// in the current delivery phase (FLUTTER-CONVERSION-PRD.md §6 delivers
@@ -21,7 +22,7 @@ class PhasePendingScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(title)),
+      appBar: MainAppBar(title: title),
       body: Center(
         child: Padding(
           padding: const EdgeInsets.all(AppSpacing.xl),
