@@ -37,7 +37,10 @@ const paySchema = Joi.object({
 const issueSchema = Joi.object({ insurerName: Joi.string().max(150).optional() });
 const rejectSchema = Joi.object({ reason: Joi.string().max(255).optional() });
 
-const proposalUuidParam = Joi.object({ proposalUuid: Joi.string().uuid().required() });
+const proposalUuidParam = Joi.object({
+  proposalUuid: Joi.string().uuid().required(),
+  contentHash: Joi.string().hex().length(64).optional(),
+});
 const policyUuidParam = Joi.object({ policyUuid: Joi.string().uuid().required() });
 const journeyUuidParam = Joi.object({ journeyUuid: Joi.string().uuid().required() });
 const commissionUuidParam = Joi.object({ commissionUuid: Joi.string().uuid().required() });

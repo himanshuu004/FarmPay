@@ -23,7 +23,10 @@ const evidenceSchema = Joi.object({
 const reportSchema = Joi.object({ report: Joi.object().default({}) });
 const settleSchema = Joi.object({ amount: Joi.number().positive().max(1e7).optional() });
 const rejectSchema = Joi.object({ reason: Joi.string().max(255).required() });
-const claimUuidParam = Joi.object({ claimUuid: Joi.string().uuid().required() });
+const claimUuidParam = Joi.object({
+  claimUuid: Joi.string().uuid().required(),
+  contentHash: Joi.string().hex().length(64).optional(),
+});
 const taskUuidParam = Joi.object({ taskUuid: Joi.string().uuid().required() });
 
 const grievanceSchema = Joi.object({
