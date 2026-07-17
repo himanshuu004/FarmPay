@@ -1,5 +1,27 @@
 Implement the Allied KCC Flutter mobile app end-to-end, in full, to a production-ready standard.
 
+## Repo state
+
+Git is initialized on `main`, remote `origin` is set to `https://github.com/himanshuu004/FarmPay.git`, and the baseline is pushed. Continue committing there — don't force-push, don't rewrite history, don't run destructive git commands without asking first.
+
+## Pilot infra status — already done, don't redo this
+
+- **Supabase**: a live project is provisioned and all 22 Sequelize migrations have already been run against it successfully (pgvector + PostGIS extensions enabled, every module's tables exist). Connection details are already in `backend/.env` (git-ignored) — `DB_HOST`/`DB_PORT`/`DB_NAME`/`DB_USER`/`DB_PASSWORD` point at Supabase's **Session Pooler** endpoint (chosen deliberately over Direct Connection, since Direct Connection is IPv6-only on Supabase's free tier and our hosting needs IPv4). `DB_SSL_REJECT_UNAUTHORIZED=false` is also set and required — Supabase's pooler presents a cert chain Node won't validate by default under strict mode; this is intentional, not a bug to "fix" by reverting it. The backend has been confirmed booting locally against this database (`/health` returns `200 {"status":"ok",...}`).
+- **Redis**: intentionally not wired up yet for the pilot — the app runs without it (logs reconnect errors on startup, which is expected noise, not a crash). Don't spend time fixing this unless asked.
+- **Backend hosting**: deploying to **Render** (not Fly.io/Koyeb — both were ruled out: Fly.io needs a credit card, Koyeb was mid-acquisition by Mistral AI with a broken-looking dashboard at the time this was evaluated). Render's free tier needs no card but sleeps after 15 min idle (30-50s cold start on first request after sleep) — acceptable for a pilot demo, revisit for production.
+- **OTP**: using the backend's existing mock/dev behavior — `[DEV] OTP for <number>: <code>` is printed to server logs when `NODE_ENV` isn't `production`. No real SMS provider is wired up; this is deliberate for the pilot, not a gap to fill.
+- **Voice/ASR**: the existing RN app's `voiceInput.ts` uses free on-device speech-to-text (Web Speech API / `expo-speech`), not Bhashini. Reproduce that with an equivalent free on-device Flutter package (e.g. `speech_to_text`) — no Bhashini account or API key is needed for parity.
+
+## What's still needed from the user before certain steps — ask explicitly, don't proceed without them
+
+1. **Apple Developer account** (for iOS builds/TestFlight): not yet created. Needed once there's a first iOS build ready to distribute, not before — ask when you reach that point, don't block earlier work on it.
+2. **Google Play Console account** (for Android internal testing/release): not yet created. Same — needed once there's a first Android build ready, ask then.
+3. **Branding assets**: app icon, splash screen, app display name — if these should differ from what's already in `/app/assets`, ask; otherwise reuse those.
+4. **Client-specific demo data** (society name, sample farmer profiles, milk-passbook history) if the pilot demo should look realistic rather than using generic seed data — `scripts/seedDemo.js` and `scripts/seedCia.js` already exist as a starting point; ask whether to use/extend them.
+5. **Aanchal ERP live credentials**: not needed — `mock` mode is already configured and is almost certainly sufficient for the pilot. Only ask if the client specifically wants live co-op data shown.
+
+**How to ask for anything above**: never ask the user to paste API keys, passwords, or connection strings directly into chat. Ask what's needed, then have them paste it once and put it straight into the relevant `.env` file or hosting platform's secret manager (Render env vars, GitHub repo secrets) yourself, so it doesn't linger in chat history unnecessarily. For accounts (Apple/Google), prefer being added as a collaborator/team member over being given a password.
+
 ## Before writing any code
 
 1. Read `CLAUDE.md` in full — it is the authoritative source for architecture, domain rules, module map, and state machines. Every rule in it is a hard constraint, not a suggestion.

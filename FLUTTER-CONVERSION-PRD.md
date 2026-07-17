@@ -142,21 +142,24 @@ Two deployment targets: a **pilot** (fast, free/cheap, good enough to demo to th
 |---|---|---|---|
 | Frontend | Flutter app (this PRD), distributed via TestFlight (iOS) + Play Internal Testing or direct APK (Android) | Free, except mandatory $99/yr Apple Developer account for iOS distribution | No app-store review needed for a client demo |
 | Backend API | Existing Node/Express app, unchanged, containerized via the repo's existing `deploy/Dockerfile` | Free tier | Business logic (KCC math, insurance rules, CIA state machines, ERP adapter) stays untouched |
-| Backend hosting | **Fly.io** | Free allowance (always-on small VM, no cold-start delay during a live demo) | Deploys straight from the existing Dockerfile |
-| Database + object storage | **Supabase** (Postgres + pgvector + PostGIS + S3-compatible storage bucket) | Free tier | Drop-in Postgres — existing Sequelize migrations run unmodified; also covers evidence/KYC file storage |
-| Redis | **Upstash** (serverless Redis) | Free tier | Drop-in replacement for `ioredis` config; no server to manage |
+| Backend hosting | **Render** (free tier, no card required) | Free (sleeps after 15 min idle, ~30-50s cold start on first request after sleep — acceptable for a pilot, revisit for production) | Fly.io requires a card; Koyeb was ruled out mid-build after its dashboard broke during Mistral AI's acquisition of the company — Render is the stable no-card option |
+| Database + object storage | **Supabase** (Postgres + pgvector + PostGIS + S3-compatible storage bucket) — **live, provisioned, migrated** | Free tier | Drop-in Postgres — all 22 existing Sequelize migrations already run clean against it. Connect via the **Session Pooler** endpoint, not Direct Connection (Direct is IPv6-only on the free tier; most hosts, including Render, are IPv4-only). Object storage bucket for evidence/KYC files not wired up yet — see known gaps below. |
+| Redis | Skipped for pilot — app runs without it (logs reconnect warnings on boot, non-fatal) | Free | Not needed to validate the product; add Upstash free tier when caching/session behavior actually needs testing |
 | RabbitMQ / outbox | Skipped for pilot — `outboxRelayJob.js` runs in-process on schedule instead of against a real broker | Free | Not needed at pilot scale; add CloudAMQP free tier later only if real async decoupling is needed pre-production |
 | Error tracking | **Sentry** free tier | Free | Catches crashes before the client does |
-| CI/CD | Manual `fly deploy`, or GitHub Actions once that becomes annoying to do by hand | Free | Automate only once it's worth it |
-| Domain/TLS | Fly.io's provided `*.fly.dev` subdomain + auto HTTPS | Free | No need to buy a domain for an internal pilot |
+| CI/CD | Manual deploy via Render's GitHub integration (auto-deploys on push to `main`), or explicit GitHub Actions later | Free | Render's git-push-to-deploy is enough for pilot cadence |
+| Domain/TLS | Render's provided `*.onrender.com` subdomain + auto HTTPS | Free | No need to buy a domain for an internal pilot |
 
-**Pilot deployment steps:**
-1. `git init` the repo and commit the current state (no version history currently exists — do this before anything else).
-2. Supabase: create project, enable `vector`, `postgis`, `pgcrypto`, `uuid-ossp` extensions, run existing Sequelize migrations against it (`npx sequelize-cli db:migrate`), create a storage bucket for evidence/KYC files.
-3. Upstash: create a free Redis DB, grab `REDIS_URL`.
-4. Fill in `.env` from `.env.example` with the Supabase `DATABASE_URL`, storage keys, and `REDIS_URL`.
-5. Deploy backend to Fly.io: `fly launch --dockerfile deploy/Dockerfile --no-deploy` (skip Fly's own Postgres provisioning), `fly secrets set ...` for env vars, `fly deploy`.
-6. Point the Flutter app's API base URL at the resulting `https://<app>.fly.dev`.
+**Known gap, not yet fixed:** the backend's file-storage code is hardcoded for plain AWS S3 (`AWS_ACCESS_KEY_ID`/`AWS_SECRET_ACCESS_KEY` + `S3_BUCKET_NAME`/`S3_BUCKET_REGION`, no endpoint override), so it can't yet point at Supabase's S3-compatible storage bucket as-is. Evidence/KYC file upload will not work in the pilot until an `S3_ENDPOINT`-style override is added. Not urgent for a first demo (passbook, KCC calculator, coop ordering don't need it) but must be fixed before the CIA evidence-capture or insurance-claim-document screens can be demoed for real.
+
+**Pilot deployment steps (done so far, marked ✅):**
+1. ✅ `git init`, initial commit, remote `origin` set to the project's GitHub repo, pushed to `main`.
+2. ✅ Supabase project created; `vector` and `postgis` extensions enabled; all 22 Sequelize migrations run successfully (`NODE_ENV=production npx sequelize-cli db:migrate` — the `production` config block is used even locally for this one-off, since it's the block with SSL enabled, which Supabase requires).
+3. ✅ `backend/.env` filled in with Supabase's Session Pooler `DB_HOST`/`DB_PORT`/`DB_NAME`/`DB_USER`/`DB_PASSWORD`, plus `DB_SSL_REJECT_UNAUTHORIZED=false` (a new config flag added to `backend/src/config/database.js` — Supabase's pooler presents a cert chain Node doesn't trust under strict validation; this is a legitimate, intentional setting, not a workaround to revert). Backend confirmed booting locally against Supabase (`/health` → `200 {"status":"ok",...}`).
+4. Storage bucket for evidence/KYC files: not yet created — blocked on the S3-endpoint-override gap noted above.
+5. Redis: skipped for pilot (see table above).
+6. Deploy backend to Render: connect the GitHub repo, set builder to Dockerfile (`deploy/Dockerfile`), add the env vars from `backend/.env` (excluding Redis/RabbitMQ, which aren't wired up), deploy.
+7. Point the Flutter app's API base URL at the resulting `https://<app>.onrender.com`.
 7. Build and distribute: Android via `flutter build apk` or Play Console Internal Testing; iOS via `flutter build ipa` → TestFlight.
 8. Smoke test the full app end-to-end against the real Supabase-backed API before the client sees it.
 

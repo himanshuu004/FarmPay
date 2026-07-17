@@ -110,7 +110,10 @@ const dbConfig = {
       ...sharedDialectOptions,
       ssl: {
         require: true,
-        rejectUnauthorized: true,
+        // Managed poolers (e.g. Supabase Supavisor) can present a chain
+        // Node's default trust store won't validate; allow disabling strict
+        // verification per-environment via DB_SSL_REJECT_UNAUTHORIZED.
+        rejectUnauthorized: process.env.DB_SSL_REJECT_UNAUTHORIZED !== 'false',
       },
     },
     timezone: '+05:30',
