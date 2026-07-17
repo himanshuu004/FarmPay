@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -6,6 +8,7 @@ import '../../../design_system/tokens.dart';
 import '../../../l10n/generated/app_localizations.dart';
 import '../providers/auth_providers.dart';
 import '../widgets/auth_scaffold.dart';
+import '../widgets/dev_otp_banner.dart';
 import '../widgets/step_indicator.dart';
 
 /// Mirrors app/app/forgot-password.tsx: mobile -> forgot-mpin, otp ->
@@ -21,16 +24,39 @@ class _ForgotMpinScreenState extends ConsumerState<ForgotMpinScreen> {
   int _step = 1;
   bool _loading = false;
   String _otpRequestId = '';
+  String? _devOtp;
+  Timer? _devOtpTimer;
 
   final _mobileCtrl = TextEditingController();
   final _otpCtrl = TextEditingController();
   final _newMpinCtrl = TextEditingController();
   final _confirmMpinCtrl = TextEditingController();
 
+  @override
+  void dispose() {
+    _devOtpTimer?.cancel();
+    _mobileCtrl.dispose();
+    _otpCtrl.dispose();
+    _newMpinCtrl.dispose();
+    _confirmMpinCtrl.dispose();
+    super.dispose();
+  }
+
   void _showError(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text(message), backgroundColor: AppColors.danger),
     );
+  }
+
+  /// Pilot-only: see register_screen.dart's _showDevOtp for the full
+  /// rationale — surfaces the backend's echoed devOtp for 10s.
+  void _showDevOtp(String? otp) {
+    _devOtpTimer?.cancel();
+    if (otp == null || otp.isEmpty) return;
+    setState(() => _devOtp = otp);
+    _devOtpTimer = Timer(const Duration(seconds: 10), () {
+      if (mounted) setState(() => _devOtp = null);
+    });
   }
 
   Future<void> _run(Future<void> Function() fn) async {
@@ -59,6 +85,7 @@ class _ForgotMpinScreenState extends ConsumerState<ForgotMpinScreen> {
             res['data']?['otpRequestId'] ??
             res['data']?['otp_request_id'] ??
             '';
+        _showDevOtp(res['data']?['devOtp']);
         setState(() => _step = 2);
       } else {
         _showError(res['message'] ?? 'Could not send OTP');
@@ -166,6 +193,7 @@ class _ForgotMpinScreenState extends ConsumerState<ForgotMpinScreen> {
                   style: const TextStyle(color: AppColors.muted),
                 ),
                 const SizedBox(height: AppSpacing.sm),
+                DevOtpBanner(otp: _devOtp),
                 TextField(
                   controller: _otpCtrl,
                   keyboardType: TextInputType.number,

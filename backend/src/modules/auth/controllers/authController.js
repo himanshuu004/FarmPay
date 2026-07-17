@@ -41,6 +41,8 @@ const register = async (req, res, next) => {
         userId: result.userId,
         otpRequestId: result.otpRequestId,
         expiresInSeconds: result.expiresInSeconds,
+        // Pilot-only, gated by SHOW_DEV_OTP — no SMS provider is wired up.
+        ...(result.devOtp && { devOtp: result.devOtp }),
       },
       statusCode: STATUS_CODES.CREATED,
     });
@@ -79,6 +81,7 @@ const sendOtp = async (req, res, next) => {
       data: {
         otpRequestId: result.otpRequestId,
         expiresInSeconds: result.expiresInSeconds,
+        ...(result.devOtp && { devOtp: result.devOtp }),
       },
     });
   } catch (err) {
@@ -204,6 +207,7 @@ const forgotMpin = async (req, res, next) => {
       data: {
         otpRequestId: result.otpRequestId,
         expiresInSeconds: result.expiresInSeconds,
+        ...(result.devOtp && { devOtp: result.devOtp }),
       },
     });
   } catch (err) {

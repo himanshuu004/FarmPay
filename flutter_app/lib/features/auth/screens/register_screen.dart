@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -9,6 +10,7 @@ import '../../../design_system/tokens.dart';
 import '../../../l10n/generated/app_localizations.dart';
 import '../providers/auth_providers.dart';
 import '../widgets/auth_scaffold.dart';
+import '../widgets/dev_otp_banner.dart';
 import '../widgets/step_indicator.dart';
 
 /// Mirrors app/app/register.tsx's 4-step flow exactly:
@@ -27,6 +29,8 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   int _step = 1;
   bool _loading = false;
   String _otpRequestId = '';
+  String? _devOtp;
+  Timer? _devOtpTimer;
 
   final _mobileCtrl = TextEditingController();
   final _otpCtrl = TextEditingController();
@@ -52,7 +56,20 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     _confirmMpinCtrl.dispose();
     _firstNameCtrl.dispose();
     _lastNameCtrl.dispose();
+    _devOtpTimer?.cancel();
     super.dispose();
+  }
+
+  /// Pilot-only: surfaces the backend's echoed devOtp for 10s so testers
+  /// don't need Render log access. No-op once SHOW_DEV_OTP is unset
+  /// server-side (the field just won't be present in the response).
+  void _showDevOtp(String? otp) {
+    _devOtpTimer?.cancel();
+    if (otp == null || otp.isEmpty) return;
+    setState(() => _devOtp = otp);
+    _devOtpTimer = Timer(const Duration(seconds: 10), () {
+      if (mounted) setState(() => _devOtp = null);
+    });
   }
 
   void _showError(String message) {
@@ -87,6 +104,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
             res['data']?['otpRequestId'] ??
             res['data']?['otp_request_id'] ??
             '';
+        _showDevOtp(res['data']?['devOtp']);
         setState(() => _step = 2);
         return;
       }
@@ -95,6 +113,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
         final otpRes = await api.sendOtp(mobile: mobile, purpose: 'register');
         if (otpRes['success'] == true) {
           _otpRequestId = otpRes['data']?['otpRequestId'] ?? '';
+          _showDevOtp(otpRes['data']?['devOtp']);
           setState(() => _step = 2);
         } else {
           _showError(otpRes['message'] ?? 'Failed');
@@ -130,6 +149,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
           .sendOtp(mobile: _mobileCtrl.text.trim(), purpose: 'register');
       if (res['success'] == true) {
         _otpRequestId = res['data']?['otpRequestId'] ?? '';
+        _showDevOtp(res['data']?['devOtp']);
         if (mounted) {
           ScaffoldMessenger.of(
             context,
@@ -361,6 +381,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
         style: const TextStyle(color: AppColors.muted),
       ),
       const SizedBox(height: AppSpacing.sm),
+      DevOtpBanner(otp: _devOtp),
       TextField(
         controller: _otpCtrl,
         keyboardType: TextInputType.number,

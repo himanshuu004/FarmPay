@@ -208,6 +208,11 @@ const register = async (data) => {
       userId: user.user_id,
       otpRequestId,
       expiresInSeconds: OTP_EXPIRY_MINUTES * 60,
+      // Pilot-only: no SMS provider is wired up, so surface the OTP directly
+      // in the response behind an explicit opt-in flag (never on by default)
+      // rather than requiring log access. Same pattern as aadhaarAuthService's
+      // demoOtp field.
+      ...(process.env.SHOW_DEV_OTP === 'true' && { devOtp: otpCode }),
     };
   } catch (err) {
     await transaction.rollback();
@@ -291,7 +296,11 @@ const sendOtp = async (data) => {
     logger.info(`[DEV] OTP for ${formattedMobile || email} (${purpose}): ${otpCode}`);
   }
 
-  return { otpRequestId, expiresInSeconds: OTP_EXPIRY_MINUTES * 60 };
+  return {
+    otpRequestId,
+    expiresInSeconds: OTP_EXPIRY_MINUTES * 60,
+    ...(process.env.SHOW_DEV_OTP === 'true' && { devOtp: otpCode }),
+  };
 };
 
 /**
