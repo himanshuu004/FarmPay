@@ -7,6 +7,7 @@ const Joi = require('joi');
 
 const appUuidParam = Joi.object({
   appUuid: Joi.string().uuid().required(),
+  contentHash: Joi.string().hex().length(64).optional(),
 });
 
 const schemeVersionParam = Joi.object({

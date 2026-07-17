@@ -182,6 +182,24 @@ const createDraft = async (req) => {
   };
 };
 
+/**
+ * Live-capture evidence upload — one generic endpoint behind every CIA photo
+ * ref field (application docs, purchase seller/inspection/eartag/transport
+ * photos). Stored content-addressed, unmodified (Convention 9/32); the
+ * returned URL is what the client then passes as docRef/photoRef/etc. Any
+ * status is accepted (not gated to FILLABLE_STATUSES) since purchase-phase
+ * evidence uploads happen well after submission.
+ */
+const uploadEvidence = async (req) => {
+  const actor = await resolveActor(req);
+  const app = await loadOwned(req.params.appUuid, actor);
+  if (!req.file) throw err('photo file is required', 'VALIDATION_ERROR', 400);
+  const evidenceStorageService = require('../../../shared/services/evidenceStorageService');
+  const descriptor = evidenceStorageService.store(req.file.buffer, { mimeType: req.file.mimetype, capturedAt: new Date() });
+  const url = `${req.protocol}://${req.get('host')}/api/v1/cattle-induction/applications/${app.application_uuid}/evidence/${descriptor.contentHash}`;
+  return { url, contentHash: descriptor.contentHash };
+};
+
 /** Camera-first document upload — content-addressed, per checklist key (re-upload replaces). */
 const uploadDocument = async (req) => {
   const actor = await resolveActor(req);
@@ -322,6 +340,8 @@ module.exports = {
   listForFarmer,        // Slice A
   createDraft,          // Slice B — open/fill application (ERP pre-fill)
   uploadDocument,       // Slice B — camera-first, content-addressed
+  uploadEvidence,       // generic live-capture evidence upload (docs + purchase photos)
+  loadOwned,             // exported for the evidence-photo GET (ownership + role check)
   submit,               // ★ Slice B — mandatory-gated → PENDING_SUPERVISOR_VERIFY
   getStatus,            // Slice C — owner-scoped timeline from domain_events
   getConfig,            // Slice 0 (admin)

@@ -61,6 +61,27 @@ const uploadDocument = async (req, res, next) => {
   try { return success(res, { message: 'Document uploaded', data: await applicationService.uploadDocument(req) }); }
   catch (err) { next(err); }
 };
+// Generic live-capture evidence upload behind every CIA photo ref field
+// (application docs, purchase seller/inspection/eartag/transport photos).
+const uploadEvidence = async (req, res, next) => {
+  try { return success(res, { message: 'Evidence captured', data: await applicationService.uploadEvidence(req), statusCode: 201 }); }
+  catch (err) { next(err); }
+};
+const getEvidence = async (req, res, next) => {
+  try {
+    if (!/^[0-9a-f]{64}$/i.test(req.params.contentHash)) { const e = new Error('Invalid content hash'); e.statusCode = 400; e.errorCode = 'VALIDATION_ERROR'; throw e; }
+    if (!['ROUTE_SUPERVISOR', 'VET', 'DUSS_MAKER', 'DUSS_CHECKER', 'DISTRICT_OFFICER'].includes(req.user.role)) {
+      const { resolveActor } = require('../services/context');
+      const actor = await resolveActor(req);
+      await applicationService.loadOwned(req.params.appUuid, actor);
+    }
+    const evidenceStorageService = require('../../../shared/services/evidenceStorageService');
+    const fs = require('fs');
+    const filePath = evidenceStorageService.resolvePath(req.params.contentHash, 'image/jpeg');
+    if (!fs.existsSync(filePath)) { const e = new Error('Evidence not found'); e.statusCode = 404; e.errorCode = 'RES_001'; throw e; }
+    return res.sendFile(filePath);
+  } catch (err) { next(err); }
+};
 const submitApplication = async (req, res, next) => {
   try { return success(res, { message: 'Application submitted', data: await applicationService.submit(req) }); }
   catch (err) { next(err); }
@@ -287,7 +308,7 @@ const transitionGrievance = async (req, res, next) => {
 module.exports = {
   // farmer
   getScheme, listSchemes, getSchemeDetail, checkEligibility, expressInterest, listMyApplications, createApplication,
-  uploadDocument, submitApplication, getStatus, getPurchaseState, capturePurchase, acknowledgeDelivery,
+  uploadDocument, uploadEvidence, getEvidence, submitApplication, getStatus, getPurchaseState, capturePurchase, acknowledgeDelivery,
   issueTransitInsurance, confirmArrival, issueCattleInsurance,   // CIA-3 (Slice Q)
   reportDeath, getClaimStatus,           // CIA-4 (Slice U)
   getEmiLedger, getNoDuesCert, remapMilkAccount, setMoratorium,   // CIA-2 (Slice K/L + edges: no-dues, DCS re-map, moratorium)

@@ -7,6 +7,18 @@ import '../features/auth/screens/forgot_mpin_screen.dart';
 import '../features/auth/screens/login_screen.dart';
 import '../features/auth/screens/register_screen.dart';
 import '../features/auth/providers/auth_providers.dart';
+import '../features/cia/screens/cia_application_screen.dart';
+import '../features/cia/screens/cia_claim_screen.dart';
+import '../features/cia/screens/cia_eligibility_screen.dart';
+import '../features/cia/screens/cia_emi_consent_screen.dart';
+import '../features/cia/screens/cia_emi_screen.dart';
+import '../features/cia/screens/cia_eoi_screen.dart';
+import '../features/cia/screens/cia_grievance_screen.dart';
+import '../features/cia/screens/cia_loan_screen.dart';
+import '../features/cia/screens/cia_purchase_screen.dart';
+import '../features/cia/screens/cia_scheme_screen.dart';
+import '../features/cia/screens/cia_schemes_screen.dart';
+import '../features/cia/screens/cia_status_screen.dart';
 import '../features/coop/screens/society_order_screen.dart';
 import '../features/coop/screens/society_orders_screen.dart';
 import '../features/coop/screens/society_passbook_screen.dart';
@@ -223,11 +235,66 @@ final routerProvider = Provider<GoRouter>((ref) {
         parentNavigatorKey: _rootNavigatorKey,
         builder: (context, state) => const PashuClaimScreen(),
       ),
-      _pendingRoute(
-        '/cia-schemes',
-        'Cattle induction',
-        'The CIA loan-cum-subsidy programme ships in Phase 6.',
-        _rootNavigatorKey,
+      // ── CIA / Cattle induction (Phase 6) — same route names as the RN app ──
+      GoRoute(
+        path: '/cia-schemes',
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => const CiaSchemesScreen(),
+      ),
+      GoRoute(
+        path: '/cia-scheme',
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => CiaSchemeScreen(schemeVersion: state.uri.queryParameters['scheme'] ?? ''),
+      ),
+      GoRoute(
+        path: '/cia-eligibility',
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => CiaEligibilityScreen(schemeVersion: state.uri.queryParameters['scheme']),
+      ),
+      GoRoute(
+        path: '/cia-eoi',
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => CiaEoiScreen(schemeVersion: state.uri.queryParameters['scheme']),
+      ),
+      GoRoute(
+        path: '/cia-application',
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => const CiaApplicationScreen(),
+      ),
+      GoRoute(
+        path: '/cia-status',
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => CiaStatusScreen(appUuid: state.uri.queryParameters['app']),
+      ),
+      GoRoute(
+        path: '/cia-loan',
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => CiaLoanScreen(appUuid: state.uri.queryParameters['app']),
+      ),
+      GoRoute(
+        path: '/cia-purchase',
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => CiaPurchaseScreen(appUuid: state.uri.queryParameters['app']),
+      ),
+      GoRoute(
+        path: '/cia-emi',
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => CiaEmiScreen(appUuid: state.uri.queryParameters['app']),
+      ),
+      GoRoute(
+        path: '/cia-emi-consent',
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => CiaEmiConsentScreen(appUuid: state.uri.queryParameters['app']),
+      ),
+      GoRoute(
+        path: '/cia-claim',
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => CiaClaimScreen(appUuid: state.uri.queryParameters['app']),
+      ),
+      GoRoute(
+        path: '/cia-grievance',
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => CiaGrievanceScreen(appUuid: state.uri.queryParameters['app']),
       ),
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) =>

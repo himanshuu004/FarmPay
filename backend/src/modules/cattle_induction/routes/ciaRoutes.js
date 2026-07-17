@@ -13,6 +13,7 @@
  * and gated purchase-approval land in CIA-2/CIA-3 — stubbed 501 here by design.
  */
 const express = require('express');
+const multer = require('multer');
 const ctrl = require('../controllers/ciaController');
 const validate = require('../../../middleware/validate');
 const { authenticate } = require('../../../middleware/auth');
@@ -20,6 +21,17 @@ const roleCheck = require('../../../middleware/roleCheck');
 const requireAadhaarAuth = require('../../../middleware/requireAadhaarAuth'); // Tier-2 step-up on money-movement
 const { ROLES, ROLE_GROUPS } = require('../../../shared/constants/roles');
 const v = require('../validators/ciaValidator');
+
+// memory storage — evidenceStorageService writes the raw buffer to disk
+// unmodified (Convention 9/32: no resize/recompress on evidence photos).
+const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 10 * 1024 * 1024 },
+  fileFilter: (_req, file, cb) => {
+    if (/^image\/(jpeg|png|webp|heic|heif)$/i.test(file.mimetype)) cb(null, true);
+    else cb(new Error('Only image uploads allowed'));
+  },
+});
 
 /* ------------------------------ farmer surface ----------------------------- */
 const farmerRouter = express.Router();
@@ -32,6 +44,10 @@ farmerRouter.post('/interest', validate(v.expressInterestSchema), ctrl.expressIn
 farmerRouter.get('/applications', ctrl.listMyApplications);
 farmerRouter.post('/applications', validate(v.createApplicationSchema), ctrl.createApplication); // DRAFT ★
 farmerRouter.post('/applications/:appUuid/documents', validate(v.appUuidParam, 'params'), validate(v.uploadDocumentSchema), ctrl.uploadDocument);
+// Generic live-capture evidence upload — the byte-storage step behind every
+// docRef/photoRef/idProofRef/billRef/challanRef field CIA's JSON endpoints accept.
+farmerRouter.post('/applications/:appUuid/evidence', validate(v.appUuidParam, 'params'), upload.single('photo'), ctrl.uploadEvidence);
+farmerRouter.get('/applications/:appUuid/evidence/:contentHash', validate(v.appUuidParam, 'params'), ctrl.getEvidence);
 farmerRouter.post('/applications/:appUuid/submit', validate(v.appUuidParam, 'params'), ctrl.submitApplication); // ★
 farmerRouter.get('/applications/:appUuid/status', validate(v.appUuidParam, 'params'), ctrl.getStatus);
 // Guided purchase — CIA-1 captures evidence; the payment GATE is enforced in CIA-3.
