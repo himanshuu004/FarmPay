@@ -19,11 +19,19 @@ class DairyApi {
   Future<Map> upsertProfile(Map<String, dynamic> body) async =>
       Map.from(await _client.post('/livestock/profile', body));
 
-  Future<Map> listAnimals() async =>
-      Map.from(await _client.get('/livestock/animals'));
+  Future<Map> listAnimals({String? status}) async => Map.from(
+    await _client.get(
+      '/livestock/animals${status != null ? '?status=$status' : ''}',
+    ),
+  );
 
   Future<Map> addAnimal(Map<String, dynamic> body) async =>
       Map.from(await _client.post('/livestock/animals', body));
+
+  /// kcc-calculator.tsx's "Sold?" action — marks an animal exited so it
+  /// drops out of the live KCC unit count automatically.
+  Future<Map> exitAnimal(String animalUuid, Map<String, dynamic> body) async =>
+      Map.from(await _client.post('/livestock/animals/$animalUuid/exit', body));
 
   Future<Map> createRevenueEvent(Map<String, dynamic> body) async =>
       Map.from(await _client.post('/livestock/revenue-events', body));

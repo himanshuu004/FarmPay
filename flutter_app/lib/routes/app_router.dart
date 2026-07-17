@@ -11,6 +11,13 @@ import '../features/coop/screens/society_order_screen.dart';
 import '../features/coop/screens/society_orders_screen.dart';
 import '../features/coop/screens/society_passbook_screen.dart';
 import '../features/home/screens/home_screen.dart';
+import '../features/kcc/screens/kcc_apply_screen.dart';
+import '../features/kcc/screens/kcc_calculator_screen.dart';
+import '../features/kcc/screens/kcc_drawdown_screen.dart';
+import '../features/kcc/screens/kcc_eligibility_screen.dart';
+import '../features/kcc/screens/kcc_limit_screen.dart';
+import '../features/kcc/screens/kcc_pack_screen.dart';
+import '../features/kcc/screens/kcc_transactions_screen.dart';
 import '../features/logbook/screens/activity_dairy_screen.dart';
 import '../features/logbook/screens/dairy_animals_screen.dart';
 import '../features/logbook/screens/dairy_breeding_screen.dart';
@@ -136,6 +143,40 @@ final routerProvider = Provider<GoRouter>((ref) {
         _rootNavigatorKey,
       ),
 
+      // ── KCC (Phase 4) — same route names as the RN app ──
+      GoRoute(
+        path: '/kcc-calculator',
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => const KccCalculatorScreen(),
+      ),
+      GoRoute(
+        path: '/kcc-eligibility',
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => const KccEligibilityScreen(),
+      ),
+      GoRoute(
+        path: '/kcc-apply',
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => KccApplyScreen(
+          chosenAnimalUuids: (state.extra as List<String>?) ?? const [],
+        ),
+      ),
+      GoRoute(
+        path: '/kcc-drawdown',
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => const KccDrawdownScreen(),
+      ),
+      GoRoute(
+        path: '/kcc-transactions',
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => const KccTransactionsScreen(),
+      ),
+      GoRoute(
+        path: '/kcc-pack',
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => const KccPackScreen(),
+      ),
+
       _pendingRoute(
         '/pashu-renew',
         'Renewals',
@@ -172,11 +213,7 @@ final routerProvider = Provider<GoRouter>((ref) {
             routes: [
               GoRoute(
                 path: '/kcc',
-                builder: (context, state) => const PhasePendingScreen(
-                  title: 'KCC',
-                  phaseLabel:
-                      'KCC calculator, eligibility, application and drawdown ship in Phase 4.',
-                ),
+                builder: (context, state) => const KccLimitScreen(),
               ),
             ],
           ),
