@@ -24,7 +24,23 @@ class QueueOps extends Table {
   Set<Column> get primaryKey => {opUuid};
 }
 
-@DriftDatabase(tables: [QueueOps])
+/// Direct-endpoint retry queue for coop receipt confirmation. This is
+/// deliberately NOT routed through QueueOps/POST /api/v1/sync — the
+/// backend's generic offline-sync applier (offlineSyncService.js) only
+/// supports DairyCostEvent/DairyRevenueEvent today (explicitly documented
+/// as "Phase 0 — extend per phase"). Confirming receipt is a state-machine
+/// transition with side effects (auto feed-cost logging), not a raw field
+/// patch, so it goes straight to the existing, already-idempotent
+/// POST /coop/orders/:id/receipt endpoint once connectivity returns.
+class CoopPendingReceipts extends Table {
+  TextColumn get orderUuid => text()();
+  TextColumn get queuedAt => text()();
+
+  @override
+  Set<Column> get primaryKey => {orderUuid};
+}
+
+@DriftDatabase(tables: [QueueOps, CoopPendingReceipts])
 class OfflineQueueDb extends _$OfflineQueueDb {
   OfflineQueueDb() : super(_openConnection());
   OfflineQueueDb.forTesting(super.e);

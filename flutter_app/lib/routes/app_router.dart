@@ -7,6 +7,9 @@ import '../features/auth/screens/forgot_mpin_screen.dart';
 import '../features/auth/screens/login_screen.dart';
 import '../features/auth/screens/register_screen.dart';
 import '../features/auth/providers/auth_providers.dart';
+import '../features/coop/screens/society_order_screen.dart';
+import '../features/coop/screens/society_orders_screen.dart';
+import '../features/coop/screens/society_passbook_screen.dart';
 import '../features/home/screens/home_screen.dart';
 import '../features/shell/main_shell.dart';
 import '../features/shell/phase_pending_screen.dart';
@@ -42,6 +45,16 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => AadhaarVerifyScreen(
           returnTo: state.uri.queryParameters['returnTo'],
         ),
+      ),
+      GoRoute(
+        path: '/society-order',
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => const SocietyOrderScreen(),
+      ),
+      GoRoute(
+        path: '/society-orders',
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => const SocietyOrdersScreen(),
       ),
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) =>
@@ -82,11 +95,7 @@ final routerProvider = Provider<GoRouter>((ref) {
             routes: [
               GoRoute(
                 path: '/society',
-                builder: (context, state) => const PhasePendingScreen(
-                  title: 'Society',
-                  phaseLabel:
-                      'Milk passbook, ordering and receipts ship in Phase 2.',
-                ),
+                builder: (context, state) => const SocietyPassbookScreen(),
               ),
             ],
           ),
