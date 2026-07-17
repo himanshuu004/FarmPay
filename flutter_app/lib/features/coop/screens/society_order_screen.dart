@@ -26,6 +26,7 @@ class _SocietyOrderScreenState extends ConsumerState<SocietyOrderScreen> {
   bool _submitting = false;
   List<Map> _items = [];
   double _limit = 0;
+  Map? _window;
   final Map<String, int> _cart = {};
 
   @override
@@ -38,9 +39,14 @@ class _SocietyOrderScreenState extends ConsumerState<SocietyOrderScreen> {
     setState(() => _loading = true);
     try {
       final api = ref.read(coopApiProvider);
-      final results = await Future.wait([api.getCatalog(), api.getPassbook()]);
+      final results = await Future.wait([
+        api.getCatalog(),
+        api.getPassbook(),
+        api.getDemandWindow(),
+      ]);
       final cat = results[0];
       final pb = results[1];
+      final win = results[2];
       if (cat['success'] == true) {
         setState(() => _items = List<Map>.from(cat['data'] ?? []));
       }
@@ -50,11 +56,21 @@ class _SocietyOrderScreenState extends ConsumerState<SocietyOrderScreen> {
               (pb['data']?['availableOrderLimit'] as num?)?.toDouble() ?? 0,
         );
       }
+      if (win['success'] == true) {
+        setState(() => _window = win['data']);
+      }
     } catch (_) {
       // offline-tolerant: keep whatever was already loaded
     } finally {
       if (mounted) setState(() => _loading = false);
     }
+  }
+
+  String _windowRange(Map? w) {
+    if (w == null) return '';
+    final from = w['fromDay'];
+    final to = w['toDay'];
+    return '$from–$to';
   }
 
   void _setQty(String sku, int q) {
@@ -173,6 +189,7 @@ class _SocietyOrderScreenState extends ConsumerState<SocietyOrderScreen> {
                 160,
               ),
               children: [
+                if (_window != null) _windowBanner(l10n),
                 AppCard(
                   title: l10n.socChooseItems,
                   child: _items.isEmpty
@@ -283,6 +300,34 @@ class _SocietyOrderScreenState extends ConsumerState<SocietyOrderScreen> {
                   : Text(l10n.socSubmitOrder),
             ),
           ],
+        ),
+      ),
+    );
+  }
+
+  // Mirrors prototypes/society/index.html's window banner — shown
+  // proactively via GET /coop/demand-window (a read-only mirror of the
+  // same gate submitOrder() enforces server-side, never a second source
+  // of truth for it).
+  Widget _windowBanner(AppLocalizations l10n) {
+    final open = _window!['open'] == true;
+    final range = _windowRange(
+      open ? _window!['window'] : _window!['nextWindow'],
+    );
+    return Container(
+      width: double.infinity,
+      margin: const EdgeInsets.only(bottom: AppSpacing.md),
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+      decoration: BoxDecoration(
+        color: open ? AppColors.accent : AppColors.warnAmberBg,
+        borderRadius: BorderRadius.circular(AppRadii.button),
+      ),
+      child: Text(
+        open ? l10n.socWindowOpen(range) : l10n.socWindowClosed(range),
+        style: TextStyle(
+          fontSize: 12,
+          fontWeight: FontWeight.w600,
+          color: open ? AppColors.brandDark : AppColors.warnAmber,
         ),
       ),
     );

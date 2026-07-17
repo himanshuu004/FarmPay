@@ -13,6 +13,12 @@ class CoopApi {
   Future<Map> getCatalog() async =>
       Map.from(await _client.get('/coop/catalog'));
 
+  /// Read-only mirror of the same demand-window gate submitOrder()
+  /// enforces server-side — lets the order screen show the prototype's
+  /// window banner proactively instead of only on a failed submit.
+  Future<Map> getDemandWindow() async =>
+      Map.from(await _client.get('/coop/demand-window'));
+
   Future<Map> listOrders() async => Map.from(await _client.get('/coop/orders'));
 
   Future<Map> createDraft(List<Map<String, dynamic>> lines) async =>

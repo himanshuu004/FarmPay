@@ -7,6 +7,7 @@ const membershipService = require('../services/membershipService');
 const passbookService = require('../services/passbookService');
 const eligibilityService = require('../services/eligibilityService');
 const orderService = require('../services/orderService');
+const { getPolicy, demandWindowStatus } = require('../services/coopPolicyService');
 
 let db;
 const getDb = () => { if (!db) db = require('../../../shared/models'); return db; };
@@ -50,6 +51,22 @@ const getEligibility = async (req, res, next) => {
 const getCatalog = async (req, res, next) => {
   try {
     return success(res, { message: 'Input catalog', data: await orderService.listCatalog() });
+  } catch (err) { next(err); }
+};
+
+/**
+ * GET /coop/demand-window — lets the order screen show the same window
+ * banner the prototype specifies (prototypes/society/index.html) *before*
+ * the farmer builds a cart, rather than only surfacing COOP_WINDOW_CLOSED
+ * after a failed submit. Read-only mirror of the same demandWindowStatus()
+ * check submitOrder() already enforces — never a second source of truth
+ * for the gate itself.
+ */
+const getDemandWindow = async (req, res, next) => {
+  try {
+    const { membership } = await resolveMember(req);
+    const policy = await getPolicy(membership?.society_ref || 'DEFAULT');
+    return success(res, { message: 'Demand window', data: demandWindowStatus(policy) });
   } catch (err) { next(err); }
 };
 
@@ -107,6 +124,6 @@ const joinNudge = async (req, res, next) => {
 };
 
 module.exports = {
-  getPassbook, getEligibility, getCatalog, createDraft, submitOrder,
+  getPassbook, getEligibility, getCatalog, getDemandWindow, createDraft, submitOrder,
   confirmReceipt, listOrders, linkMembership, joinNudge,
 };

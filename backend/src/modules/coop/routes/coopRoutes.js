@@ -20,6 +20,7 @@ router.post('/membership/link', validate(v.linkMembershipSchema), ctrl.linkMembe
 
 // Ordering (app-authored transitions only).
 router.get('/catalog', ctrl.getCatalog);
+router.get('/demand-window', ctrl.getDemandWindow);
 router.get('/orders', ctrl.listOrders);
 router.post('/orders', validate(v.createDraftSchema), ctrl.createDraft);
 router.post('/orders/:orderUuid/submit', validate(v.orderUuidParam, 'params'), ctrl.submitOrder);

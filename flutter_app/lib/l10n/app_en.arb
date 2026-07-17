@@ -142,13 +142,34 @@
   "socNotSubmittedMsg": "Ordering may be closed or over your limit.",
   "socConnectSocietyFail": "Cannot connect to the society. Check your connection.",
   "socSubmitOrder": "Submit order",
+  "socWindowOpen": "🟢 Ordering open — {range}",
+  "@socWindowOpen": {
+    "placeholders": { "range": { "type": "String" } }
+  },
+  "socWindowClosed": "🔴 Ordering closed — opens {range}",
+  "@socWindowClosed": {
+    "placeholders": { "range": { "type": "String" } }
+  },
 
   "socNudgeTitle": "Join your village dairy society",
   "socNudgeBody": "Members get a milk passbook, input credit up to 70% of their milk dues, and a path to a KCC.",
   "socNudgeCta": "Find my society",
   "socOutstanding": "Outstanding milk payment",
-  "socInputCredit": "Input credit — 70% of dues",
+  "socInputCredit": "Input credit limit — 70% of milk dues",
   "socAvailable": "available",
+  "socAvailableToOrder": "Available to order",
+  "socOutstandingDues": "Outstanding milk dues",
+  "socMonthsChip": "{count} months",
+  "@socMonthsChip": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "socLimitMathNote": "70% × {outstanding} − {inFlight} in-flight orders",
+  "@socLimitMathNote": {
+    "placeholders": {
+      "outstanding": { "type": "String" },
+      "inFlight": { "type": "String" }
+    }
+  },
   "socRepaidNote": "Repaid against your milk by the society. Never part of your KCC limit.",
   "socOrderInputs": "Order inputs",
   "socMyOrders": "My orders",
