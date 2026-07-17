@@ -200,7 +200,7 @@ const register = async (data) => {
     }
 
     logger.info(`User registered: ${user.user_id}, mobile: ${formattedMobile}`);
-    if (process.env.NODE_ENV !== 'production') {
+    if (process.env.NODE_ENV !== 'production' || process.env.SHOW_DEV_OTP === 'true') {
       logger.info(`[DEV] OTP for ${formattedMobile} (register): ${otpCode}`);
     }
 
@@ -287,7 +287,7 @@ const sendOtp = async (data) => {
   }
 
   logger.info(`OTP sent for ${purpose} to ${formattedMobile || email}`);
-  if (process.env.NODE_ENV !== 'production') {
+  if (process.env.NODE_ENV !== 'production' || process.env.SHOW_DEV_OTP === 'true') {
     logger.info(`[DEV] OTP for ${formattedMobile || email} (${purpose}): ${otpCode}`);
   }
 

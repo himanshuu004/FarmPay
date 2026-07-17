@@ -108,7 +108,11 @@ const initiateAadhaarOtp = async (userId, aadhaar, meta = {}) => {
     otpRequestId,
     aadhaarLast4: record.aadhaar_last4,
     expiresInSeconds: OTP_TTL_MINUTES * 60,
-    ...(config.env !== 'production' && { demoOtp: otp }), // surface for demo only
+    // surface for demo only — SHOW_DEV_OTP is an explicit pilot opt-in so
+    // this never leaks in a real production deploy even though the pilot
+    // backend itself runs with NODE_ENV=production (required for Supabase
+    // pooler SSL, see backend/src/config/database.js)
+    ...((config.env !== 'production' || process.env.SHOW_DEV_OTP === 'true') && { demoOtp: otp }),
   };
 };
 
