@@ -80,7 +80,7 @@ class _KccDrawdownScreenState extends ConsumerState<KccDrawdownScreen> {
     final l10n = AppLocalizations.of(context);
     final amt = num.tryParse(_amountCtrl.text.trim());
     if (_descCtrl.text.trim().isEmpty || amt == null || amt <= 0) {
-      _showSnack(l10n.kccFillDescAmount, error: true);
+      _showSnack('${l10n.kccFillItIn}. ${l10n.kccFillDescAmount}', error: true);
       return;
     }
     setState(() => _busy = true);
@@ -93,17 +93,23 @@ class _KccDrawdownScreenState extends ConsumerState<KccDrawdownScreen> {
         amount: amt,
       );
       if (create['success'] != true) {
-        _showSnack((create['message'] ?? l10n.commonRetry).toString(), error: true);
+        _showSnack(
+          '${l10n.kccCouldNotRaise}. ${(create['message'] ?? l10n.commonRetry).toString()}',
+          error: true,
+        );
         return;
       }
       final sub = await api.submitDrawdown(create['data']['requestUuid'].toString());
       if (sub['success'] == true) {
-        _showSnack(l10n.kccSentToBank);
+        _showSnack('${l10n.kccSubmittedTitle}. ${l10n.kccSentToBank}');
         _descCtrl.clear();
         _amountCtrl.clear();
         await _load();
       } else {
-        _showSnack((sub['message'] ?? l10n.commonRetry).toString(), error: true);
+        _showSnack(
+          '${l10n.kccNotSubmitted}. ${(sub['message'] ?? l10n.commonRetry).toString()}',
+          error: true,
+        );
       }
     } catch (_) {
       _showSnack(l10n.kccCannotConnect, error: true);
