@@ -63,6 +63,33 @@ const addEvidence = async (req, res, next) => {
   } catch (err) { next(err); }
 };
 
+// Live-capture evidence photo. Stores the raw bytes content-addressed
+// (Convention 9) and returns {objectKey, contentHash} for the caller to
+// pass into POST /:claimUuid/evidence — kept as two calls (not one) so the
+// existing evidenceSchema/evidenceService validation path is unchanged.
+const uploadEvidencePhoto = async (req, res, next) => {
+  try {
+    await loadOwnedClaim(req);
+    if (!req.file) { const e = new Error('photo file is required'); e.statusCode = 400; e.errorCode = 'VALIDATION_ERROR'; throw e; }
+    const evidenceStorageService = require('../../../shared/services/evidenceStorageService');
+    const descriptor = evidenceStorageService.store(req.file.buffer, { mimeType: req.file.mimetype, capturedAt: new Date() });
+    const objectKey = `/api/v1/claims/${req.params.claimUuid}/evidence/photo/${descriptor.contentHash}`;
+    return success(res, { message: 'Photo captured', data: { objectKey, contentHash: descriptor.contentHash }, statusCode: 201 });
+  } catch (err) { next(err); }
+};
+
+const getEvidencePhoto = async (req, res, next) => {
+  try {
+    if (!/^[0-9a-f]{64}$/i.test(req.params.contentHash)) { const e = new Error('Invalid content hash'); e.statusCode = 400; e.errorCode = 'VALIDATION_ERROR'; throw e; }
+    if (!['SURVEYOR', 'VET', 'INSURER_OPS', 'GOV_VIEWER'].includes(req.user.role)) await loadOwnedClaim(req);
+    const evidenceStorageService = require('../../../shared/services/evidenceStorageService');
+    const fs = require('fs');
+    const filePath = evidenceStorageService.resolvePath(req.params.contentHash, 'image/jpeg');
+    if (!fs.existsSync(filePath)) { const e = new Error('Photo not found'); e.statusCode = 404; e.errorCode = 'RES_001'; throw e; }
+    return res.sendFile(filePath);
+  } catch (err) { next(err); }
+};
+
 const submitDocs = async (req, res, next) => {
   try {
     const { farmerId } = await loadOwnedClaim(req);
@@ -148,7 +175,7 @@ const honorarium = async (req, res, next) => {
 };
 
 module.exports = {
-  intimate, listMine, getClaim, addEvidence, submitDocs, verifyChain,
+  intimate, listMine, getClaim, addEvidence, uploadEvidencePhoto, getEvidencePhoto, submitDocs, verifyChain,
   recordSurvey, recordPostmortem, beginReview, settle, reject,
   myTasks, taskEnroute, taskOnsite, taskSubmit, taskQc, honorarium,
 };

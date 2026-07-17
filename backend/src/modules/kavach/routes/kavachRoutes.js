@@ -4,12 +4,24 @@
  * steps are roleCheck'd (no live insurer system in v1 — ops is back-office).
  */
 const express = require('express');
+const multer = require('multer');
 const router = express.Router();
 const ctrl = require('../controllers/kavachController');
 const validate = require('../../../middleware/validate');
 const { authenticate } = require('../../../middleware/auth');
 const roleCheck = require('../../../middleware/roleCheck');
 const v = require('../validators/kavachValidator');
+
+// memory storage — evidenceStorageService writes the raw buffer to disk
+// unmodified (Convention 9: no resize/recompress on evidence photos).
+const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 10 * 1024 * 1024 },
+  fileFilter: (_req, file, cb) => {
+    if (/^image\/(jpeg|png|webp|heic|heif)$/i.test(file.mimetype)) cb(null, true);
+    else cb(new Error('Only image uploads allowed'));
+  },
+});
 
 router.use(authenticate);
 
@@ -22,6 +34,8 @@ router.get('/assets/me', ctrl.assetsMe);
 router.post('/proposals', validate(v.createProposalSchema), ctrl.createProposal);
 router.get('/proposals/me', ctrl.listProposals);
 router.get('/proposals/:proposalUuid', validate(v.proposalUuidParam, 'params'), ctrl.getProposal);
+router.post('/proposals/:proposalUuid/photo', validate(v.proposalUuidParam, 'params'), upload.single('photo'), ctrl.uploadPhoto);
+router.get('/proposals/:proposalUuid/photo/:contentHash', validate(v.proposalUuidParam, 'params'), ctrl.getPhoto);
 router.post('/proposals/:proposalUuid/tag', validate(v.proposalUuidParam, 'params'), validate(v.tagSchema), ctrl.tag);
 
 // Proposals — VET lifecycle.

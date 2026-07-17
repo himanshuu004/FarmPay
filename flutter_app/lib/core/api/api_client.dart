@@ -96,6 +96,12 @@ class ApiClient {
   Future<dynamic> get(String path) => _send('GET', path);
   Future<dynamic> post(String path, [Map<String, dynamic>? body]) =>
       _send('POST', path, body: body ?? const {});
+
+  /// Multipart upload — used by live-capture evidence endpoints
+  /// (kavach proposal photos, claim evidence photos). `form` must be a
+  /// [FormData]; Dio sets the multipart content-type automatically.
+  Future<dynamic> postForm(String path, FormData form) =>
+      _send('POST', path, body: form);
   Future<dynamic> put(String path, [Map<String, dynamic>? body]) =>
       _send('PUT', path, body: body ?? const {});
   Future<dynamic> patch(String path, [Map<String, dynamic>? body]) =>

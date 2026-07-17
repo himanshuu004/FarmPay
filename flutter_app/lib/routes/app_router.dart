@@ -29,6 +29,13 @@ import '../features/logbook/screens/dairy_pnl_screen.dart';
 import '../features/logbook/screens/dairy_treatment_screen.dart';
 import '../features/logbook/screens/farm_tab_screen.dart';
 import '../features/logbook/screens/setup_dairy_screen.dart';
+import '../features/insurance/screens/pashu_animals_screen.dart';
+import '../features/insurance/screens/pashu_claim_screen.dart';
+import '../features/insurance/screens/pashu_enrol_screen.dart';
+import '../features/insurance/screens/pashu_home_screen.dart';
+import '../features/insurance/screens/pashu_quote_screen.dart';
+import '../features/insurance/screens/pashu_renew_screen.dart';
+import '../features/insurance/screens/pashu_vault_screen.dart';
 import '../features/shell/main_shell.dart';
 import '../features/shell/phase_pending_screen.dart';
 
@@ -177,11 +184,44 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => const KccPackScreen(),
       ),
 
-      _pendingRoute(
-        '/pashu-renew',
-        'Renewals',
-        'Policy renewals ship in Phase 5.',
-        _rootNavigatorKey,
+      // ── Pashu Suraksha (Phase 5) — same route names as the RN app ──
+      GoRoute(
+        path: '/pashu-animals',
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => const PashuAnimalsScreen(),
+      ),
+      GoRoute(
+        path: '/pashu-quote',
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => PashuQuoteScreen(
+          animalId: state.uri.queryParameters['animalId'],
+        ),
+      ),
+      GoRoute(
+        path: '/pashu-enrol',
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => PashuEnrolScreen(
+          planCode: state.uri.queryParameters['planCode'],
+          marketValue: state.uri.queryParameters['marketValue'],
+          preselectAnimalId: state.uri.queryParameters['animalId'],
+        ),
+      ),
+      GoRoute(
+        path: '/pashu-vault',
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => PashuVaultScreen(
+          policyUuid: state.uri.queryParameters['policyUuid'],
+        ),
+      ),
+      GoRoute(
+        path: '/pashu-renew',
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => const PashuRenewScreen(),
+      ),
+      GoRoute(
+        path: '/pashu-claim',
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => const PashuClaimScreen(),
       ),
       _pendingRoute(
         '/cia-schemes',
@@ -229,11 +269,7 @@ final routerProvider = Provider<GoRouter>((ref) {
             routes: [
               GoRoute(
                 path: '/suraksha',
-                builder: (context, state) => const PhasePendingScreen(
-                  title: 'Pashu Suraksha',
-                  phaseLabel:
-                      'Animal tagging, quotes, enrolment and claims ship in Phase 5.',
-                ),
+                builder: (context, state) => const PashuHomeScreen(),
               ),
             ],
           ),

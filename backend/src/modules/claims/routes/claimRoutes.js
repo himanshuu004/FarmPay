@@ -6,11 +6,23 @@
  * Settle/reject live ONLY on the admin router — decisions are human (#10).
  */
 const express = require('express');
+const multer = require('multer');
 const ctrl = require('../controllers/claimController');
 const validate = require('../../../middleware/validate');
 const { authenticate } = require('../../../middleware/auth');
 const roleCheck = require('../../../middleware/roleCheck');
 const v = require('../validators/claimValidator');
+
+// memory storage — evidenceStorageService writes the raw buffer to disk
+// unmodified (Convention 9: no resize/recompress on claim evidence).
+const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 10 * 1024 * 1024 },
+  fileFilter: (_req, file, cb) => {
+    if (/^image\/(jpeg|png|webp|heic|heif)$/i.test(file.mimetype)) cb(null, true);
+    else cb(new Error('Only image uploads allowed'));
+  },
+});
 
 // ── Farmer ──
 const claimsRouter = express.Router();
@@ -19,6 +31,8 @@ claimsRouter.post('/', validate(v.intimateSchema), ctrl.intimate);
 claimsRouter.get('/me', ctrl.listMine);
 claimsRouter.get('/:claimUuid', validate(v.claimUuidParam, 'params'), ctrl.getClaim);
 claimsRouter.get('/:claimUuid/verify', validate(v.claimUuidParam, 'params'), ctrl.verifyChain);
+claimsRouter.post('/:claimUuid/evidence/photo', validate(v.claimUuidParam, 'params'), upload.single('photo'), ctrl.uploadEvidencePhoto);
+claimsRouter.get('/:claimUuid/evidence/photo/:contentHash', validate(v.claimUuidParam, 'params'), ctrl.getEvidencePhoto);
 claimsRouter.post('/:claimUuid/evidence', validate(v.claimUuidParam, 'params'), validate(v.evidenceSchema), ctrl.addEvidence);
 claimsRouter.post('/:claimUuid/submit-docs', validate(v.claimUuidParam, 'params'), ctrl.submitDocs);
 

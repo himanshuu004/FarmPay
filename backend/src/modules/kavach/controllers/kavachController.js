@@ -103,6 +103,36 @@ const getProposal = async (req, res, next) => {
   } catch (err) { next(err); }
 };
 
+// Live-capture evidence photo (owner+animal / tag close-up) for a proposal
+// the farmer owns. Stored content-addressed, unmodified (Convention 9);
+// returns a URL the farmer app then passes into POST .../tag as
+// ownerPhotoUrl/tagPhotoUrl.
+const uploadPhoto = async (req, res, next) => {
+  try {
+    await loadOwnedProposal(req);
+    if (!req.file) { const e = new Error('photo file is required'); e.statusCode = 400; e.errorCode = 'VALIDATION_ERROR'; throw e; }
+    const evidenceStorageService = require('../../../shared/services/evidenceStorageService');
+    const descriptor = evidenceStorageService.store(req.file.buffer, { mimeType: req.file.mimetype, capturedAt: new Date() });
+    // ownerPhotoUrl/tagPhotoUrl are validated as absolute URIs (tagSchema) —
+    // req.protocol reflects the original scheme via `trust proxy` (app.js).
+    const url = `${req.protocol}://${req.get('host')}/api/v1/kavach/proposals/${req.params.proposalUuid}/photo/${descriptor.contentHash}`;
+    return success(res, { message: 'Photo captured', data: { url, contentHash: descriptor.contentHash }, statusCode: 201 });
+  } catch (err) { next(err); }
+};
+
+const getPhoto = async (req, res, next) => {
+  try {
+    if (!/^[0-9a-f]{64}$/i.test(req.params.contentHash)) { const e = new Error('Invalid content hash'); e.statusCode = 400; e.errorCode = 'VALIDATION_ERROR'; throw e; }
+    if (!['VET', 'INSURER_OPS'].includes(req.user.role)) await loadOwnedProposal(req);
+    const evidenceStorageService = require('../../../shared/services/evidenceStorageService');
+    const fs = require('fs');
+    // mimeType is unknown from the hash alone; try the common capture type.
+    const filePath = evidenceStorageService.resolvePath(req.params.contentHash, 'image/jpeg');
+    if (!fs.existsSync(filePath)) { const e = new Error('Photo not found'); e.statusCode = 404; e.errorCode = 'RES_001'; throw e; }
+    return res.sendFile(filePath);
+  } catch (err) { next(err); }
+};
+
 const tag = async (req, res, next) => {
   try {
     await loadOwnedProposal(req);
@@ -194,7 +224,7 @@ const advanceCommission = async (req, res, next) => {
 
 module.exports = {
   listPlans, quote, assetsMe, policiesMe, getPolicy,
-  createProposal, listProposals, getProposal, tag, examine, value, pay, issue, reject,
+  createProposal, listProposals, getProposal, tag, uploadPhoto, getPhoto, examine, value, pay, issue, reject,
   renewalsDue, renew, optInRenewal, optOutRenewal,
   myCommissions, advanceCommission,
 };
