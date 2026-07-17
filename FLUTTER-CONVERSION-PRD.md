@@ -158,10 +158,12 @@ Two deployment targets: a **pilot** (fast, free/cheap, good enough to demo to th
 3. ✅ `backend/.env` filled in with Supabase's Session Pooler `DB_HOST`/`DB_PORT`/`DB_NAME`/`DB_USER`/`DB_PASSWORD`, plus `DB_SSL_REJECT_UNAUTHORIZED=false` (a new config flag added to `backend/src/config/database.js` — Supabase's pooler presents a cert chain Node doesn't trust under strict validation; this is a legitimate, intentional setting, not a workaround to revert). Backend confirmed booting locally against Supabase (`/health` → `200 {"status":"ok",...}`).
 4. Storage bucket for evidence/KYC files: not yet created — blocked on the S3-endpoint-override gap noted above.
 5. Redis: skipped for pilot (see table above).
-6. Deploy backend to Render: connect the GitHub repo, set builder to Dockerfile (`deploy/Dockerfile`), add the env vars from `backend/.env` (excluding Redis/RabbitMQ, which aren't wired up), deploy.
-7. Point the Flutter app's API base URL at the resulting `https://<app>.onrender.com`.
-7. Build and distribute: Android via `flutter build apk` or Play Console Internal Testing; iOS via `flutter build ipa` → TestFlight.
-8. Smoke test the full app end-to-end against the real Supabase-backed API before the client sees it.
+6. ✅ Deployed backend to Render as a native Node web service (Render auto-detected Node from `package.json` and used `npm install` / `node backend/src/app.js` directly — no Docker needed for this host), Free instance type, Singapore region, health check path `/health`, env vars pasted in via Render's "Add from .env" bulk-paste. **Live at `https://farmpay-1l94.onrender.com`** — confirmed responding (`/health` → `200 {"status":"ok","env":"production"}`) and connecting to Supabase successfully (clean boot, no DB errors in deploy logs).
+7. Point the Flutter app's API base URL at `https://farmpay-1l94.onrender.com`.
+8. Build and distribute: Android via `flutter build apk` or Play Console Internal Testing; iOS via `flutter build ipa` → TestFlight.
+9. Smoke test the full app end-to-end against the real Supabase-backed API before the client sees it.
+
+**Note on Render's free tier**: the service sleeps after 15 minutes of no traffic and takes ~30-50s to wake on the next request. Fine for pilot testing; if a live client demo is scheduled, hit `https://farmpay-1l94.onrender.com/health` a minute or two beforehand to wake it up first so the demo doesn't stall on a cold start.
 
 ### 8.2 Production stack (post client approval, large-audience scale)
 
