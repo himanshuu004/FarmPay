@@ -1,0 +1,97 @@
+{
+  "@@locale": "hi",
+
+  "commonSave": "सहेजें",
+  "commonSaving": "सहेज रहे हैं…",
+  "commonCancel": "रद्द करें",
+  "commonDone": "हो गया",
+  "commonOk": "ठीक है",
+  "commonBack": "वापस",
+  "commonRetry": "फिर कोशिश करें",
+  "commonError": "त्रुटि",
+  "commonOfflineRetry": "कनेक्ट नहीं हो पा रहा। ऑनलाइन होने पर आपकी जानकारी दोबारा भेजी जाएगी।",
+  "commonLanguage": "भाषा",
+  "commonContinue": "आगे बढ़ें",
+  "commonSkip": "छोड़ें",
+
+  "tabHome": "होम",
+  "tabSociety": "समिति",
+  "tabKcc": "केसीसी",
+  "tabSuraksha": "सुरक्षा",
+  "tabFarm": "खेती",
+
+  "authAppName": "एलाइड केसीसी",
+  "authTagline": "किसान डैशबोर्ड",
+  "authMobileNumber": "मोबाइल नंबर",
+  "authMpin": "एमपिन",
+  "authSignIn": "साइन इन करें",
+  "authForgotMpin": "एमपिन भूल गए?",
+  "authNewHereRegister": "नए हैं? पंजीकरण करें",
+  "authFooterSecured": "एलाइड केसीसी प्लेटफॉर्म द्वारा सुरक्षित",
+  "authInvalidMobile": "कृपया मान्य 10-अंकीय मोबाइल नंबर दर्ज करें",
+  "authInvalidMpin": "एमपिन ठीक 4 अंकों का होना चाहिए",
+  "authLoginFailed": "साइन इन नहीं हो सका",
+  "authCannotConnect": "सर्वर से जुड़ नहीं पाए। अपना कनेक्शन जांचें।",
+  "authFasterSignIn": "तेज़ी से साइन इन करें?",
+  "authEnableBiometricBody": "अगली बार एलाइड केसीसी अनलॉक करने के लिए {method} का उपयोग करें।",
+  "@authEnableBiometricBody": {
+    "placeholders": { "method": { "type": "String" } }
+  },
+  "authNotNow": "अभी नहीं",
+  "authEnable": "चालू करें",
+  "authUnlock": "एलाइड केसीसी अनलॉक करें",
+
+  "registerTitle": "अपना खाता बनाएं",
+  "registerFirstName": "पहला नाम",
+  "registerLastName": "अंतिम नाम",
+  "registerMobile": "मोबाइल नंबर",
+  "registerSendOtp": "ओटीपी भेजें",
+  "registerOtpTitle": "{mobile} पर भेजा गया ओटीपी दर्ज करें",
+  "@registerOtpTitle": {
+    "placeholders": { "mobile": { "type": "String" } }
+  },
+  "registerOtpVerify": "ओटीपी सत्यापित करें",
+  "registerResendOtp": "ओटीपी फिर भेजें",
+  "registerSetMpinTitle": "अपना 4-अंकीय एमपिन सेट करें",
+  "registerConfirmMpin": "एमपिन की पुष्टि करें",
+  "registerMpinMismatch": "एमपिन मेल नहीं खाते",
+  "registerDone": "खाता बन गया — आप साइन इन हैं।",
+  "registerBackToLogin": "पहले से खाता है? साइन इन करें",
+
+  "forgotMpinTitle": "अपना एमपिन रीसेट करें",
+  "forgotMpinMobile": "पंजीकृत मोबाइल नंबर",
+  "forgotMpinNewMpin": "नया एमपिन",
+  "forgotMpinConfirmMpin": "एमपिन की पुष्टि करें",
+  "forgotMpinSendOtp": "ओटीपी भेजें",
+  "forgotMpinVerify": "सत्यापित करें",
+  "forgotMpinReset": "एमपिन रीसेट करें",
+  "forgotMpinSuccess": "एमपिन रीसेट सफल रहा। कृपया साइन इन करें।",
+  "forgotMpinBackToLogin": "साइन इन पर वापस जाएं",
+
+  "aadhaarStepUpTitle": "आधार से सत्यापित करें",
+  "aadhaarStepUpBody": "आपकी सुरक्षा के लिए इस कार्रवाई हेतु अतिरिक्त आधार-आधारित सत्यापन चरण आवश्यक है।",
+  "aadhaarSendOtp": "आधार से जुड़े मोबाइल पर ओटीपी भेजें",
+  "aadhaarVerifyOtp": "सत्यापित करें और आगे बढ़ें",
+  "aadhaarNumber": "आधार नंबर",
+  "aadhaarInvalid": "कृपया मान्य 12-अंकीय आधार नंबर दर्ज करें",
+  "aadhaarOtpSentTo": "आधार {last4} पर समाप्त होने वाले के लिए ओटीपी भेजा गया",
+  "@aadhaarOtpSentTo": {
+    "placeholders": { "last4": { "type": "String" } }
+  },
+  "aadhaarResend": "आधार बदलें / ओटीपी फिर भेजें",
+  "aadhaarVerifiedContinue": "आधार सत्यापित हुआ — आगे बढ़ रहे हैं",
+  "aadhaarDpdpFooter": "आपका डेटा डीपीडीपी अधिनियम, 2023 के तहत सुरक्षित है। मूल आधार नंबर हमारे सिस्टम में कभी संग्रहीत नहीं होते।",
+  "aadhaarBadge": "टियर-2 प्रमाणीकरण",
+
+  "homeGreeting": "नमस्ते",
+  "homeRecordToday": "आज आप क्या दर्ज करना चाहेंगे?",
+  "homeJoinSociety": "अनलॉक करने के लिए समिति से जुड़ें",
+
+  "offlineBannerTitle": "ऑफ़लाइन",
+  "offlineBannerBody": "आप ऑफ़लाइन हैं — बदलाव इस डिवाइस पर सहेजे गए हैं और अपने आप सिंक हो जाएंगे।",
+  "syncPendingLabel": "{count} सिंक बाकी",
+  "@syncPendingLabel": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "syncConflictNotice": "आपकी एक प्रविष्टि आपके सहेजने के बाद सर्वर पर अपडेट हुई थी। अब सर्वर वाला संस्करण दिखाया जा रहा है।"
+}

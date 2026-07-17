@@ -1,0 +1,97 @@
+{
+  "@@locale": "en",
+
+  "commonSave": "Save",
+  "commonSaving": "Saving…",
+  "commonCancel": "Cancel",
+  "commonDone": "Done",
+  "commonOk": "OK",
+  "commonBack": "Back",
+  "commonRetry": "Try again",
+  "commonError": "Error",
+  "commonOfflineRetry": "Cannot connect. Your entry will retry when back online.",
+  "commonLanguage": "Language",
+  "commonContinue": "Continue",
+  "commonSkip": "Skip",
+
+  "tabHome": "Home",
+  "tabSociety": "Society",
+  "tabKcc": "KCC",
+  "tabSuraksha": "Suraksha",
+  "tabFarm": "Farm",
+
+  "authAppName": "Allied KCC",
+  "authTagline": "Farmer Dashboard",
+  "authMobileNumber": "Mobile number",
+  "authMpin": "MPIN",
+  "authSignIn": "Sign in",
+  "authForgotMpin": "Forgot MPIN?",
+  "authNewHereRegister": "New here? Register",
+  "authFooterSecured": "Secured by Allied KCC Platform",
+  "authInvalidMobile": "Please enter a valid 10-digit mobile number",
+  "authInvalidMpin": "MPIN must be exactly 4 digits",
+  "authLoginFailed": "Login failed",
+  "authCannotConnect": "Cannot connect to server. Check your connection.",
+  "authFasterSignIn": "Faster sign-in?",
+  "authEnableBiometricBody": "Use {method} to unlock Allied KCC next time.",
+  "@authEnableBiometricBody": {
+    "placeholders": { "method": { "type": "String" } }
+  },
+  "authNotNow": "Not now",
+  "authEnable": "Enable",
+  "authUnlock": "Unlock Allied KCC",
+
+  "registerTitle": "Create your account",
+  "registerFirstName": "First name",
+  "registerLastName": "Last name",
+  "registerMobile": "Mobile number",
+  "registerSendOtp": "Send OTP",
+  "registerOtpTitle": "Enter the OTP sent to {mobile}",
+  "@registerOtpTitle": {
+    "placeholders": { "mobile": { "type": "String" } }
+  },
+  "registerOtpVerify": "Verify OTP",
+  "registerResendOtp": "Resend OTP",
+  "registerSetMpinTitle": "Set your 4-digit MPIN",
+  "registerConfirmMpin": "Confirm MPIN",
+  "registerMpinMismatch": "MPINs do not match",
+  "registerDone": "Account created — you're signed in.",
+  "registerBackToLogin": "Already have an account? Sign in",
+
+  "forgotMpinTitle": "Reset your MPIN",
+  "forgotMpinMobile": "Registered mobile number",
+  "forgotMpinNewMpin": "New MPIN",
+  "forgotMpinConfirmMpin": "Confirm MPIN",
+  "forgotMpinSendOtp": "Send OTP",
+  "forgotMpinVerify": "Verify",
+  "forgotMpinReset": "Reset MPIN",
+  "forgotMpinSuccess": "MPIN reset successful. Please sign in.",
+  "forgotMpinBackToLogin": "Back to sign in",
+
+  "aadhaarStepUpTitle": "Verify with Aadhaar",
+  "aadhaarStepUpBody": "This action needs an extra Aadhaar-based verification step for your security.",
+  "aadhaarSendOtp": "Send OTP to Aadhaar-linked mobile",
+  "aadhaarVerifyOtp": "Verify & continue",
+  "aadhaarNumber": "Aadhaar number",
+  "aadhaarInvalid": "Please enter a valid 12-digit Aadhaar number",
+  "aadhaarOtpSentTo": "OTP sent for Aadhaar ending {last4}",
+  "@aadhaarOtpSentTo": {
+    "placeholders": { "last4": { "type": "String" } }
+  },
+  "aadhaarResend": "Change Aadhaar / resend OTP",
+  "aadhaarVerifiedContinue": "Aadhaar verified — continuing",
+  "aadhaarDpdpFooter": "Your data is protected under the DPDP Act, 2023. Raw Aadhaar numbers are never stored in our systems.",
+  "aadhaarBadge": "Tier-2 authentication",
+
+  "homeGreeting": "Namaste",
+  "homeRecordToday": "What would you like to record today?",
+  "homeJoinSociety": "Join your society to unlock",
+
+  "offlineBannerTitle": "Offline",
+  "offlineBannerBody": "You're offline — changes are saved on this device and will sync automatically.",
+  "syncPendingLabel": "{count} pending sync",
+  "@syncPendingLabel": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "syncConflictNotice": "One of your entries was updated on the server since you saved it. The server version is now shown."
+}
