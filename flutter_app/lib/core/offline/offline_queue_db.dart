@@ -40,7 +40,28 @@ class CoopPendingReceipts extends Table {
   Set<Column> get primaryKey => {orderUuid};
 }
 
-@DriftDatabase(tables: [QueueOps, CoopPendingReceipts])
+/// Direct-endpoint retry queue for the dairy logbook (revenue/cost/
+/// treatment/breeding events) — the hard offline-first requirement for
+/// "logbook entry" (CLAUDE.md Convention 26). Same rationale as
+/// CoopPendingReceipts: the generic /api/v1/sync applier does a raw,
+/// business-logic-free `Model.create(payload)` keyed by exact snake_case
+/// DB columns (including farmer_id, which the client would have to know
+/// and supply itself — the sync service never injects it from the
+/// authenticated user). Retrying against the real POST /livestock/*
+/// endpoints instead keeps every validation/UUID-generation/auto-cost-event
+/// side effect where CLAUDE.md requires it: server-side only.
+class DairyPendingEvents extends Table {
+  TextColumn get opUuid => text()();
+  TextColumn get kind => text()(); // revenue | cost | treatment | breeding
+  TextColumn get path => text()(); // e.g. /livestock/revenue-events
+  TextColumn get payloadJson => text()();
+  TextColumn get queuedAt => text()();
+
+  @override
+  Set<Column> get primaryKey => {opUuid};
+}
+
+@DriftDatabase(tables: [QueueOps, CoopPendingReceipts, DairyPendingEvents])
 class OfflineQueueDb extends _$OfflineQueueDb {
   OfflineQueueDb() : super(_openConnection());
   OfflineQueueDb.forTesting(super.e);
