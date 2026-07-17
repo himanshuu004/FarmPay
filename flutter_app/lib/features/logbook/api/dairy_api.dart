@@ -55,11 +55,12 @@ class DairyApi {
     ),
   );
 
-  /// setup-dairy.tsx's prefill call — no matching backend route exists
-  /// (dairyV2Routes.js has no GET /herd/summary), so this always 404s.
-  /// The RN app swallows the failure and falls back to zeroed defaults;
-  /// replicated faithfully rather than silently "fixed" — see
-  /// FLUTTER-CONVERSION-PRD parity notes.
+  /// setup-dairy.tsx's edit-mode prefill call. The RN app's equivalent
+  /// call 404s (no matching route ever existed in dairyV2Routes.js); added
+  /// GET /livestock/herd/summary server-side (bucketed by species — see
+  /// dairyAggregateService.js's getHerdSummary doc comment for why the
+  /// cows/mixed split can't be exactly reconstructed) so edit mode
+  /// actually prefills instead of always showing zeroed defaults.
   Future<Map?> getHerdSummary() async {
     try {
       return Map.from(await _client.get('/livestock/herd/summary'));

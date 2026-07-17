@@ -122,4 +122,45 @@ const saveAggregateHerd = async (farmerId, aggregates) => {
   };
 };
 
-module.exports = { saveAggregateHerd };
+/**
+ * GET /roots/dairy/v2/herd/summary — prefill for setup-dairy.tsx's edit
+ * mode. Buckets active animals by species (CATTLE→cows, BUFFALO→
+ * buffaloes); "mixed" can't be reconstructed because saveAggregateHerd's
+ * own KIND_MAP creates "mixed" animals as species CATTLE too (see the
+ * comment there) — there's no DB column distinguishing a "mixed" cow from
+ * a plain "cow" once saved, so mixed always reports 0 here. Total animal
+ * count is still exact; only the cows/mixed split is unrecoverable.
+ * avgDailyMilkLiters isn't persisted anywhere (saveAggregateHerd only
+ * echoes it back on save) — derived instead from each active dairy
+ * animal's most recent production log, summed.
+ */
+const getHerdSummary = async (farmerId) => {
+  const { DairyAnimal, DairyMilkProductionLog } = getDb();
+  const animals = await DairyAnimal.findAll({
+    where: { farmer_id: farmerId, is_active: true, status: 'ACTIVE' },
+  });
+
+  const counts = { cows: 0, buffaloes: 0, mixed: 0 };
+  for (const a of animals) {
+    if (a.species === 'CATTLE') counts.cows += 1;
+    else if (a.species === 'BUFFALO') counts.buffaloes += 1;
+  }
+
+  let avgDailyMilkLiters = null;
+  const dairyAnimalIds = animals.filter((a) => a.species === 'CATTLE' || a.species === 'BUFFALO').map((a) => a.id);
+  if (dairyAnimalIds.length > 0) {
+    let total = 0;
+    for (const animalId of dairyAnimalIds) {
+      const latest = await DairyMilkProductionLog.findOne({
+        where: { animal_id: animalId },
+        order: [['production_date', 'DESC']],
+      });
+      if (latest && latest.total_daily_milk != null) total += Number(latest.total_daily_milk);
+    }
+    if (total > 0) avgDailyMilkLiters = Math.round(total);
+  }
+
+  return { counts, avgDailyMilkLiters, totalAnimals: animals.length };
+};
+
+module.exports = { saveAggregateHerd, getHerdSummary };

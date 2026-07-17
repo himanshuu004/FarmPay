@@ -9,10 +9,9 @@ import '../widgets/form_kit.dart';
 
 /// Mirrors app/app/setup-dairy.tsx — aggregate herd counts (cows/buffaloes/
 /// mixed + avg daily milk), reconciled server-side into individual
-/// DairyAnimal rows. The GET /livestock/herd/summary prefill call 404s in
-/// the real backend (no matching route) — replicated faithfully (edit mode
-/// always shows the zeroed defaults) rather than silently patched, per the
-/// RN-parity audit.
+/// DairyAnimal rows. Edit-mode prefill now works (GET
+/// /livestock/herd/summary was missing server-side in the RN app's
+/// backend; added — see DairyApi.getHerdSummary's doc comment).
 class SetupDairyScreen extends ConsumerStatefulWidget {
   const SetupDairyScreen({super.key, this.editMode = false});
 

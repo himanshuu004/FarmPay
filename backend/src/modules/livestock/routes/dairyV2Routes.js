@@ -126,5 +126,6 @@ router.get('/pnl/per-animal', validate(v.pnlQuerySchema, 'query'), c.getPerAnima
 
 // --------- Persona phase: aggregate herd save-and-lock ---------
 router.post('/herd/aggregate', c.saveAggregateHerd);
+router.get('/herd/summary', c.getHerdSummary);
 
 module.exports = router;

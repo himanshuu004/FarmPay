@@ -46,6 +46,17 @@ const saveAggregateHerd = async (req, res, next) => {
   } catch (err) { next(err); }
 };
 
+/**
+ * GET /roots/dairy/v2/herd/summary — edit-mode prefill for setup-dairy.tsx.
+ */
+const getHerdSummary = async (req, res, next) => {
+  try {
+    const farmerId = await resolveFarmerId(req);
+    const result = await aggregateService.getHerdSummary(farmerId);
+    return success(res, { message: 'Herd summary', data: result });
+  } catch (err) { next(err); }
+};
+
 // ---------- Profile ----------
 const upsertProfile = async (req, res, next) => {
   try {
@@ -338,5 +349,5 @@ module.exports = {
   createTemplate, listTemplates, deleteTemplate,
   upsertWeeklySummary, finalizeWeek, listWeeklySummaries,
   getHerdPnl, getPerAnimalPnl,
-  saveAggregateHerd,
+  saveAggregateHerd, getHerdSummary,
 };
