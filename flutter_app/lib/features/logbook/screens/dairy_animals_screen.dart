@@ -243,7 +243,7 @@ class _DairyAnimalsScreenState extends ConsumerState<DairyAnimalsScreen> {
             ),
           ),
           if (a['purchase_cost'] != null)
-            Text(formatRupees(a['purchase_cost'] as num?)),
+            Text(formatRupees(a['purchase_cost'])),
         ],
       ),
     );

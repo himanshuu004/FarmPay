@@ -212,7 +212,7 @@ class _SocietyOrdersScreenState extends ConsumerState<SocietyOrdersScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                formatRupees(o['total_amount'] as num?),
+                formatRupees(o['total_amount']),
                 style: const TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.w800,

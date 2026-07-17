@@ -102,7 +102,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     }
 
     final isMember = _pb != null && _pb!['isMember'] != false;
-    final availLimit = (_pb?['availableOrderLimit'] as num?) ?? 0;
+    final availLimit = _pb?['availableOrderLimit'];
     final hasFacility = _kcc?['hasFacility'] == true;
 
     return Scaffold(
@@ -201,9 +201,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       Container(width: 1, height: 40, color: AppColors.line),
                       Expanded(
                         child: _snapshotCol(
-                          formatRupees(
-                            (_pb?['outstandingPayables'] as num?) ?? 0,
-                          ),
+                          formatRupees(_pb?['outstandingPayables']),
                           l10n.homeMilkDues,
                         ),
                       ),
@@ -256,7 +254,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             _JourneyCard(
               icon: '💳',
               title: hasFacility
-                  ? '${formatRupees((_kcc?['cmpl'] as num?) ?? 0)} ${l10n.homeKccLimit}'
+                  ? '${formatRupees(_kcc?['cmpl'])} ${l10n.homeKccLimit}'
                   : l10n.homeYourKcc,
               subtitle: hasFacility
                   ? (_kcc?['status'] as String? ?? '')

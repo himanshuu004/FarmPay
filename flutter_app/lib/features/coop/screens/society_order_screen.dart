@@ -52,8 +52,7 @@ class _SocietyOrderScreenState extends ConsumerState<SocietyOrderScreen> {
       }
       if (pb['success'] == true && pb['data']?['isMember'] != false) {
         setState(
-          () => _limit =
-              (pb['data']?['availableOrderLimit'] as num?)?.toDouble() ?? 0,
+          () => _limit = asNum(pb['data']?['availableOrderLimit']).toDouble(),
         );
       }
       if (win['success'] == true) {
@@ -81,7 +80,7 @@ class _SocietyOrderScreenState extends ConsumerState<SocietyOrderScreen> {
     var total = 0.0;
     for (final it in _items) {
       final qty = _cart[it['sku']] ?? 0;
-      total += qty * (it['subsidisedPrice'] as num).toDouble();
+      total += qty * asNum(it['subsidisedPrice']).toDouble();
     }
     return total;
   }
@@ -219,7 +218,7 @@ class _SocietyOrderScreenState extends ConsumerState<SocietyOrderScreen> {
                                           ),
                                           const SizedBox(height: 2),
                                           Text(
-                                            '${formatRupees(it['subsidisedPrice'] as num)} ${l10n.socPerUnit} ${it['unit']}',
+                                            '${formatRupees(it['subsidisedPrice'])} ${l10n.socPerUnit} ${it['unit']}',
                                             style: const TextStyle(
                                               color: AppColors.muted,
                                               fontSize: 12,

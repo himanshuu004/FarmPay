@@ -149,12 +149,33 @@ class ApiClient {
       _diceSend('PUT', path, body: body ?? const {});
 }
 
+/// Safely coerces a raw API value (String or num, per formatRupees' doc
+/// comment on why both shapes occur) into a num for arithmetic — meter
+/// fractions, over-limit comparisons, cart totals. Never use a bare
+/// `as num?` cast on a field read from decoded JSON.
+num asNum(dynamic v, {num fallback = 0}) {
+  if (v is num) return v;
+  return num.tryParse(v?.toString() ?? '') ?? fallback;
+}
+
 /// Mirrors formatRupees() in app/lib/api.ts — the ONLY client-side
 /// formatting allowed on statutory figures is presentation (₹ + thousands
 /// separators), never recomputation.
-String formatRupees(num? n) {
-  if (n == null || n.isNaN) return '₹0';
-  final rounded = n.round();
+///
+/// Accepts `dynamic` rather than `num?` deliberately: raw snake_case CRUD
+/// echoes (animals, coop orders, dairy events — anything backed by a
+/// Sequelize DECIMAL column) serialize as JSON **strings** (e.g.
+/// `"65000.00"`), while hand-built computed objects (P&L totals, KCC
+/// facility, eligibility) use real JSON numbers. Coercing here means every
+/// call site can pass the raw API value directly — `formatRupees(x)`, never
+/// `formatRupees(x as num?)` — without needing to know or guess which shape
+/// a given field is. A `num? n` cast at the call site is exactly the bug
+/// this caused: "String is not a subtype of num?" the moment that field is
+/// actually a stringified decimal.
+String formatRupees(dynamic n) {
+  final parsed = n is num ? n : num.tryParse(n?.toString() ?? '');
+  if (parsed == null || parsed.isNaN) return '₹0';
+  final rounded = parsed.round();
   final s = rounded.abs().toString();
   final buf = StringBuffer();
   final chars = s.split('');

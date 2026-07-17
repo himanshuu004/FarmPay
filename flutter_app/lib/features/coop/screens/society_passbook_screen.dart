@@ -73,17 +73,14 @@ class _SocietyPassbookScreenState extends ConsumerState<SocietyPassbookScreen> {
       );
     }
 
-    final avail = (pb?['availableOrderLimit'] as num?)?.toDouble() ?? 0;
-    final gross = (pb?['grossOrderLimit'] as num?)?.toDouble() ?? 1;
+    final avail = asNum(pb?['availableOrderLimit']).toDouble();
+    final gross = asNum(pb?['grossOrderLimit'], fallback: 1).toDouble();
     final fill = gross == 0 ? 0.0 : (avail / gross).clamp(0.0, 1.0);
     final months = (pb?['months'] as List?) ?? const [];
     final freshness = pb?['freshness'] as String?;
-    final outstanding = (pb?['outstandingPayables'] as num?) ?? 0;
-    final inFlight = (pb?['inFlightOrders'] as num?) ?? 0;
-    final totalValue = months.fold<num>(
-      0,
-      (s, m) => s + ((m['value'] as num?) ?? 0),
-    );
+    final outstanding = asNum(pb?['outstandingPayables']);
+    final inFlight = asNum(pb?['inFlightOrders']);
+    final totalValue = months.fold<num>(0, (s, m) => s + asNum(m['value']));
 
     return Scaffold(
       appBar: MainAppBar(title: l10n.tabSociety),
@@ -174,7 +171,7 @@ class _SocietyPassbookScreenState extends ConsumerState<SocietyPassbookScreen> {
                             ),
                             Expanded(
                               child: Text(
-                                formatRupees(m['value'] as num?),
+                                formatRupees(m['value']),
                                 textAlign: TextAlign.right,
                               ),
                             ),
