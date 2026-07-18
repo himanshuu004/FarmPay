@@ -88,13 +88,105 @@ const applyVerification = async (p, actor, t, { capturedOffline = false } = {}) 
 /* --------------------------------- surface --------------------------------- */
 
 /** Assigned task queue: applications awaiting field verification. */
+/** Best-effort ERP farmer name lookup — never blocks the task list on ERP being degraded. */
+const farmerNameFor = async (farmerRef) => {
+  try {
+    const { erp } = require('../../../integrations');
+    const f = await erp.getFarmerMaster(farmerRef);
+    return f ? f.name : null;
+  } catch (_e) {
+    return null;
+  }
+};
+
+/**
+ * Role-appropriate, display-ready task queue for the Field PWA. Unlike the
+ * original supervisor-only version, this returns a `kind`-discriminated list
+ * so the client can render three real screens (verify / vetExam / inspection)
+ * from one endpoint instead of three thin, farmerRef-only rows:
+ *   ROUTE_SUPERVISOR → verify + inspection tasks
+ *   VET               → vetExam + inspection tasks
+ * `dcsRef` scopes to the caller's own society (from the JWT context or an
+ * explicit ?dcsRef= override for staff not yet geo-scoped — see context.js).
+ */
 const myTasks = async (req) => {
-  const { CiaApplication } = getDb();
+  const { CiaApplication, CiaPurchase, CiaAnimal, CiaPostPurchaseInspection } = getDb();
   const scope = (req.user && req.user.dcsRef) || (req.query && req.query.dcsRef) || null;
-  const where = { status: APP.PENDING_SUPERVISOR_VERIFY };
-  if (scope) where.dcs_ref = scope;
-  const rows = await CiaApplication.findAll({ where, order: [['submitted_at', 'ASC']] });
-  return rows.map((a) => ({ applicationUuid: a.application_uuid, farmerRef: a.farmer_ref, dcsRef: a.dcs_ref, status: a.status, submittedAt: a.submitted_at }));
+  const role = req.user && req.user.role;
+  const tasks = [];
+
+  if (role !== 'VET') {
+    const where = { status: APP.PENDING_SUPERVISOR_VERIFY };
+    if (scope) where.dcs_ref = scope;
+    const rows = await CiaApplication.findAll({ where, order: [['submitted_at', 'ASC']] });
+    for (const a of rows) {
+      tasks.push({
+        kind: 'verify',
+        applicationUuid: a.application_uuid,
+        farmerRef: a.farmer_ref,
+        farmerName: await farmerNameFor(a.farmer_ref),
+        dcsRef: a.dcs_ref,
+        requestedCattleCount: a.requested_cattle_count,
+        preferredBreed: a.preferred_breed,
+        status: a.status,
+        submittedAt: a.submitted_at,
+      });
+    }
+  }
+
+  if (role !== 'ROUTE_SUPERVISOR') {
+    const purchases = await CiaPurchase.findAll({
+      where: { status: ['PURCHASE_INITIATED', 'VET_VERIFICATION_PENDING'] },
+      include: [
+        { model: CiaApplication, as: 'application' },
+        { model: CiaAnimal, as: 'animal' },
+      ],
+      order: [['initiated_at', 'ASC']],
+    });
+    for (const p of purchases) {
+      const a = p.application;
+      if (!a || (scope && a.dcs_ref !== scope)) continue;
+      tasks.push({
+        kind: 'vetExam',
+        applicationUuid: a.application_uuid,
+        farmerRef: a.farmer_ref,
+        farmerName: await farmerNameFor(a.farmer_ref),
+        dcsRef: a.dcs_ref,
+        purchaseStatus: p.status,
+        earTagNo: p.animal ? p.animal.ear_tag_no : null,
+        species: p.animal ? p.animal.species : null,
+        breed: p.animal ? p.animal.breed : null,
+        initiatedAt: p.initiated_at,
+      });
+    }
+  }
+
+  const inspections = await CiaPostPurchaseInspection.findAll({
+    where: { status: 'SCHEDULED' },
+    include: [
+      { model: CiaApplication, as: 'application' },
+      { model: CiaPurchase, as: 'purchase', include: [{ model: CiaAnimal, as: 'animal' }] },
+    ],
+    order: [['due_date', 'ASC']],
+  });
+  for (const i of inspections) {
+    const a = i.application;
+    if (!a || (scope && a.dcs_ref !== scope)) continue;
+    const animal = i.purchase && i.purchase.animal;
+    tasks.push({
+      kind: 'inspection',
+      applicationUuid: a.application_uuid,
+      farmerRef: a.farmer_ref,
+      farmerName: await farmerNameFor(a.farmer_ref),
+      dcsRef: a.dcs_ref,
+      dueDay: i.due_day,
+      dueDate: i.due_date,
+      overdue: new Date(i.due_date) < new Date(),
+      earTagNo: animal ? animal.ear_tag_no : null,
+    });
+  }
+
+  return tasks;
 };
 
 /** Online submit (single verification). */

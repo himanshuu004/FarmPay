@@ -126,9 +126,21 @@ const getUserPermissions = async (userId) => {
  * @param {Object} data - Registration payload
  * @returns {Promise<Object>} { userId, otpRequestId, expiresInSeconds }
  */
+// Pilot-only: lets a caller self-select a staff role at registration, gated
+// by the same SHOW_DEV_OTP pilot-convenience flag already used to echo OTPs
+// (no SMS provider wired up) — never available when that flag is unset, so
+// production farmer registration is unaffected. Scoped to the two field
+// roles the CIA Field PWA needs (Convention 30); a real admin role-grant
+// endpoint is the long-term replacement once the back-office dashboard
+// exists to host it.
+const PILOT_SELF_REGISTERABLE_ROLES = ['ROUTE_SUPERVISOR', 'VET'];
+
 const register = async (data) => {
-  const { firstName, lastName, mobile, email, dateOfBirth, gender } = data;
+  const { firstName, lastName, mobile, email, dateOfBirth, gender, role } = data;
   const formattedMobile = mobile.startsWith('+91') ? mobile : `+91${mobile}`;
+  const pilotRole = process.env.SHOW_DEV_OTP === 'true' && role && PILOT_SELF_REGISTERABLE_ROLES.includes(role)
+    ? role
+    : null;
 
   // Check for existing user
   const existingUser = await User.findOne({
@@ -164,15 +176,21 @@ const register = async (data) => {
       gender: gender || null,
     }, { transaction });
 
-    // Assign default FARMER role
-    const farmerRole = await Role.findOne({ where: { role_name: 'FARMER' } });
-    if (farmerRole) {
-      await UserRole.create({
-        user_id: user.id,
-        role_id: farmerRole.id,
-        assigned_at: new Date(),
-      }, { transaction });
-    }
+    // Assign role — FARMER by default; a pilot-gated staff role if requested
+    // and permitted (see PILOT_SELF_REGISTERABLE_ROLES above). Role rows are
+    // reference data with no seed migration today, so findOrCreate here
+    // rather than assuming the row exists.
+    const roleName = pilotRole || 'FARMER';
+    const [assignedRole] = await Role.findOrCreate({
+      where: { role_name: roleName },
+      defaults: { role_name: roleName, display_name: roleName.replace(/_/g, ' ') },
+      transaction,
+    });
+    await UserRole.create({
+      user_id: user.id,
+      role_id: assignedRole.id,
+      assigned_at: new Date(),
+    }, { transaction });
 
     // Generate and store OTP for mobile verification
     const otpCode = generateOtpCode();

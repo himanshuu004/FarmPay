@@ -50,6 +50,10 @@ const registerSchema = Joi.object({
   email: Joi.string().email().max(120).allow('', null),
   dateOfBirth: Joi.date().iso().max('now').allow(null),
   gender: Joi.string().valid('male', 'female', 'other').allow(null),
+  // Pilot-only staff self-registration (SHOW_DEV_OTP-gated server-side —
+  // see authService.PILOT_SELF_REGISTERABLE_ROLES); silently ignored
+  // (falls back to FARMER) when the pilot flag is off.
+  role: Joi.string().valid('ROUTE_SUPERVISOR', 'VET').optional(),
 });
 
 /**
