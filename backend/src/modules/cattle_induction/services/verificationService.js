@@ -246,4 +246,39 @@ const sync = async (req) => {
   return { synced: results };
 };
 
-module.exports = { myTasks, submit, sync, applyVerification };
+/**
+ * Live-capture evidence upload for field staff (Convention 9/25/32: real
+ * SHA-256, unmodified bytes). NOT owner-scoped like the farmer-side CIA
+ * evidence endpoint (applicationService.uploadEvidence) — a Route Supervisor
+ * or Vet uploading evidence for a farmer's application is never the
+ * application's owner, so that farmer-ownership check would always 403 a
+ * field user. Trust boundary here is fieldRouter's roleCheck (ROUTE_
+ * SUPERVISOR/VET only) plus the application existing, matching the same
+ * no-extra-ownership-check trust level already given to verify/vet/
+ * inspection submissions on this router.
+ */
+const uploadEvidence = async (req) => {
+  const { CiaApplication } = getDb();
+  const app = await CiaApplication.findOne({ where: { application_uuid: req.params.appUuid } });
+  if (!app) throw err('Application not found', 'CIA_APP_NOT_FOUND', 404);
+  if (!req.file) throw err('photo file is required', 'VALIDATION_ERROR', 400);
+  const evidenceStorageService = require('../../../shared/services/evidenceStorageService');
+  const descriptor = evidenceStorageService.store(req.file.buffer, { mimeType: req.file.mimetype, capturedAt: new Date() });
+  const url = `${req.protocol}://${req.get('host')}/api/v1/cattle-induction/field/evidence/${app.application_uuid}/${descriptor.contentHash}`;
+  return { url, contentHash: descriptor.contentHash };
+};
+
+/** Field-role-gated evidence GET — same trust boundary as uploadEvidence above. */
+const getEvidence = async (req) => {
+  if (!/^[0-9a-f]{64}$/i.test(req.params.contentHash)) throw err('Invalid content hash', 'VALIDATION_ERROR', 400);
+  const { CiaApplication } = getDb();
+  const app = await CiaApplication.findOne({ where: { application_uuid: req.params.appUuid } });
+  if (!app) throw err('Application not found', 'CIA_APP_NOT_FOUND', 404);
+  const evidenceStorageService = require('../../../shared/services/evidenceStorageService');
+  const fs = require('fs');
+  const filePath = evidenceStorageService.resolvePath(req.params.contentHash, 'image/jpeg');
+  if (!fs.existsSync(filePath)) throw err('Evidence not found', 'RES_001', 404);
+  return filePath;
+};
+
+module.exports = { myTasks, submit, sync, applyVerification, uploadEvidence, getEvidence };

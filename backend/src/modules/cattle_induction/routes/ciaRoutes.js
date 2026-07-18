@@ -80,6 +80,10 @@ fieldRouter.post('/inspection/:appUuid', validate(v.appUuidParam, 'params'), val
 fieldRouter.post('/muzzle/:appUuid/enrol', validate(v.appUuidParam, 'params'), validate(v.muzzleSchema), ctrl.enrolMuzzle);   // CIA-4: muzzle re-ID (shadow)
 fieldRouter.post('/muzzle/:appUuid/verify', validate(v.appUuidParam, 'params'), validate(v.muzzleSchema), ctrl.verifyMuzzle);
 fieldRouter.post('/sync', ctrl.syncQueue);                          // idempotent offline batch sync
+// Live-capture evidence for field verification/vet-exam/inspection photos —
+// NOT owner-scoped (see verificationService.uploadEvidence's doc comment).
+fieldRouter.post('/evidence/:appUuid', validate(v.appUuidParam, 'params'), upload.single('photo'), ctrl.uploadFieldEvidence);
+fieldRouter.get('/evidence/:appUuid/:contentHash', validate(v.appUuidParam, 'params'), ctrl.getFieldEvidence);
 
 /* -------------------------------- DCS surface ------------------------------ */
 const dcsRouter = express.Router();

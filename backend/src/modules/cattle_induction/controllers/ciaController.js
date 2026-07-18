@@ -128,6 +128,14 @@ const syncQueue = async (req, res, next) => {
   try { return success(res, { message: 'Sync accepted', data: await verificationService.sync(req) }); }
   catch (err) { next(err); }
 };
+const uploadFieldEvidence = async (req, res, next) => {
+  try { return success(res, { message: 'Evidence captured', data: await verificationService.uploadEvidence(req), statusCode: 201 }); }
+  catch (err) { next(err); }
+};
+const getFieldEvidence = async (req, res, next) => {
+  try { return res.sendFile(await verificationService.getEvidence(req)); }
+  catch (err) { next(err); }
+};
 const submitVetExam = async (req, res, next) => {
   try { return success(res, { message: 'Vet exam recorded', data: await vetService.vetExam(req) }); }
   catch (err) { next(err); }
@@ -314,7 +322,7 @@ module.exports = {
   getEmiLedger, getNoDuesCert, remapMilkAccount, setMoratorium,   // CIA-2 (Slice K/L + edges: no-dues, DCS re-map, moratorium)
   recordEmiConsent, revokeEmiConsent,    // CIA-2 (Slice N)
   // field
-  getFieldTasks, submitVerification, syncQueue,
+  getFieldTasks, submitVerification, syncQueue, uploadFieldEvidence, getFieldEvidence,
   submitVetExam,                         // CIA-3 (Slice O)
   runFraudChecks,                        // CIA-3 (Slice P)
   recordInspection,                      // CIA-4 (Slice T)
