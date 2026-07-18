@@ -1,0 +1,319 @@
+/* Design tokens — same palette as flutter_app/lib/design_system/tokens.dart,
+   so the field app reads visually as part of the same product family. */
+:root {
+  --brand: #0f7a4d;
+  --brand-dark: #0a5c3a;
+  --accent: #e8f5ee;
+
+  --ink: #14201b;
+  --muted: #6b7c74;
+  --line: #e2e8e4;
+  --bg: #f4f6f5;
+  --card: #ffffff;
+
+  --warn: #b45309;
+  --warn-bg: #fef3e2;
+  --danger: #b3261e;
+  --danger-bg: #fbe9e7;
+  --gold: #8a6d1f;
+  --gold-bg: #fbf3d9;
+  --blue: #0b5c8a;
+  --blue-bg: #e6f0f6;
+
+  --radius-card: 16px;
+  --radius-btn: 12px;
+  --radius-chip: 999px;
+
+  font: 15px/1.5 -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  color-scheme: light;
+  color: var(--ink);
+  background: var(--bg);
+  -webkit-font-smoothing: antialiased;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100svh;
+}
+
+#root {
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  max-width: 480px;
+  margin: 0 auto;
+  background: var(--bg);
+}
+
+h1, h2, h3 {
+  margin: 0;
+  color: var(--ink);
+  font-weight: 800;
+}
+
+p {
+  margin: 0;
+}
+
+button, input, select, textarea {
+  font: inherit;
+}
+
+button:focus-visible, input:focus-visible, a:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 2px;
+}
+
+button {
+  cursor: pointer;
+}
+
+.btn {
+  display: block;
+  width: 100%;
+  border: none;
+  border-radius: var(--radius-btn);
+  padding: 13px;
+  font-weight: 800;
+  font-size: 15px;
+  background: var(--brand);
+  color: #fff;
+}
+.btn:disabled {
+  background: #a9c3b1;
+  cursor: not-allowed;
+}
+.btn.ghost {
+  background: #fff;
+  color: var(--brand-dark);
+  border: 1.5px solid var(--brand);
+}
+.btn.danger-ghost {
+  background: #fff;
+  color: var(--danger);
+  border: 1.5px solid #f1c7c1;
+}
+.btn.sm {
+  padding: 9px;
+  font-size: 13px;
+}
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-card);
+  padding: 14px;
+  margin-bottom: 10px;
+}
+
+.row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+
+.muted {
+  color: var(--muted);
+  font-size: 12.5px;
+}
+
+.chip {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 800;
+  border-radius: var(--radius-chip);
+  padding: 3px 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+.chip.brand { background: var(--accent); color: var(--brand-dark); }
+.chip.warn { background: var(--warn-bg); color: var(--warn); }
+.chip.danger { background: var(--danger-bg); color: var(--danger); }
+.chip.blue { background: var(--blue-bg); color: var(--blue); }
+.chip.gold { background: var(--gold-bg); color: var(--gold); }
+
+.field-label {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--ink);
+  margin: 12px 0 6px;
+  display: block;
+}
+
+.input {
+  width: 100%;
+  border: 1.5px solid var(--line);
+  border-radius: 10px;
+  padding: 11px 12px;
+  font-size: 15px;
+  background: #fafbfa;
+  color: var(--ink);
+}
+.input:focus {
+  border-color: var(--brand);
+  outline: none;
+}
+
+.checklist-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 0;
+  border-bottom: 1px solid #eef2f0;
+  font-size: 13.5px;
+}
+.checklist-row:last-child { border-bottom: none; }
+
+.dot {
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+  border: 1.5px solid #cbd3ce;
+  flex: 0 0 auto;
+}
+.dot.on {
+  background: var(--brand);
+  border-color: var(--brand);
+}
+
+.section-label {
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+  margin: 14px 0 8px;
+}
+
+.role-tag {
+  font-family: ui-monospace, monospace;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--blue);
+  background: var(--blue-bg);
+  border-radius: 6px;
+  padding: 3px 8px;
+  display: inline-block;
+}
+
+.offline-banner {
+  background: var(--warn-bg);
+  color: var(--warn);
+  font-size: 12px;
+  font-weight: 700;
+  text-align: center;
+  padding: 7px;
+}
+
+.appbar {
+  background: var(--brand);
+  color: #fff;
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.appbar h1 {
+  color: #fff;
+  font-size: 16px;
+}
+.appbar button {
+  background: rgba(255, 255, 255, 0.18);
+  border: none;
+  color: #fff;
+  border-radius: 8px;
+  padding: 6px 10px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.tabbar {
+  display: flex;
+  border-top: 1px solid var(--line);
+  background: var(--card);
+}
+.tabbar button {
+  flex: 1;
+  background: none;
+  border: none;
+  padding: 10px 4px 12px;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--muted);
+  border-top: 2px solid transparent;
+}
+.tabbar button.active {
+  color: var(--brand-dark);
+  border-top-color: var(--brand);
+}
+
+.content {
+  flex: 1;
+  padding: 16px;
+  overflow-y: auto;
+  padding-bottom: 90px;
+}
+
+.empty-state {
+  text-align: center;
+  color: var(--muted);
+  padding: 60px 20px;
+}
+
+.photo-thumbs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 8px 0;
+}
+.photo-thumb {
+  width: 64px;
+  height: 64px;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #0b120e;
+}
+.photo-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.photo-add {
+  width: 64px;
+  height: 64px;
+  border-radius: 10px;
+  border: 1.5px dashed var(--brand);
+  background: none;
+  color: var(--brand-dark);
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.geo-box {
+  background: #0b120e;
+  border-radius: 14px;
+  padding: 18px;
+  text-align: center;
+  margin: 8px 0;
+}
+.geo-box .ok { color: #7fd0a3; font-weight: 800; font-size: 14px; }
+.geo-box .coord { color: #cfe; font-size: 12px; font-family: ui-monospace, monospace; margin-top: 4px; }
+.geo-box .wait { color: #7fd0a3; font-size: 13px; }
+
+.spinner {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.5);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
