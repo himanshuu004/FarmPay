@@ -4,6 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/api/api_client.dart';
 import '../../../design_system/tokens.dart';
 import '../../../design_system/widgets/app_card.dart';
+import '../../../design_system/widgets/capture_photo_field.dart';
+import '../../../design_system/widgets/captured_evidence.dart';
 import '../../../design_system/widgets/status_chip.dart';
 import '../../../l10n/generated/app_localizations.dart';
 import '../models/kcc_status.dart';
@@ -32,6 +34,7 @@ class _KccDrawdownScreenState extends ConsumerState<KccDrawdownScreen> {
   String _item = 'ANIMAL';
   final _descCtrl = TextEditingController();
   final _amountCtrl = TextEditingController();
+  CapturedEvidence? _quotationPhoto;
 
   @override
   void initState() {
@@ -86,11 +89,18 @@ class _KccDrawdownScreenState extends ConsumerState<KccDrawdownScreen> {
     setState(() => _busy = true);
     try {
       final api = ref.read(kccApiProvider);
+      String? quotationDocUrl;
+      final photo = _quotationPhoto;
+      if (photo != null) {
+        final up = await api.uploadDrawdownEvidence(_facilityUuid!, photo);
+        if (up['success'] == true) quotationDocUrl = up['data']['url'].toString();
+      }
       final create = await api.createDrawdown(
         _facilityUuid!,
         item: _item,
         description: _descCtrl.text.trim(),
         amount: amt,
+        quotationDocUrl: quotationDocUrl,
       );
       if (create['success'] != true) {
         _showSnack(
@@ -104,6 +114,7 @@ class _KccDrawdownScreenState extends ConsumerState<KccDrawdownScreen> {
         _showSnack('${l10n.kccSubmittedTitle}. ${l10n.kccSentToBank}');
         _descCtrl.clear();
         _amountCtrl.clear();
+        setState(() => _quotationPhoto = null);
         await _load();
       } else {
         _showSnack(
@@ -210,6 +221,21 @@ class _KccDrawdownScreenState extends ConsumerState<KccDrawdownScreen> {
                   controller: _amountCtrl,
                   keyboardType: TextInputType.number,
                   decoration: InputDecoration(hintText: l10n.kccAmountPlaceholder),
+                ),
+                const SizedBox(height: 10),
+                Row(
+                  children: [
+                    Text(
+                      _quotationPhoto != null ? '✅ ${l10n.kccQuotationPhoto}' : l10n.kccQuotationPhoto,
+                      style: const TextStyle(fontSize: 13.5, color: AppColors.ink),
+                    ),
+                    const Spacer(),
+                    CapturePhotoField(
+                      label: _quotationPhoto != null ? l10n.kccRetakePhoto : l10n.kccAddPhoto,
+                      captured: _quotationPhoto,
+                      onCaptured: (e) => setState(() => _quotationPhoto = e),
+                    ),
+                  ],
                 ),
                 const SizedBox(height: 10),
                 Text(l10n.kccDrawdownNote, style: const TextStyle(fontSize: 12, color: AppColors.muted, height: 1.35)),

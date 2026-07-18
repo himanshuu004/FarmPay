@@ -152,6 +152,35 @@ const createDrawdown = async (req, res, next) => {
   } catch (err) { next(err); }
 };
 
+// Live-capture evidence for the LT drawdown quotation (Convention 9: real
+// SHA-256, unmodified bytes). Scoped to the facility (uploaded before the
+// drawdown request exists) — the returned URL is then passed as
+// quotationDocUrl in the createDrawdown body. Same pattern as kavach/
+// claims/CIA's evidence endpoints; OCR extraction is a later AI-0b item —
+// this endpoint only stores the photo as attached evidence today.
+const uploadDrawdownEvidence = async (req, res, next) => {
+  try {
+    const facility = await loadOwnedFacility(req);
+    if (!req.file) { const e = new Error('photo file is required'); e.statusCode = 400; e.errorCode = 'VALIDATION_ERROR'; throw e; }
+    const evidenceStorageService = require('../../../shared/services/evidenceStorageService');
+    const descriptor = evidenceStorageService.store(req.file.buffer, { mimeType: req.file.mimetype, capturedAt: new Date() });
+    const url = `${req.protocol}://${req.get('host')}/api/v1/kcc/facility/${facility.facility_uuid}/evidence/${descriptor.contentHash}`;
+    return success(res, { message: 'Evidence captured', data: { url, contentHash: descriptor.contentHash }, statusCode: 201 });
+  } catch (err) { next(err); }
+};
+
+const getDrawdownEvidence = async (req, res, next) => {
+  try {
+    if (!/^[0-9a-f]{64}$/i.test(req.params.contentHash)) { const e = new Error('Invalid content hash'); e.statusCode = 400; e.errorCode = 'VALIDATION_ERROR'; throw e; }
+    await loadOwnedFacility(req);
+    const evidenceStorageService = require('../../../shared/services/evidenceStorageService');
+    const fs = require('fs');
+    const filePath = evidenceStorageService.resolvePath(req.params.contentHash, 'image/jpeg');
+    if (!fs.existsSync(filePath)) { const e = new Error('Evidence not found'); e.statusCode = 404; e.errorCode = 'RES_001'; throw e; }
+    return res.sendFile(filePath);
+  } catch (err) { next(err); }
+};
+
 const listDrawdowns = async (req, res, next) => {
   try {
     await loadReadableFacility(req);
@@ -208,6 +237,6 @@ const getPackHtml = async (req, res, next) => {
 
 module.exports = {
   calculate, eligibility, apply, getFacility, submitApplication, renew, transition,
-  createDrawdown, listDrawdowns, submitDrawdown, bankApproveDrawdown, disburseDrawdown, rejectDrawdown,
+  createDrawdown, uploadDrawdownEvidence, getDrawdownEvidence, listDrawdowns, submitDrawdown, bankApproveDrawdown, disburseDrawdown, rejectDrawdown,
   buildDrawingPower, getDrawingPower, getPack, getPackHtml,
 };

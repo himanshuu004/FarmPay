@@ -9,6 +9,7 @@ import '../../../core/api/api_response.dart';
 import '../../../core/providers/core_providers.dart';
 import '../../../design_system/tokens.dart';
 import '../../../l10n/generated/app_localizations.dart';
+import '../../logbook/widgets/voice_input_button.dart';
 import '../providers/auth_providers.dart';
 import '../widgets/auth_scaffold.dart';
 import '../widgets/dev_otp_banner.dart';
@@ -444,15 +445,37 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   Widget _profileStep(AppLocalizations l10n) => Column(
     crossAxisAlignment: CrossAxisAlignment.stretch,
     children: [
-      TextField(
-        controller: _firstNameCtrl,
-        autofocus: true,
-        decoration: InputDecoration(labelText: l10n.registerFirstName),
+      Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Expanded(
+            child: TextField(
+              controller: _firstNameCtrl,
+              autofocus: true,
+              decoration: InputDecoration(labelText: l10n.registerFirstName),
+            ),
+          ),
+          VoiceInputButton(
+            language: 'hi',
+            onResult: (t) => setState(() => _firstNameCtrl.text = t),
+          ),
+        ],
       ),
       const SizedBox(height: AppSpacing.md),
-      TextField(
-        controller: _lastNameCtrl,
-        decoration: InputDecoration(labelText: l10n.registerLastName),
+      Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Expanded(
+            child: TextField(
+              controller: _lastNameCtrl,
+              decoration: InputDecoration(labelText: l10n.registerLastName),
+            ),
+          ),
+          VoiceInputButton(
+            language: 'hi',
+            onResult: (t) => setState(() => _lastNameCtrl.text = t),
+          ),
+        ],
       ),
       const SizedBox(height: AppSpacing.lg),
       if (_states.isEmpty)

@@ -5,6 +5,7 @@ import '../../../core/api/api_client.dart';
 import '../../../design_system/tokens.dart';
 import '../../../l10n/generated/app_localizations.dart';
 import '../providers/dairy_providers.dart';
+import '../widgets/voice_input_button.dart';
 
 /// Mirrors app/app/dairy-animals.tsx — the herd register. Unlike the other
 /// dairy screens this one is NOT FormKit-based in the RN reference (its own
@@ -266,9 +267,20 @@ class _DairyAnimalsScreenState extends ConsumerState<DairyAnimalsScreen> {
           decoration: const InputDecoration(hintText: 'e.g., RG-001'),
         ),
         _label(l10n.dairyAnimalsName),
-        TextField(
-          controller: _nameCtrl,
-          decoration: const InputDecoration(hintText: 'e.g., Ganga'),
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Expanded(
+              child: TextField(
+                controller: _nameCtrl,
+                decoration: const InputDecoration(hintText: 'e.g., Ganga'),
+              ),
+            ),
+            VoiceInputButton(
+              language: 'hi',
+              onResult: (t) => setState(() => _nameCtrl.text = t),
+            ),
+          ],
         ),
         _label(l10n.dairyAnimalsSpecies),
         Wrap(
@@ -284,10 +296,21 @@ class _DairyAnimalsScreenState extends ConsumerState<DairyAnimalsScreen> {
           ],
         ),
         _label(l10n.dairyAnimalsBreed),
-        TextField(
-          controller: _breedCtrl,
-          textCapitalization: TextCapitalization.characters,
-          decoration: const InputDecoration(hintText: 'e.g., HF_CROSS, MURRAH'),
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Expanded(
+              child: TextField(
+                controller: _breedCtrl,
+                textCapitalization: TextCapitalization.characters,
+                decoration: const InputDecoration(hintText: 'e.g., HF_CROSS, MURRAH'),
+              ),
+            ),
+            VoiceInputButton(
+              language: 'hi',
+              onResult: (t) => setState(() => _breedCtrl.text = t),
+            ),
+          ],
         ),
         _label(l10n.dairyAnimalsGender),
         Wrap(

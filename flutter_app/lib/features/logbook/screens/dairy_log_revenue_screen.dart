@@ -5,6 +5,7 @@ import '../../../design_system/tokens.dart';
 import '../../../l10n/generated/app_localizations.dart';
 import '../providers/dairy_providers.dart';
 import '../widgets/form_kit.dart';
+import '../widgets/voice_input_button.dart';
 
 /// Mirrors app/app/dairy-log-revenue.tsx exactly. Writes go through
 /// DairyOfflineSync so "Log Milk" works with no signal (CLAUDE.md
@@ -297,12 +298,32 @@ class _DairyLogRevenueScreenState extends ConsumerState<DairyLogRevenueScreen> {
                     ],
                   ),
                 const FieldLabel(en: 'Paid by', hi: 'किसने दिया'),
-                BigInput(
-                  controller: _payerCtrl,
-                  placeholder: 'e.g. Society / trader',
+                Row(
+                  children: [
+                    Expanded(
+                      child: BigInput(
+                        controller: _payerCtrl,
+                        placeholder: 'e.g. Society / trader',
+                      ),
+                    ),
+                    VoiceInputButton(
+                      language: 'hi',
+                      onResult: (t) => setState(() => _payerCtrl.text = t),
+                    ),
+                  ],
                 ),
                 const FieldLabel(en: 'Note', hi: 'टिप्पणी'),
-                BigInput(controller: _notesCtrl, placeholder: 'Optional'),
+                Row(
+                  children: [
+                    Expanded(
+                      child: BigInput(controller: _notesCtrl, placeholder: 'Optional'),
+                    ),
+                    VoiceInputButton(
+                      language: 'hi',
+                      onResult: (t) => setState(() => _notesCtrl.text = t),
+                    ),
+                  ],
+                ),
               ],
             ),
           ]),

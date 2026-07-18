@@ -8,12 +8,24 @@
  * against the generated pack (there is no live-bank actor in v1).
  */
 const express = require('express');
+const multer = require('multer');
 const router = express.Router();
 const ctrl = require('../controllers/kccController');
 const validate = require('../../../middleware/validate');
 const { authenticate } = require('../../../middleware/auth');
 const roleCheck = require('../../../middleware/roleCheck');
 const v = require('../validators/kccValidator');
+
+// memory storage — evidenceStorageService writes the raw buffer to disk
+// unmodified (Convention 9: no resize/recompress on evidence photos).
+const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 10 * 1024 * 1024 },
+  fileFilter: (_req, file, cb) => {
+    if (/^image\/(jpeg|png|webp|heic|heif)$/i.test(file.mimetype)) cb(null, true);
+    else cb(new Error('Only image uploads allowed'));
+  },
+});
 
 router.use(authenticate);
 
@@ -33,6 +45,10 @@ router.post('/facility/:facilityUuid/transition',
   roleCheck('BANKER'), ctrl.transition);
 
 // LT drawdown.
+// Quotation-photo evidence — uploaded before the drawdown request exists;
+// the returned url is then passed as quotationDocUrl below.
+router.post('/facility/:facilityUuid/evidence', validate(v.facilityUuidParam, 'params'), upload.single('photo'), ctrl.uploadDrawdownEvidence);
+router.get('/facility/:facilityUuid/evidence/:contentHash', validate(v.facilityUuidParam, 'params'), ctrl.getDrawdownEvidence);
 router.post('/facility/:facilityUuid/drawdowns', validate(v.facilityUuidParam, 'params'), validate(v.createDrawdownSchema), ctrl.createDrawdown);
 router.get('/facility/:facilityUuid/drawdowns', validate(v.facilityUuidParam, 'params'), ctrl.listDrawdowns);
 router.post('/drawdowns/:requestUuid/submit', validate(v.requestUuidParam, 'params'), ctrl.submitDrawdown);

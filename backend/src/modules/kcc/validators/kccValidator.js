@@ -30,7 +30,10 @@ const applySchema = calculateSchema.keys({
   }).optional(),
 });
 
-const facilityUuidParam = Joi.object({ facilityUuid: Joi.string().uuid().required() });
+const facilityUuidParam = Joi.object({
+  facilityUuid: Joi.string().uuid().required(),
+  contentHash: Joi.string().hex().length(64).optional(),
+});
 const requestUuidParam = Joi.object({ requestUuid: Joi.string().uuid().required() });
 
 const transitionSchema = Joi.object({

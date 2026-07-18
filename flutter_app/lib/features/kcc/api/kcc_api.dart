@@ -1,4 +1,7 @@
+import 'package:dio/dio.dart';
+
 import '../../../core/api/api_client.dart';
+import '../../../design_system/widgets/captured_evidence.dart';
 
 /// Wraps /kcc/* — mirrors app/app/kcc-*.tsx's apiGet/apiPost calls exactly
 /// (same paths, same body field names — verified against
@@ -41,12 +44,34 @@ class KccApi {
     required String item,
     required String description,
     required num amount,
+    String? quotationDocUrl,
   }) async => Map.from(
     await _client.post('/kcc/facility/$facilityUuid/drawdowns', {
       'item': item,
       'description': description,
       'amount': amount,
+      if (quotationDocUrl != null) 'quotationDocUrl': quotationDocUrl,
     }),
+  );
+
+  /// Uploads a live-captured quotation photo → real contentHash + URL, for
+  /// use as createDrawdown's quotationDocUrl. CLAUDE.md names "quotation
+  /// photo/OCR" as a named LT-drawdown requirement; this stores the photo
+  /// as attached evidence (OCR text-extraction is a separate, later item).
+  Future<Map> uploadDrawdownEvidence(
+    String facilityUuid,
+    CapturedEvidence evidence,
+  ) async => Map.from(
+    await _client.postForm(
+      '/kcc/facility/$facilityUuid/evidence',
+      FormData.fromMap({
+        'photo': MultipartFile.fromBytes(
+          evidence.bytes,
+          filename: 'quotation.jpg',
+          contentType: DioMediaType('image', 'jpeg'),
+        ),
+      }),
+    ),
   );
 
   Future<Map> submitDrawdown(String requestUuid) async =>

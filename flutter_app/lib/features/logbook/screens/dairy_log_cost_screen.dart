@@ -5,6 +5,7 @@ import '../../../design_system/tokens.dart';
 import '../../../l10n/generated/app_localizations.dart';
 import '../providers/dairy_providers.dart';
 import '../widgets/form_kit.dart';
+import '../widgets/voice_input_button.dart';
 
 /// Mirrors app/app/dairy-log-cost.tsx exactly, including the
 /// amountFormal-defaults-to-full-amount quirk (see save()). Offline-capable
@@ -304,12 +305,32 @@ class _DairyLogCostScreenState extends ConsumerState<DairyLogCostScreen> {
                   ],
                 ),
                 const FieldLabel(en: 'Shop / vendor', hi: 'दुकान'),
-                BigInput(
-                  controller: _vendorCtrl,
-                  placeholder: 'e.g. local agri store',
+                Row(
+                  children: [
+                    Expanded(
+                      child: BigInput(
+                        controller: _vendorCtrl,
+                        placeholder: 'e.g. local agri store',
+                      ),
+                    ),
+                    VoiceInputButton(
+                      language: 'hi',
+                      onResult: (t) => setState(() => _vendorCtrl.text = t),
+                    ),
+                  ],
                 ),
                 const FieldLabel(en: 'Note', hi: 'टिप्पणी'),
-                BigInput(controller: _notesCtrl, placeholder: 'Optional'),
+                Row(
+                  children: [
+                    Expanded(
+                      child: BigInput(controller: _notesCtrl, placeholder: 'Optional'),
+                    ),
+                    VoiceInputButton(
+                      language: 'hi',
+                      onResult: (t) => setState(() => _notesCtrl.text = t),
+                    ),
+                  ],
+                ),
               ],
             ),
           ]),

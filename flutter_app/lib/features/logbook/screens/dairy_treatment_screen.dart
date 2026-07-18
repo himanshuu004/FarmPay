@@ -5,6 +5,7 @@ import '../../../design_system/tokens.dart';
 import '../../../l10n/generated/app_localizations.dart';
 import '../providers/dairy_providers.dart';
 import '../widgets/form_kit.dart';
+import '../widgets/voice_input_button.dart';
 
 const _herdWideSentinel = '__HERD__';
 
@@ -248,16 +249,36 @@ class _DairyTreatmentScreenState extends ConsumerState<DairyTreatmentScreen> {
           ]),
           _card([
             const FieldLabel(en: 'Illness / condition', hi: 'बीमारी'),
-            BigInput(
-              controller: _conditionCtrl,
-              placeholder: 'e.g. Mild mastitis',
+            Row(
+              children: [
+                Expanded(
+                  child: BigInput(
+                    controller: _conditionCtrl,
+                    placeholder: 'e.g. Mild mastitis',
+                  ),
+                ),
+                VoiceInputButton(
+                  language: 'hi',
+                  onResult: (t) => setState(() => _conditionCtrl.text = t),
+                ),
+              ],
             ),
             MoreDetails(
               children: [
                 const FieldLabel(en: 'Vet name', hi: 'डॉक्टर का नाम'),
-                BigInput(
-                  controller: _vetNameCtrl,
-                  placeholder: 'e.g. Dr Basavaraj',
+                Row(
+                  children: [
+                    Expanded(
+                      child: BigInput(
+                        controller: _vetNameCtrl,
+                        placeholder: 'e.g. Dr Basavaraj',
+                      ),
+                    ),
+                    VoiceInputButton(
+                      language: 'hi',
+                      onResult: (t) => setState(() => _vetNameCtrl.text = t),
+                    ),
+                  ],
                 ),
                 const FieldLabel(en: 'Vet type', hi: 'प्रकार'),
                 ChipsField<String>(
@@ -295,7 +316,17 @@ class _DairyTreatmentScreenState extends ConsumerState<DairyTreatmentScreen> {
                   ],
                 ),
                 const FieldLabel(en: 'Note', hi: 'टिप्पणी'),
-                BigInput(controller: _notesCtrl, placeholder: 'Optional'),
+                Row(
+                  children: [
+                    Expanded(
+                      child: BigInput(controller: _notesCtrl, placeholder: 'Optional'),
+                    ),
+                    VoiceInputButton(
+                      language: 'hi',
+                      onResult: (t) => setState(() => _notesCtrl.text = t),
+                    ),
+                  ],
+                ),
               ],
             ),
           ]),
