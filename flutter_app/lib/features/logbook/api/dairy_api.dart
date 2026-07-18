@@ -79,6 +79,19 @@ class DairyApi {
 
   Future<Map> saveAggregateHerd(Map<String, dynamic> body) async =>
       Map.from(await _client.post('/livestock/herd/aggregate', body));
+
+  /// Wraps /farmer/activity-subscriptions — used by setup-goatery/
+  /// setup-poultry.tsx's aggregate-count save (no dedicated goatery/
+  /// poultry endpoint exists yet; RN's own workaround, replicated as-is).
+  Future<Map> listActivitySubscriptions() async =>
+      Map.from(await _client.get('/farmer/activity-subscriptions'));
+
+  Future<Map> patchActivitySubscription(
+    String subscriptionId,
+    Map<String, dynamic> body,
+  ) async => Map.from(
+    await _client.patch('/farmer/activity-subscriptions/$subscriptionId', body),
+  );
 }
 
 /// Defensively coerces the mixed string/num typing that P&L responses

@@ -11,7 +11,12 @@ import '../providers/dairy_providers.dart';
 /// plain TextInput/TouchableOpacity layout), replicated faithfully rather
 /// than retrofitted onto FormKit.
 class DairyAnimalsScreen extends ConsumerStatefulWidget {
-  const DairyAnimalsScreen({super.key});
+  const DairyAnimalsScreen({super.key, this.initialSpecies});
+
+  /// Mirrors RN's `/dairy-animals?species=GOAT` — the goatery/poultry
+  /// activity menus link here with a pre-selected species so "add animal"
+  /// doesn't default to cattle.
+  final String? initialSpecies;
 
   @override
   ConsumerState<DairyAnimalsScreen> createState() => _DairyAnimalsScreenState();
@@ -49,13 +54,14 @@ class _DairyAnimalsScreenState extends ConsumerState<DairyAnimalsScreen> {
   final _dobCtrl = TextEditingController();
   final _purchaseCostCtrl = TextEditingController();
   final _purchaseDateCtrl = TextEditingController();
-  String _species = 'CATTLE';
+  late String _species;
   String _gender = 'FEMALE';
   String _lifecycle = 'HEIFER';
 
   @override
   void initState() {
     super.initState();
+    _species = widget.initialSpecies ?? 'CATTLE';
     _load();
   }
 
@@ -91,7 +97,7 @@ class _DairyAnimalsScreenState extends ConsumerState<DairyAnimalsScreen> {
     _dobCtrl.clear();
     _purchaseCostCtrl.clear();
     _purchaseDateCtrl.clear();
-    _species = 'CATTLE';
+    _species = widget.initialSpecies ?? 'CATTLE';
     _gender = 'FEMALE';
     _lifecycle = 'HEIFER';
   }

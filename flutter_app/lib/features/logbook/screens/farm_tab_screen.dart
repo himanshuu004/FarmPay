@@ -6,10 +6,11 @@ import '../../../design_system/widgets/main_app_bar.dart';
 import '../../../l10n/generated/app_localizations.dart';
 
 /// Mirrors app/app/(tabs)/farm.tsx — pick a livestock activity. Dairy is
-/// full-featured; goat/poultry reuse the shared register+logbook+P&L
-/// pattern per CLAUDE.md's module map, but those screens aren't in this
-/// phase's scope (only dairy is, per FLUTTER-CONVERSION-PRD §6 Phase 3) —
-/// routed to an honest "ships later" placeholder rather than built now.
+/// full-featured; goat/poultry route to the same v1-stub menu pattern the
+/// RN reference app itself uses (see activity_goatery/poultry_screen.dart) —
+/// reused dairy register/cost/revenue/P&L screens with a species filter,
+/// plus an aggregate herd-count setup form, per CLAUDE.md's module map
+/// (goatery/poultry = register + logbook + PoP, not dairy's full depth).
 class FarmTabScreen extends StatelessWidget {
   const FarmTabScreen({super.key});
 

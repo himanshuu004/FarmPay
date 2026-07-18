@@ -31,6 +31,8 @@ import '../features/kcc/screens/kcc_limit_screen.dart';
 import '../features/kcc/screens/kcc_pack_screen.dart';
 import '../features/kcc/screens/kcc_transactions_screen.dart';
 import '../features/logbook/screens/activity_dairy_screen.dart';
+import '../features/logbook/screens/activity_goatery_screen.dart';
+import '../features/logbook/screens/activity_poultry_screen.dart';
 import '../features/logbook/screens/dairy_animals_screen.dart';
 import '../features/logbook/screens/dairy_breeding_screen.dart';
 import '../features/logbook/screens/dairy_log_cost_screen.dart';
@@ -41,6 +43,8 @@ import '../features/logbook/screens/dairy_pnl_screen.dart';
 import '../features/logbook/screens/dairy_treatment_screen.dart';
 import '../features/logbook/screens/farm_tab_screen.dart';
 import '../features/logbook/screens/setup_dairy_screen.dart';
+import '../features/logbook/screens/setup_goatery_screen.dart';
+import '../features/logbook/screens/setup_poultry_screen.dart';
 import '../features/insurance/screens/pashu_animals_screen.dart';
 import '../features/insurance/screens/pashu_claim_screen.dart';
 import '../features/insurance/screens/pashu_enrol_screen.dart';
@@ -49,7 +53,6 @@ import '../features/insurance/screens/pashu_quote_screen.dart';
 import '../features/insurance/screens/pashu_renew_screen.dart';
 import '../features/insurance/screens/pashu_vault_screen.dart';
 import '../features/shell/main_shell.dart';
-import '../features/shell/phase_pending_screen.dart';
 
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
 
@@ -113,7 +116,9 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/dairy-animals',
         parentNavigatorKey: _rootNavigatorKey,
-        builder: (context, state) => const DairyAnimalsScreen(),
+        builder: (context, state) => DairyAnimalsScreen(
+          initialSpecies: state.uri.queryParameters['species'],
+        ),
       ),
       GoRoute(
         path: '/dairy-treatment',
@@ -148,18 +153,31 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => const ActivityDairyScreen(),
       ),
       // Goat/poultry reuse the shared register+logbook+P&L pattern per
-      // CLAUDE.md's module map, but aren't in this phase's scope.
-      _pendingRoute(
-        '/activity-goatery',
-        'Goatery',
-        'Goatery registers ship in a later phase.',
-        _rootNavigatorKey,
+      // CLAUDE.md's module map (register + logbook + PoP, not dairy's
+      // full depth) — same v1-stub scope as the RN reference app.
+      GoRoute(
+        path: '/activity-goatery',
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => const ActivityGoateryScreen(),
       ),
-      _pendingRoute(
-        '/activity-poultry',
-        'Poultry',
-        'Poultry registers ship in a later phase.',
-        _rootNavigatorKey,
+      GoRoute(
+        path: '/activity-poultry',
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => const ActivityPoultryScreen(),
+      ),
+      GoRoute(
+        path: '/setup-goatery',
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => SetupGoateryScreen(
+          editMode: state.uri.queryParameters['mode'] == 'edit',
+        ),
+      ),
+      GoRoute(
+        path: '/setup-poultry',
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => SetupPoultryScreen(
+          editMode: state.uri.queryParameters['mode'] == 'edit',
+        ),
       ),
 
       // ── KCC (Phase 4) — same route names as the RN app ──
@@ -345,20 +363,6 @@ final routerProvider = Provider<GoRouter>((ref) {
     ],
   );
 });
-
-GoRoute _pendingRoute(
-  String path,
-  String title,
-  String phaseLabel,
-  GlobalKey<NavigatorState> rootKey,
-) {
-  return GoRoute(
-    path: path,
-    parentNavigatorKey: rootKey,
-    builder: (context, state) =>
-        PhasePendingScreen(title: title, phaseLabel: phaseLabel),
-  );
-}
 
 class _SessionListenable extends ChangeNotifier {
   _SessionListenable(this.ref) {
